@@ -1,3 +1,15 @@
+Development Environment Setup
+=============================
+
+Requirement: python 3.6.1
+- Run python3 --version
+- If version different than 3.6.1, install the 3.6.1 version
+
+- Git clone this repository
+- Inside the repository folder, run `python3 -m venv .`
+- Run `source ./bin/activate`
+- Run `pip install -r requirements.txt`
+
 Git Workflow
 ============
 

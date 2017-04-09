@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import pygame
 from pygame.locals import *
+from enum import Enum
 
 
 # TODO: move to commons (confirm)
@@ -8,11 +9,24 @@ SCREEN_TITLE = 'Chess'
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 640
 BOARD_SIZE = 640
-WHITE_COLOR = (255, 255, 255)
-BLACK_COLOR = (0, 0, 0)
-GREEN_COLOR = (0, 255, 0)
-RED_COLOR = (255, 0, 0)
 IMAGES_FOLDER_PATH = 'images'
+
+
+class Color(Enum):
+    BLACK = (50, 50, 50)
+    WHITE = (230, 230, 230)
+    GREEN = (50, 200, 50)
+    RED = (200, 50, 50)
+
+    def get_rgb(code):
+        if code == 0:
+            return Color.BLACK.value
+        if code == 1:
+            return Color.WHITE.value
+        if code == 2:
+            return Color.GREEN.value
+        if code == 3:
+            return  Color.RED.value
 
 
 class ChessPiece(pygame.sprite.Sprite):
@@ -44,30 +58,39 @@ def load_png(file_name):
         raise(SystemExit, message)
     return image, image.get_rect()
 
-def draw_board(board):
-    # TODO: remove this after integration
+def draw_board(board, color_board):
+    # TODO: comment this after integration (as docs)
     board = [
-        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], # 1
-        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], # 2
-        ['.', '.', '.', '.', '.', '.', '.', '.'], # 3
-        ['.', '.', '.', '.', '.', '.', '.', '.'], # 4
-        ['.', '.', '.', '.', '.', '.', '.', '.'], # 5
+        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], # 8
+        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], # 7
         ['.', '.', '.', '.', '.', '.', '.', '.'], # 6
-        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], # 7
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'], # 8
+        ['.', '.', '.', '.', '.', '.', '.', '.'], # 5
+        ['.', '.', '.', '.', '.', '.', '.', '.'], # 4
+        ['.', '.', '.', '.', '.', '.', '.', '.'], # 3
+        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], # 2
+        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'], # 1
+        # a    b    c    d    e    f    g    h
+    ]
+    color_board = [
+        [1, 2, 1, 0, 1, 0, 1, 0], # 8
+        [0, 1, 0, 1, 0, 1, 0, 1], # 7
+        [1, 3, 1, 0, 1, 0, 1, 0], # 6
+        [0, 1, 0, 1, 0, 1, 0, 1], # 5
+        [1, 0, 1, 0, 1, 0, 1, 0], # 4
+        [0, 1, 0, 1, 0, 1, 0, 1], # 3
+        [1, 0, 1, 0, 1, 0, 1, 0], # 2
+        [0, 1, 0, 1, 0, 1, 0, 1], # 1
+        #a  b  c  d  e  f  g  h
     ]
 
     board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
     num_of_cells = len(board)
     cell_size = BOARD_SIZE / num_of_cells
-    colors = [WHITE_COLOR, BLACK_COLOR]
     for row in range(num_of_cells):
-        color_index = row % 2  # Change starting color on each row
         for col in range(num_of_cells):
-            board_cell = (col * cell_size, row * cell_size, cell_size, cell_size)
-            board_surface.fill(colors[color_index], board_cell)
-            # flip color
-            color_index = (color_index + 1) % 2
+            cell_rect = (col * cell_size, row * cell_size, cell_size, cell_size)
+            cell_color = Color.get_rgb(color_board[row][col])
+            board_surface.fill(cell_color, cell_rect)
 
     return board_surface
 
@@ -81,7 +104,7 @@ def main():
     background = pygame.Surface(screen.get_size())
     # Convert the Surface to the pixel format (necessary for all Surfaces)
     background = background.convert()
-    background.fill((250, 250, 250))
+    background.fill(Color.WHITE.value)
 
     # Display some text
     '''
@@ -108,7 +131,7 @@ def main():
             (SCREEN_WIDTH - BOARD_SIZE) / 2,
             (SCREEN_HEIGHT - BOARD_SIZE) / 2,
         )
-        screen.blit(draw_board(['remove']), board_position)
+        screen.blit(draw_board(['test_board'], ['test_board_color']), board_position)
         pygame.display.flip()
 
 

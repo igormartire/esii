@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import pygame
+import os
+import copy
 from pygame.locals import *
 from enum import Enum
 
@@ -9,8 +11,7 @@ SCREEN_TITLE = 'Chess'
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 640
 BOARD_SIZE = 640
-IMAGES_FOLDER_PATH = 'images'
-
+IMAGES_FOLDER_PATH = 'assets/images'
 
 class Color(Enum):
     BLACK = (50, 50, 50)
@@ -29,34 +30,20 @@ class Color(Enum):
             return  Color.RED.value
 
 
-class ChessPiece(pygame.sprite.Sprite):
-    def __init__(self, code):
-        pygame.sprite.Sprite.__init__(self)
-        self.image, self.rect = load_png(get_name_from_code(code) + '.png')
-        self.area = pygame.display.get_surface().get_rect()
-
-    def get_name_from_code(code):
-        if code == 'p':
-            return 'black-pawn'
-        elif code =='P':
-            return 'white-pawn'
-        else:
-            return 'white-queen'
-
-
 def load_png(file_name):
     """ Load image and return image object"""
-    fullname = os.path.join('images', file_name)
+    fullname = os.path.join(IMAGES_FOLDER_PATH, file_name + '.png')
     try:
         image = pygame.image.load(fullname)
         if image.get_alpha() is None:
             image = image.convert()
         else:
             image = image.convert_alpha()
-    except (pygame.error, message):
-        print('Cannot load image:', fullname)
-        raise(SystemExit, message)
-    return image, image.get_rect()
+    except (pygame.error):
+        print('Error loading image', fullname)
+        raise(pygame.error('a'))
+    return image
+
 
 def draw_board(board, color_board):
     # TODO: comment this after integration (as docs)
@@ -91,14 +78,19 @@ def draw_board(board, color_board):
             cell_rect = (col * cell_size, row * cell_size, cell_size, cell_size)
             cell_color = Color.get_rgb(color_board[row][col])
             board_surface.fill(cell_color, cell_rect)
+            pawn = pygame.transform.scale(PAWN_IMAGE, (int(cell_size), int(cell_size)))
+            board_surface.blit(pawn, cell_rect)
 
     return board_surface
 
-def main():
+if __name__ == '__main__':
     # Initialise screen
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(SCREEN_TITLE)
+
+    # Load images
+    PAWN_IMAGE = load_png('chess-pieces/white-pawn')
 
     # Fill background
     background = pygame.Surface(screen.get_size())
@@ -106,24 +98,16 @@ def main():
     background = background.convert()
     background.fill(Color.WHITE.value)
 
-    # Display some text
-    '''
-    font = pygame.font.Font(None, 36)
-    text = font.render("Hello There", 1, (10, 10, 10))
-    textpos = text.get_rect()
-    textpos.centerx = background.get_rect().centerx
-    background.blit(text, textpos)
-    '''
-
     # Blit everything to the screen
     screen.blit(background, (0, 0))
     pygame.display.flip()
 
     # Event loop
-    while 1:
+    running = True
+    while running:
         for event in pygame.event.get():
             if event.type == QUIT:
-                return
+                running = False
 
         screen.blit(background, (0, 0))
         # give it a margin if board is smaller than screen
@@ -133,9 +117,3 @@ def main():
         )
         screen.blit(draw_board(['test_board'], ['test_board_color']), board_position)
         pygame.display.flip()
-
-
-if __name__ == '__main__':
-    main()
-
-pygame.init()

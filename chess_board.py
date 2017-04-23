@@ -13,6 +13,30 @@ SCREEN_HEIGHT = 640
 BOARD_SIZE = 640
 IMAGES_FOLDER_PATH = 'assets/images'
 
+# TODO: comment this after integration (as docs)
+board = [
+    ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], # 8
+    ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], # 7
+    ['.', '.', '.', '.', '.', '.', '.', '.'], # 6
+    ['.', '.', '.', '.', '.', '.', '.', '.'], # 5
+    ['.', '.', '.', '.', '.', '.', '.', '.'], # 4
+    ['.', '.', '.', '.', '.', '.', '.', '.'], # 3
+    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], # 2
+    ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'], # 1
+    # a    b    c    d    e    f    g    h
+]
+color_board = [
+    [1, 2, 1, 0, 1, 0, 1, 0], # 8
+    [0, 1, 0, 1, 0, 1, 0, 1], # 7
+    [1, 3, 1, 0, 1, 0, 1, 0], # 6
+    [0, 1, 0, 1, 0, 1, 0, 1], # 5
+    [1, 0, 1, 0, 1, 0, 1, 0], # 4
+    [0, 1, 0, 1, 0, 1, 0, 1], # 3
+    [1, 0, 1, 0, 1, 0, 1, 0], # 2
+    [0, 1, 0, 1, 0, 1, 0, 1], # 1
+    #a  b  c  d  e  f  g  h
+]
+
 
 class Color(Enum):
     BLACK = (100, 100, 100)
@@ -50,9 +74,12 @@ class ChessPiece(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.name = name
         self.image = image_surface
-        self.rect = rect
+        self.rect = pygame.Rect(rect)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
+
+    def was_clicked(self, click_position):
+        return self.rect.collidepoint(click_position)
 
 def create_chess_piece(piece_code, cell_size, cell_rect):
     piece_image = None
@@ -102,29 +129,6 @@ def create_chess_piece(piece_code, cell_size, cell_rect):
     return chess_piece
 
 def draw_board(board, color_board):
-    # TODO: comment this after integration (as docs)
-    board = [
-        ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], # 8
-        ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], # 7
-        ['.', '.', '.', '.', '.', '.', '.', '.'], # 6
-        ['.', '.', '.', '.', '.', '.', '.', '.'], # 5
-        ['.', '.', '.', '.', '.', '.', '.', '.'], # 4
-        ['.', '.', '.', '.', '.', '.', '.', '.'], # 3
-        ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], # 2
-        ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'], # 1
-        # a    b    c    d    e    f    g    h
-    ]
-    color_board = [
-        [1, 2, 1, 0, 1, 0, 1, 0], # 8
-        [0, 1, 0, 1, 0, 1, 0, 1], # 7
-        [1, 3, 1, 0, 1, 0, 1, 0], # 6
-        [0, 1, 0, 1, 0, 1, 0, 1], # 5
-        [1, 0, 1, 0, 1, 0, 1, 0], # 4
-        [0, 1, 0, 1, 0, 1, 0, 1], # 3
-        [1, 0, 1, 0, 1, 0, 1, 0], # 2
-        [0, 1, 0, 1, 0, 1, 0, 1], # 1
-        #a  b  c  d  e  f  g  h
-    ]
 
     board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
     chess_pieces = []
@@ -142,6 +146,16 @@ def draw_board(board, color_board):
                 #board_surface.blit(chess_piece.image, chess_piece.rect)
 
     return board_surface, chess_pieces
+
+def get_clicked_cell(click_position, board):
+    num_of_cells = len(board)
+    cell_size = BOARD_SIZE / num_of_cells
+    for row in range(num_of_cells):
+        for col in range(num_of_cells):
+            cell = (col * cell_size, row * cell_size, cell_size, cell_size)
+            cell_rect = pygame.Rect(cell)
+            if cell_rect.collidepoint(click_position):
+                return (row, col)
 
 if __name__ == '__main__':
     # Initialise screen
@@ -177,22 +191,32 @@ if __name__ == '__main__':
     running = True
     holding_piece = False
     while running:
+        board_surface, chess_pieces = draw_board(board, color_board)
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                downclick_pos = pygame.mouse.get_pos()
+                click_position = event.pos
+                clicked_cell = get_clicked_cell(click_position, board)
+                print(clicked_cell)
 
-            if event.type == pygame.MOUSEBUTTONUP:
-                print("mouse up")
+        """
+        if pygame.mouse.get_pressed()[0] == 1 and not holding_piece:
+            for chess_piece in chess_pieces:
+                if chess_piece.was_clicked(pygame.mouse.get_pos()):
+                    print(chess_piece.name)
+                    holding_piece = True
 
-        board_surface, chess_pieces = draw_board(['test_board'], ['test_board_color'])
+        if pygame.mouse.get_pressed()[0] == 0 and holding_piece:
+            holding_piece = False
+        """
+
+
         # give it a margin if board is smaller than screen
         board_position = (
             (SCREEN_WIDTH - BOARD_SIZE) / 2,
             (SCREEN_HEIGHT - BOARD_SIZE) / 2,
         )
-
 
         # Blitting
         screen.blit(background, (0, 0))

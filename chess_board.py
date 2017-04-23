@@ -13,6 +13,7 @@ SCREEN_HEIGHT = 640
 BOARD_SIZE = 640
 IMAGES_FOLDER_PATH = 'assets/images'
 
+
 class Color(Enum):
     BLACK = (100, 100, 100)
     WHITE = (230, 230, 230)
@@ -45,13 +46,60 @@ def load_png(file_name):
     return image
 
 class ChessPiece(pygame.sprite.Sprite):
-    def __init__(self, image_file, rect):
+    def __init__(self, name, image_surface, rect):
         pygame.sprite.Sprite.__init__(self)
-        self.image = load_png(image_file)
+        self.name = name
+        self.image = image_surface
         self.rect = rect
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
 
+def create_chess_piece(piece_code, cell_size, cell_rect):
+    piece_image = None
+    if piece_code == 'P':
+        piece_image = WHITE_PAWN_IMAGE
+        name = 'white pawn'
+    elif piece_code == 'R':
+        piece_image = WHITE_ROOK_IMAGE
+        name = 'white rook'
+    elif piece_code == 'N':
+        piece_image = WHITE_KNIGHT_IMAGE
+        name = 'white knight'
+    elif piece_code == 'B':
+        piece_image = WHITE_BISHOP_IMAGE
+        name = 'white bishop'
+    elif piece_code == 'Q':
+        piece_image = WHITE_QUEEN_IMAGE
+        name = 'white queen'
+    elif piece_code == 'K':
+        piece_image = WHITE_KING_IMAGE
+        name = 'white king'
+    elif piece_code == 'p':
+        piece_image = BLACK_PAWN_IMAGE
+        name = 'black pawn'
+    elif piece_code == 'r':
+        piece_image = BLACK_ROOK_IMAGE
+        name = 'black rook'
+    elif piece_code == 'n':
+        piece_image = BLACK_KNIGHT_IMAGE
+        name = 'black knight'
+    elif piece_code == 'b':
+        piece_image = BLACK_BISHOP_IMAGE
+        name = 'black bishop'
+    elif piece_code == 'q':
+        piece_image = BLACK_QUEEN_IMAGE
+        name = 'black queen'
+    elif piece_code == 'k':
+        piece_image = BLACK_KING_IMAGE
+        name = 'black king'
+
+    chess_piece = None
+    if piece_image is not None:
+        chess_piece_image = pygame.transform.scale(
+            piece_image, (int(cell_size), int(cell_size)))
+        chess_piece = ChessPiece(name, chess_piece_image, cell_rect)
+
+    return chess_piece
 
 def draw_board(board, color_board):
     # TODO: comment this after integration (as docs)
@@ -79,6 +127,7 @@ def draw_board(board, color_board):
     ]
 
     board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
+    chess_pieces = []
     num_of_cells = len(board)
     cell_size = BOARD_SIZE / num_of_cells
     for row in range(num_of_cells):
@@ -86,39 +135,13 @@ def draw_board(board, color_board):
             cell_rect = (col * cell_size, row * cell_size, cell_size, cell_size)
             cell_color = Color.get_rgb(color_board[row][col])
             board_surface.fill(cell_color, cell_rect)
+            cell_code = board[row][col]
+            chess_piece = create_chess_piece(cell_code, cell_size, cell_rect)
+            if chess_piece is not None:
+                chess_pieces.append(chess_piece)
+                #board_surface.blit(chess_piece.image, chess_piece.rect)
 
-            # Check which image we shall blit on board_surface
-            piece_image = None
-            if board[row][col] == 'P':
-                piece_image = WHITE_PAWN_IMAGE
-            elif board[row][col] == 'R':
-                piece_image = WHITE_ROOK_IMAGE
-            elif board[row][col] == 'N':
-                piece_image = WHITE_KNIGHT_IMAGE
-            elif board[row][col] == 'B':
-                piece_image = WHITE_BISHOP_IMAGE
-            elif board[row][col] == 'Q':
-                piece_image = WHITE_QUEEN_IMAGE
-            elif board[row][col] == 'K':
-                piece_image = WHITE_KING_IMAGE
-            elif board[row][col] == 'p':
-                piece_image = BLACK_PAWN_IMAGE
-            elif board[row][col] == 'r':
-                piece_image = BLACK_ROOK_IMAGE
-            elif board[row][col] == 'n':
-                piece_image = BLACK_KNIGHT_IMAGE
-            elif board[row][col] == 'b':
-                piece_image = BLACK_BISHOP_IMAGE
-            elif board[row][col] == 'q':
-                piece_image = BLACK_QUEEN_IMAGE
-            elif board[row][col] == 'k':
-                piece_image = BLACK_KING_IMAGE
-
-            if piece_image is not None:
-                chess_piece = pygame.transform.scale(piece_image, (int(cell_size), int(cell_size)))
-                board_surface.blit(chess_piece, cell_rect)
-
-    return board_surface
+    return board_surface, chess_pieces
 
 if __name__ == '__main__':
     # Initialise screen
@@ -150,18 +173,30 @@ if __name__ == '__main__':
     screen.blit(background, (0, 0))
     pygame.display.flip()
 
-    # Event loop
+    # Events loop
     running = True
+    holding_piece = False
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                downclick_pos = pygame.mouse.get_pos()
 
-        screen.blit(background, (0, 0))
+            if event.type == pygame.MOUSEBUTTONUP:
+                print("mouse up")
+
+        board_surface, chess_pieces = draw_board(['test_board'], ['test_board_color'])
         # give it a margin if board is smaller than screen
         board_position = (
             (SCREEN_WIDTH - BOARD_SIZE) / 2,
             (SCREEN_HEIGHT - BOARD_SIZE) / 2,
         )
-        screen.blit(draw_board(['test_board'], ['test_board_color']), board_position)
+
+
+        # Blitting
+        screen.blit(background, (0, 0))
+        screen.blit(board_surface, board_position)
+        for chess_piece in chess_pieces:
+            screen.blit(chess_piece.image, chess_piece.rect)
         pygame.display.flip()

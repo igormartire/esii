@@ -13,7 +13,7 @@ SCREEN_HEIGHT = 640
 BOARD_SIZE = 640
 IMAGES_FOLDER_PATH = 'assets/images'
 
-# TODO: comment this after integration (as docs)
+# TODO: comment this and color_board after integration (as docs)
 board = [
     ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], # 8
     ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], # 7
@@ -57,6 +57,10 @@ class Color(Enum):
 
 def load_png(file_name):
     """ Load image and return image object"""
+    """ 
+        Não precisa se preocupar com essa função, ela é só uma função auxiliar para garantir que
+        as imagens sejam carregadas no formato certo
+    """
     fullname = os.path.join(IMAGES_FOLDER_PATH, file_name + '.png')
     try:
         image = pygame.image.load(fullname)
@@ -69,7 +73,11 @@ def load_png(file_name):
         raise(pygame.error('a'))
     return image
 
+
 class ChessPiece(pygame.sprite.Sprite):
+    """"
+    Não precisa se preocupar muito com essa classe também, é apenas uma 'imagem'
+    """
     def __init__(self, name, image_surface, rect):
         pygame.sprite.Sprite.__init__(self)
         self.name = name
@@ -81,7 +89,12 @@ class ChessPiece(pygame.sprite.Sprite):
     def was_clicked(self, click_position):
         return self.rect.collidepoint(click_position)
 
+
 def create_chess_piece(piece_code, cell_size, cell_rect):
+    """
+    Uma factory de peças simplesmente
+    :returns ChessPiece
+    """
     piece_image = None
     if piece_code == 'P':
         piece_image = WHITE_PAWN_IMAGE
@@ -128,8 +141,13 @@ def create_chess_piece(piece_code, cell_size, cell_rect):
 
     return chess_piece
 
-def setup_board(board, color_board):
 
+def setup_board(board, color_board):
+    """
+    Recebe um board e um color_board (ambos são matrizes)
+    A partir deles, monta um tabuleiro com as respectivas peças e cores de cada célula
+    """
+    # Surface é a classe que representa uma imagem, basicamente, a qual pode ser pintada na tela
     board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
     chess_pieces = []
     num_of_cells = len(board)
@@ -147,6 +165,10 @@ def setup_board(board, color_board):
     return board_surface, chess_pieces
 
 def get_cell_by_position(position, board):
+    """
+    Pega a posição de uma célula dentro do board (0..7)x(0..7)
+    de acordo com a position
+    """
     num_of_cells = len(board)
     cell_size = BOARD_SIZE / num_of_cells
     for row in range(num_of_cells):
@@ -159,11 +181,15 @@ def get_cell_by_position(position, board):
 
 if __name__ == '__main__':
     # Initialise screen
+    # Necessário para "rodar" o joguinho
     pygame.init()
+    # A janela do jogo em si, com tamanho WIDTHxHEIGHT (lá em cima setados)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    # Título da janela
     pygame.display.set_caption(SCREEN_TITLE)
 
     # Load sprites
+    # Ainda vou pensar em como tirar isso daqui e carregar em outro lugar hehe
     WHITE_PAWN_IMAGE = load_png('chess-pieces/white-pawn')
     WHITE_BISHOP_IMAGE = load_png('chess-pieces/white-bishop')
     WHITE_KING_IMAGE = load_png('chess-pieces/white-king')
@@ -177,54 +203,65 @@ if __name__ == '__main__':
     BLACK_QUEEN_IMAGE = load_png('chess-pieces/black-queen')
     BLACK_ROOK_IMAGE = load_png('chess-pieces/black-rook')
 
-    # Fill background
-    background = pygame.Surface(screen.get_size())
-    # Convert the Surface to the pixel format (necessary for all Surfaces)
-    background = background.convert()
-    background.fill(Color.WHITE.value)
-
     # Events loop
     running = True
+    # Posição da última peça clicada
     last_held_piece_pos = None
 
     while running:
+        # Pinta a tela de preto
         screen.fill((0,0,0))
+        # Pega posição (x,y) do mouse
         mouse_position = pygame.mouse.get_pos()
+        # Pega a posição das células (a partir da posição do mouse)
         cell_x, cell_y = get_cell_by_position(mouse_position, board)
+        # Para cada evento que ocorreu (cliques, teclas, etc.)
         for event in pygame.event.get():
+            # Se clicou para fechar a janela
             if event.type == QUIT:
                 running = False
+###### Início da lógica de movimentação #######
+            # Se apartou algum botão do mouse (ainda vou adicionar restrição para apenas o botão esquerdo)
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                # If wasn't holding a piece before and clicked on a piece
+                # If wasn't holding a piece before AND clicked on a piece (that is, board value != '.')
                 if last_held_piece_pos is None \
                         and board[cell_x][cell_y] != '.':
                     # Hold the piece
                     last_held_piece_pos = cell_x, cell_y
                     print("Clicked on cell: {} which contains a {}".format(
                         last_held_piece_pos, board[cell_x][cell_y]))
+            # Se soltou algum botão do mouse E estava segurando alguma peça
             elif event.type == pygame.MOUSEBUTTONUP \
                     and last_held_piece_pos is not None:
+                # Substitui o valor do board na célula destino pelo valor da célula de origem
+                # Pega a posição de origem (para fazer swap)
                 origin_piece_x = last_held_piece_pos[0]
                 origin_piece_y = last_held_piece_pos[1]
+                # Pega o valor da posição de origem (letra da peça)
                 origin_piece = board[origin_piece_x][origin_piece_y]
-                # erases source piece from board
+                # Remove peça de origem do tabuleiro (substitui por '.')
                 board[origin_piece_x][origin_piece_y] = '.'
-                # dest receives source piece
+                # Substitui peça na célula de destino
                 board[cell_x][cell_y] = origin_piece
-                # releases the held piece
+                # "solta" a peça
                 last_held_piece_pos = None
+##### Fim da lógica de movimentação ######
 
         # give it a margin if board is smaller than screen
+        # somente por estética, pode ignorar
         board_position = (
             (SCREEN_WIDTH - BOARD_SIZE) / 2,
             (SCREEN_HEIGHT - BOARD_SIZE) / 2,
         )
 
-        # Blitting
+        # Pega nova surface atualizada pelas linhas acima
         board_surface, chess_pieces = setup_board(board, color_board)
-        screen.blit(background, (0, 0))
+        # Blitting => drawing updates to the screen
+        # pinta o tabuleiro
         screen.blit(board_surface, board_position)
+        # pinta cada peça em sua respectiva nova posição
         for chess_piece in chess_pieces:
             screen.blit(chess_piece.image, chess_piece.rect)
 
+        # updating everything (necessary)
         pygame.display.update()

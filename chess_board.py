@@ -189,12 +189,12 @@ if __name__ == '__main__':
 
     while running:
         screen.fill((0,0,0))
+        mouse_position = pygame.mouse.get_pos()
+        cell_x, cell_y = get_cell_by_position(mouse_position, board)
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_position = pygame.mouse.get_pos()
-                cell_x, cell_y = get_cell_by_position(mouse_position, board)
                 # If wasn't holding a piece before and clicked on a piece
                 if last_held_piece_pos is None \
                         and board[cell_x][cell_y] != '.':
@@ -204,15 +204,12 @@ if __name__ == '__main__':
                         last_held_piece_pos, board[cell_x][cell_y]))
             elif event.type == pygame.MOUSEBUTTONUP \
                     and last_held_piece_pos is not None:
-                mouse_position = pygame.mouse.get_pos()
-                cell_x, cell_y = get_cell_by_position(mouse_position, board)
                 origin_piece_x = last_held_piece_pos[0]
                 origin_piece_y = last_held_piece_pos[1]
                 origin_piece = board[origin_piece_x][origin_piece_y]
                 # erases source piece from board
                 board[origin_piece_x][origin_piece_y] = '.'
                 # dest receives source piece
-                print(origin_piece)
                 board[cell_x][cell_y] = origin_piece
                 # releases the held piece
                 last_held_piece_pos = None

@@ -128,7 +128,7 @@ def create_chess_piece(piece_code, cell_size, cell_rect):
 
     return chess_piece
 
-def draw_board(board, color_board):
+def setup_board(board, color_board):
 
     board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
     chess_pieces = []
@@ -143,18 +143,17 @@ def draw_board(board, color_board):
             chess_piece = create_chess_piece(cell_code, cell_size, cell_rect)
             if chess_piece is not None:
                 chess_pieces.append(chess_piece)
-                #board_surface.blit(chess_piece.image, chess_piece.rect)
 
     return board_surface, chess_pieces
 
-def get_clicked_cell(click_position, board):
+def get_cell_by_position(position, board):
     num_of_cells = len(board)
     cell_size = BOARD_SIZE / num_of_cells
     for row in range(num_of_cells):
         for col in range(num_of_cells):
             cell = (col * cell_size, row * cell_size, cell_size, cell_size)
             cell_rect = pygame.Rect(cell)
-            if cell_rect.collidepoint(click_position):
+            if cell_rect.collidepoint(position):
                 return (row, col)
 
 
@@ -162,7 +161,6 @@ if __name__ == '__main__':
     # Initialise screen
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    """
     pygame.display.set_caption(SCREEN_TITLE)
 
     # Load sprites
@@ -185,51 +183,40 @@ if __name__ == '__main__':
     background = background.convert()
     background.fill(Color.WHITE.value)
 
-    # Blit everything to the screen
-    screen.blit(background, (0, 0))
-    pygame.display.flip()
-    """
-
     # Events loop
     running = True
-    holding_piece = False
     last_held_piece_pos = None
-    x, y = 0, 0
-    while running:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                running = False
-            x, y = pygame.mouse.get_pos()
 
-        print(x, y)
+    while running:
         screen.fill((0,0,0))
-        pygame.display.update()
-        """
-        board_surface, chess_pieces = draw_board(board, color_board)
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                click_position = event.pos
-                cell_x, cell_y = get_clicked_cell(click_position, board)
+                mouse_position = pygame.mouse.get_pos()
+                cell_x, cell_y = get_cell_by_position(mouse_position, board)
+                # If wasn't holding a piece before and clicked on a piece
                 if last_held_piece_pos is None \
                         and board[cell_x][cell_y] != '.':
                     # Hold the piece
                     last_held_piece_pos = cell_x, cell_y
+                    print("Clicked on cell: {} which contains a {}".format(
+                        last_held_piece_pos, board[cell_x][cell_y]))
             elif event.type == pygame.MOUSEBUTTONUP \
                     and last_held_piece_pos is not None:
-                print(last_held_piece_pos)
-                source_piece_x = last_held_piece_pos[0]
-                source_piece_y = last_held_piece_pos[1]
-                source_piece = board[source_piece_x][source_piece_y]
+                mouse_position = pygame.mouse.get_pos()
+                cell_x, cell_y = get_cell_by_position(mouse_position, board)
+                origin_piece_x = last_held_piece_pos[0]
+                origin_piece_y = last_held_piece_pos[1]
+                origin_piece = board[origin_piece_x][origin_piece_y]
                 # erases source piece from board
-                board[source_piece_x][source_piece_y] = '.'
+                board[origin_piece_x][origin_piece_y] = '.'
                 # dest receives source piece
-                board[cell_x][cell_y] = source_piece
+                print(origin_piece)
+                board[cell_x][cell_y] = origin_piece
                 # releases the held piece
                 last_held_piece_pos = None
 
-        print(pygame.mouse.get_pos())
         # give it a margin if board is smaller than screen
         board_position = (
             (SCREEN_WIDTH - BOARD_SIZE) / 2,
@@ -237,8 +224,10 @@ if __name__ == '__main__':
         )
 
         # Blitting
+        board_surface, chess_pieces = setup_board(board, color_board)
         screen.blit(background, (0, 0))
         screen.blit(board_surface, board_position)
         for chess_piece in chess_pieces:
             screen.blit(chess_piece.image, chess_piece.rect)
-        """
+
+        pygame.display.update()

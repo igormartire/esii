@@ -2,7 +2,10 @@ from chess.core.models import Color, Piece
 
 
 # Example:
-# colored_board = color_board(board, [models.Coordinate(1,1), models.Coordinate(3,5)])
+# colored_board = color_board(
+#   board,
+#   [models.Coordinate(1,1), models.Coordinate(3,5)]
+# )
 def color_board(board, possible_destinations):
     B = Color.BLACK
     W = Color.WHITE

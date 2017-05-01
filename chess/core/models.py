@@ -1,9 +1,11 @@
 from enum import Enum, unique
 
+
 class Coordinate:
     def __init__(self, row, column):
         self.row = row
         self.column = column
+
 
 @unique
 class Color(Enum):
@@ -11,6 +13,7 @@ class Color(Enum):
     WHITE = 1
     GREEN = 2
     RED = 3
+
 
 @unique
 class Piece(Enum):

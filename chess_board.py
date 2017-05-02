@@ -1,7 +1,8 @@
 #!/usr/bin/python
-import pygame
 import os
+import copy
 
+import pygame
 from pygame.locals import *
 
 from chess.core.models import Coordinate, Color, Piece
@@ -13,9 +14,6 @@ SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 640
 BOARD_SIZE = 640
 IMAGES_FOLDER_PATH = 'assets/images'
-
-
-colored_board = TEST_COLORED_BOARD
 
 
 def load_png(file_name):
@@ -112,7 +110,7 @@ def setup_board(board, color_board):
     return board_surface, chess_pieces
 
 
-def get_cell_by_position(position, board):
+def get_coordinates_by_position(position, board):
     num_of_cells = len(board)
     cell_size = BOARD_SIZE / num_of_cells
     for row in range(num_of_cells):
@@ -120,7 +118,7 @@ def get_cell_by_position(position, board):
             cell = (col * cell_size, row * cell_size, cell_size, cell_size)
             cell_rect = pygame.Rect(cell)
             if cell_rect.collidepoint(position):
-                return row, col
+                return Coordinate(row, col)
 
 
 # give it a margin if board is smaller than screen
@@ -128,20 +126,34 @@ def board_position():
     return (SCREEN_WIDTH - BOARD_SIZE) / 2, (SCREEN_HEIGHT - BOARD_SIZE) / 2
 
 
-def can_move_piece(clicked_piece, last_held_piece):
-    if last_held_piece is None and clicked_piece != Piece.NONE:
+def is_holding_piece(piece_coord):
+    return piece_coord is not None
+
+
+def can_move_piece(clicked_piece, held_piece_coord):
+    if not is_holding_piece(held_piece_coord) and clicked_piece != Piece.NONE:
         return True
     return False
 
 
+def move(origin, destination, board):
+    board = board.copy()
+    origin_piece = board[origin.row][origin.column]
+    # TODO: insert business logic for movement
+    board[origin.row][origin.column] = Piece.NONE
+    board[destination.row][destination.column] = origin_piece
+
+    return board
+
+
 if __name__ == '__main__':
     chess_board = INITIAL_BOARD
-    # Initialise screen
+    colored_board = TEST_COLORED_BOARD
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(SCREEN_TITLE)
 
-    # Load sprites
+# region load sprites
     WHITE_PAWN_IMAGE = load_png('chess-pieces/white-pawn')
     WHITE_BISHOP_IMAGE = load_png('chess-pieces/white-bishop')
     WHITE_KING_IMAGE = load_png('chess-pieces/white-king')
@@ -154,34 +166,38 @@ if __name__ == '__main__':
     BLACK_KNIGHT_IMAGE = load_png('chess-pieces/black-knight')
     BLACK_QUEEN_IMAGE = load_png('chess-pieces/black-queen')
     BLACK_ROOK_IMAGE = load_png('chess-pieces/black-rook')
+# endregion
 
-    # Game Loop
+# region game loop
     running = True
-    last_held_piece_pos = None
+    held_piece_coord = None
     while running:
         mouse_position = pygame.mouse.get_pos()
-        cell_x, cell_y = get_cell_by_position(mouse_position, chess_board)
+        cell_coord = get_coordinates_by_position(
+            mouse_position, chess_board)
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                clicked_piece = chess_board[cell_x][cell_y]
-                if can_move_piece(clicked_piece, last_held_piece_pos):
-                    last_held_piece_pos = cell_x, cell_y
+                clicked_piece = chess_board[cell_coord.row][cell_coord.column]
+                if can_move_piece(clicked_piece, held_piece_coord):
+                    held_piece_coord = Coordinate(
+                        cell_coord.row, cell_coord.column)
                     print("Clicked on cell: {} which contains a {}".format(
-                        last_held_piece_pos, clicked_piece))
-            elif event.type == pygame.MOUSEBUTTONUP \
-                    and last_held_piece_pos is not None:
-                origin_piece_x = last_held_piece_pos[0]
-                origin_piece_y = last_held_piece_pos[1]
-                origin_piece = chess_board[origin_piece_x][origin_piece_y]
-                chess_board[origin_piece_x][origin_piece_y] = Piece.NONE
-                chess_board[cell_x][cell_y] = origin_piece
-                last_held_piece_pos = None
+                        held_piece_coord, clicked_piece))
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if is_holding_piece(held_piece_coord):
+                    origin_piece_coord = copy.copy(held_piece_coord)
+                    dest_piece_coord = copy.copy(cell_coord)
+                    # TODO: business logic
+                    move(origin_piece_coord, dest_piece_coord, chess_board)
+                    held_piece_coord = None
 
         board_surface, chess_pieces = setup_board(chess_board, colored_board)
         screen.blit(board_surface, board_position())
         for chess_piece in chess_pieces:
             screen.blit(chess_piece.image, chess_piece.rect)
-
         pygame.display.update()
+
+# endregion game loop
+    pygame.quit()

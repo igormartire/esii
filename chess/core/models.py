@@ -6,6 +6,12 @@ class Coordinate:
         self.row = row
         self.column = column
 
+    def __eq__(self, other):
+        return self.row == other.row and self.column == other.column
+
+    def __repr__(self):
+        return "(" + str(self.row) + ", " + str(self.column) + ")"
+
 
 @unique
 class Color(Enum):
@@ -13,6 +19,21 @@ class Color(Enum):
     WHITE = 1
     GREEN = 2
     RED = 3
+    BLACK_RGB = (100, 100, 100)
+    WHITE_RGB = (230, 230, 230)
+    GREEN_RGB = (50, 200, 50)
+    RED_RGB = (200, 50, 50)
+
+    @classmethod
+    def get_rgb(cls, code):
+        if code == 0:
+            return Color.BLACK_RGB.value
+        if code == 1:
+            return Color.WHITE_RGB.value
+        if code == 2:
+            return Color.GREEN_RGB.value
+        if code == 3:
+            return Color.RED_RGB.value
 
 
 @unique
@@ -30,3 +51,6 @@ class Piece(Enum):
     BLACK_ROOK = 'r'
     BLACK_QUEEN = 'q'
     BLACK_KING = 'k'
+
+
+

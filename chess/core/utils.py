@@ -14,14 +14,27 @@ r = Piece.BLACK_ROOK
 q = Piece.BLACK_QUEEN
 k = Piece.BLACK_KING
 
-INITIAL_BOARD = [[r, n, b, q, k, b, n, r],
-                 [p, p, p, p, p, p, p, p],
-                 [o, o, o, o, o, o, o, o],
-                 [o, o, o, o, o, o, o, o],
-                 [o, o, o, o, o, o, o, o],
-                 [o, o, o, o, o, o, o, o],
-                 [P, P, P, P, P, P, P, P],
-                 [R, N, B, Q, K, B, N, R]]
+INITIAL_BOARD = [[r, n, b, q, k, b, n, r],  # 8
+                 [p, p, p, p, p, p, p, p],  # 7
+                 [o, o, o, o, o, o, o, o],  # 6
+                 [o, o, o, o, o, o, o, o],  # 5
+                 [o, o, o, o, o, o, o, o],  # 4
+                 [o, o, o, o, o, o, o, o],  # 3
+                 [P, P, P, P, P, P, P, P],  # 2
+                 [R, N, B, Q, K, B, N, R]]  # 1
+#                 a  b  c  d  e  f  g  h
+
+
+TEST_COLORED_BOARD = [
+    [1, 2, 1, 0, 1, 0, 1, 0],  # 8
+    [0, 1, 0, 1, 0, 1, 0, 1],  # 7
+    [1, 3, 1, 0, 1, 0, 1, 0],  # 6
+    [0, 1, 0, 1, 0, 1, 0, 1],  # 5
+    [1, 0, 1, 0, 1, 0, 1, 0],  # 4
+    [0, 1, 0, 1, 0, 1, 0, 1],  # 3
+    [1, 0, 1, 0, 1, 0, 1, 0],  # 2
+    [0, 1, 0, 1, 0, 1, 0, 1]]  # 1
+#    a  b  c  d  e  f  g  h
 
 
 def print_board(board):

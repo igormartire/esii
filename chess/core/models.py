@@ -6,11 +6,28 @@ class Coordinate:
         self.row = row
         self.column = column
 
+    @classmethod
+    def matrix_to_coordinates(cls, matrix):
+        coordinates = []
+        for row in matrix:
+            for column in row:
+                coordinates[row][column] = Coordinate(row, column)
+
+        return coordinates
+
     def __eq__(self, other):
         return self.row == other.row and self.column == other.column
 
     def __repr__(self):
         return "(" + str(self.row) + ", " + str(self.column) + ")"
+
+
+class Board:
+    def __init__(self, cells_matrix):
+        self.matrix = cells_matrix
+        self.coordinates = Coordinate.matrix_to_coordinates(self.matrix)
+        self.width = len(cells_matrix[0])
+        self.height = len(cells_matrix)
 
 
 @unique

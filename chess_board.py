@@ -123,6 +123,17 @@ def get_cell_by_position(position, board):
                 return row, col
 
 
+# give it a margin if board is smaller than screen
+def board_position():
+    return (SCREEN_WIDTH - BOARD_SIZE) / 2, (SCREEN_HEIGHT - BOARD_SIZE) / 2
+
+
+def can_move_piece(clicked_piece, last_held_piece):
+    if last_held_piece is None and clicked_piece != Piece.NONE:
+        return True
+    return False
+
+
 if __name__ == '__main__':
     chess_board = INITIAL_BOARD
     # Initialise screen
@@ -148,20 +159,17 @@ if __name__ == '__main__':
     running = True
     last_held_piece_pos = None
     while running:
-        screen.fill((0,0,0))
         mouse_position = pygame.mouse.get_pos()
         cell_x, cell_y = get_cell_by_position(mouse_position, chess_board)
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                # If wasn't holding a piece before AND clicked on a piece (that is, board value != '.')
-                if last_held_piece_pos is None \
-                        and chess_board[cell_x][cell_y] != Piece.NONE:
-                    # Hold the piece
+                clicked_piece = chess_board[cell_x][cell_y]
+                if can_move_piece(clicked_piece, last_held_piece_pos):
                     last_held_piece_pos = cell_x, cell_y
                     print("Clicked on cell: {} which contains a {}".format(
-                        last_held_piece_pos, chess_board[cell_x][cell_y]))
+                        last_held_piece_pos, clicked_piece))
             elif event.type == pygame.MOUSEBUTTONUP \
                     and last_held_piece_pos is not None:
                 origin_piece_x = last_held_piece_pos[0]
@@ -171,21 +179,9 @@ if __name__ == '__main__':
                 chess_board[cell_x][cell_y] = origin_piece
                 last_held_piece_pos = None
 
-        # give it a margin if board is smaller than screen
-        # somente por estética, pode ignorar
-        board_position = (
-            (SCREEN_WIDTH - BOARD_SIZE) / 2,
-            (SCREEN_HEIGHT - BOARD_SIZE) / 2,
-        )
-
-        # Pega nova surface atualizada pelas linhas acima
         board_surface, chess_pieces = setup_board(chess_board, colored_board)
-        # Blitting => drawing updates to the screen
-        # pinta o tabuleiro
-        screen.blit(board_surface, board_position)
-        # pinta cada peça em sua respectiva nova posição
+        screen.blit(board_surface, board_position())
         for chess_piece in chess_pieces:
             screen.blit(chess_piece.image, chess_piece.rect)
 
-        # updating everything (necessary)
         pygame.display.update()

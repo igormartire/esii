@@ -140,7 +140,6 @@ def can_move_piece(clicked_piece, held_piece_coord):
 def move(origin, destination, board):
     board = board.copy()
     origin_piece = board[origin.row][origin.column]
-    # TODO: insert business logic for movement
     board[origin.row][origin.column] = Piece.NONE
     board[destination.row][destination.column] = origin_piece
 
@@ -190,12 +189,18 @@ if __name__ == '__main__':
                         held_piece_coord, clicked_piece))
             elif player_turn and event.type == pygame.MOUSEBUTTONUP:
                 if is_holding_piece(held_piece_coord):
-                    chess_board = move(
-                        held_piece_coord, cell_coord, chess_board)
-                    player_turn = False
+                    possible_destinations = destinations(
+                        held_piece_coord, chess_board)
+                    if cell_coord in possible_destinations:
+                        chess_board = move(
+                            held_piece_coord, cell_coord, chess_board)
+                        player_turn = False
+                        print("Player moved!")
+                        print("Computer turn...")
+                    else:
+                        print("You cannot do that!")
+                        print("Player turn still...")
                     held_piece_coord = None
-                    print("Player moved!")
-                    print("Computer turn...")
 
         possible_destinations = []
         if player_turn and is_holding_piece(held_piece_coord):

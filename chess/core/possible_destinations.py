@@ -7,7 +7,6 @@ from .utils import BLACK_PIECES, WHITE_PIECES, INITIAL_BOARD
 # TODO: adicionar testes (basear-se em moving_test)
 
 def is_valid(piece, dest_coord, chess_board):
-    print(dest_coord)
     if not dest_coord.inside_board:
         return False
 

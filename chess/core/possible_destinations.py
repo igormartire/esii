@@ -65,6 +65,15 @@ def destinations(origin_coord, chess_board):
                                  for row in range(8)]
         allowed_destinations = horizontal_destinations + vertical_destiantions
 
+    if piece == Piece.WHITE_BISHOP or piece == Piece.BLACK_BISHOP:
+        for i in range(8):
+            allowed_destinations += [
+                Coordinate(origin_coord.row + i, origin_coord.column + i),
+                Coordinate(origin_coord.row - i, origin_coord.column + i),
+                Coordinate(origin_coord.row - i, origin_coord.column - i),
+                Coordinate(origin_coord.row + i, origin_coord.column - i),
+            ]
+
     valid_destinations = [
         coord for coord in allowed_destinations
         if is_valid(piece, coord, chess_board)]

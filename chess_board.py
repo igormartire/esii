@@ -6,7 +6,8 @@ import pygame
 from pygame.locals import *
 
 from chess.core.models import Coordinate, Color, Piece
-from chess.core.utils import INITIAL_BOARD, TEST_COLORED_BOARD
+from chess.core.utils import (
+    INITIAL_BOARD, TEST_COLORED_BOARD, BLACK_PIECES, WHITE_PIECES)
 from chess.core.possible_destinations import destinations
 from chess.core.coloring import color_board
 
@@ -132,7 +133,8 @@ def is_holding_piece(piece_coord):
 
 
 def can_move_piece(clicked_piece, held_piece_coord):
-    if not is_holding_piece(held_piece_coord) and clicked_piece != Piece.NONE:
+    if not is_holding_piece(held_piece_coord) and clicked_piece != Piece.NONE \
+            and clicked_piece in WHITE_PIECES:
         return True
     return False
 
@@ -144,6 +146,17 @@ def move(origin, destination, board):
     board[destination.row][destination.column] = origin_piece
 
     return board
+
+
+def random_move(board):
+    for row in range(8):
+        for column in range(8):
+            piece = board[row][column]
+            if piece in BLACK_PIECES:
+                src = Coordinate(row, column)
+                dests = possible_destinations(board, src)
+                if (dests):
+                    return (src, dests[0])
 
 
 if __name__ == '__main__':
@@ -210,6 +223,7 @@ if __name__ == '__main__':
         colored_board = color_board(chess_board, possible_destinations)
 
         if not player_turn:
+
             print("Computer moved!")
             player_turn = True
             print("Player turn...")

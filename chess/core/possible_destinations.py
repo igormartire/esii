@@ -61,9 +61,9 @@ def destinations(origin_coord, chess_board):
     if piece == Piece.WHITE_ROOK or piece == Piece.BLACK_ROOK:
         horizontal_destinations = [Coordinate(origin_coord.row, column)
                                    for column in range(8)]
-        vertical_destiantions = [Coordinate(row, origin_coord.column)
+        vertical_destinations = [Coordinate(row, origin_coord.column)
                                  for row in range(8)]
-        allowed_destinations = horizontal_destinations + vertical_destiantions
+        allowed_destinations = horizontal_destinations + vertical_destinations
 
     if piece == Piece.WHITE_BISHOP or piece == Piece.BLACK_BISHOP:
         for i in range(8):
@@ -73,6 +73,23 @@ def destinations(origin_coord, chess_board):
                 Coordinate(origin_coord.row - i, origin_coord.column - i),
                 Coordinate(origin_coord.row + i, origin_coord.column - i),
             ]
+
+    if piece == Piece.WHITE_QUEEN or piece == Piece.BLACK_QUEEN:
+        h_destinations = [Coordinate(origin_coord.row, column)
+                                   for column in range(8)]
+        v_destinations = [Coordinate(row, origin_coord.column)
+                                 for row in range(8)]
+        d_destinations = []
+        for i in range(8):
+            d_destinations += [
+                    Coordinate(origin_coord.row + i, origin_coord.column + i),
+                    Coordinate(origin_coord.row - i, origin_coord.column + i),
+                    Coordinate(origin_coord.row - i, origin_coord.column - i),
+                    Coordinate(origin_coord.row + i, origin_coord.column - i),
+            ]
+
+        allowed_destinations = \
+            h_destinations + v_destinations + d_destinations
 
     valid_destinations = [
         coord for coord in allowed_destinations

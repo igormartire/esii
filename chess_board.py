@@ -200,7 +200,6 @@ if __name__ == '__main__':
         possible_destinations = []
         if player_turn and is_holding_piece(held_piece_coord):
             piece = chess_board[held_piece_coord.row][held_piece_coord.column]
-            #possible_destinations = [Coordinate(1, 1), Coordinate(2, 2), Coordinate(3, 3)]
             possible_destinations = destinations(held_piece_coord, chess_board)
             print(possible_destinations)
 

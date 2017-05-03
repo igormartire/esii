@@ -1,6 +1,21 @@
-from chess.core.models import Coordinate
-from chess.core.models import Piece
-from chess.core.utils import BLACK_PIECES, WHITE_PIECES
+from .models import Coordinate, Piece
+from .utils import BLACK_PIECES, WHITE_PIECES, INITIAL_BOARD
+
+
+def is_valid(piece, dest_coord, chess_board):
+    print(dest_coord)
+    if not dest_coord.inside_board:
+        return False
+
+    if dest_coord.row >= 0 and dest_coord.row < 8 and dest_coord.column >= 0 and dest_coord.column < 8:
+        dest_piece = chess_board[dest_coord.row][dest_coord.column]
+        if dest_piece != Piece.NONE:
+            if piece in WHITE_PIECES and dest_piece in WHITE_PIECES:
+                return False
+            if piece in BLACK_PIECES and dest_piece in BLACK_PIECES:
+                return False
+        return True
+    return False
 
 
 def destinations(origin_coord, chess_board):
@@ -17,21 +32,22 @@ def destinations(origin_coord, chess_board):
             Coordinate(origin_coord.row + 1, origin_coord.column)
         ]
 
-    for coordinate in allowed_destinations:
-        # Remove coordinates outside board
-        invalid_coordinate = False
-        if not coordinate.inside_board(chess_board):
-            invalid_coordinate = True
+    if piece == Piece.WHITE_KNIGHT or piece == Piece.BLACK_KNIGHT:
+        allowed_destinations = [
+            # Up
+            Coordinate(origin_coord.row - 2, origin_coord.column - 1),
+            Coordinate(origin_coord.row - 2, origin_coord.column + 1),
+            Coordinate(origin_coord.row - 1, origin_coord.column - 2),
+            Coordinate(origin_coord.row - 1, origin_coord.column + 2),
+            # Down
+            Coordinate(origin_coord.row + 2, origin_coord.column - 1),
+            Coordinate(origin_coord.row + 2, origin_coord.column + 1),
+            Coordinate(origin_coord.row + 1, origin_coord.column - 2),
+            Coordinate(origin_coord.row + 1, origin_coord.column + 2),
+        ]
 
-        if not invalid_coordinate:
-            dest_piece = chess_board[coordinate.row][coordinate.column]
-            if dest_piece != Piece.NONE:
-                if piece in WHITE_PIECES and dest_piece in WHITE_PIECES:
-                    invalid_coordinate = True
-                if piece in BLACK_PIECES and dest_piece in BLACK_PIECES:
-                    invalid_coordinate = True
+    valid_destinations = [
+        coord for coord in allowed_destinations
+        if is_valid(piece, coord, chess_board)]
 
-        if invalid_coordinate:
-            allowed_destinations.remove(coordinate)
-
-    return allowed_destinations
+    return valid_destinations

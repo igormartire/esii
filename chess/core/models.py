@@ -20,11 +20,17 @@ class Coordinate:
             return False
         return True
 
+    def __key(self):
+        return self.row, self.column
+
+    def __hash__(self):
+        return hash(self.__key())
+
     def __eq__(self, other):
-        return self.row == other.row and self.column == other.column
+        return self.__key() == other.__key()
 
     def __repr__(self):
-        return "(" + str(self.row) + ", " + str(self.column) + ")"
+        return str(self.__key())
 
 
 class Board:

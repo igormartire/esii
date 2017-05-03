@@ -149,7 +149,7 @@ def move(origin, destination, board):
 
 def greedy_move(board):
     best_move = None
-    best_value = -200
+    best_value = -9999
     for row in range(8):
         for column in range(8):
             piece = board[row][column]

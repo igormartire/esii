@@ -154,7 +154,7 @@ def random_move(board):
             piece = board[row][column]
             if piece in BLACK_PIECES:
                 src = Coordinate(row, column)
-                dests = possible_destinations(board, src)
+                dests = destinations(src, board)
                 if (dests):
                     return (src, dests[0])
 
@@ -223,7 +223,8 @@ if __name__ == '__main__':
         colored_board = color_board(chess_board, possible_destinations)
 
         if not player_turn:
-
+            movement = random_move(chess_board)
+            chess_board = move(movement[0], movement[1], chess_board)
             print("Computer moved!")
             player_turn = True
             print("Player turn...")

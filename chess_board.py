@@ -1,13 +1,10 @@
-#!/usr/bin/python
 import os
-import copy
 
 import pygame
 from pygame.locals import *
 
 from chess.core.models import Coordinate, Color, Piece
-from chess.core.utils import (
-    INITIAL_BOARD, TEST_COLORED_BOARD, BLACK_PIECES, WHITE_PIECES)
+from chess.core.utils import (initial_board, BLACK_PIECES, WHITE_PIECES)
 from chess.core.possible_destinations import destinations
 from chess.core.coloring import color_board
 
@@ -148,7 +145,7 @@ def move(origin, destination, board):
     return board
 
 
-def random_move(board):
+def random_movement(board):
     for row in range(8):
         for column in range(8):
             piece = board[row][column]
@@ -160,8 +157,7 @@ def random_move(board):
 
 
 if __name__ == '__main__':
-    chess_board = INITIAL_BOARD
-    colored_board = TEST_COLORED_BOARD
+    chess_board = initial_board()
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(SCREEN_TITLE)
@@ -223,7 +219,7 @@ if __name__ == '__main__':
         colored_board = color_board(chess_board, possible_destinations)
 
         if not player_turn:
-            movement = random_move(chess_board)
+            movement = random_movement(chess_board)
             chess_board = move(movement[0], movement[1], chess_board)
             print("Computer moved!")
             player_turn = True

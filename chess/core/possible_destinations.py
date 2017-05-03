@@ -1,5 +1,5 @@
 from .models import Coordinate, Piece
-from .utils import BLACK_PIECES, WHITE_PIECES, INITIAL_BOARD
+from .utils import BLACK_PIECES, WHITE_PIECES, initial_board
 
 
 # TODO: mover movimentação para funções
@@ -150,33 +150,7 @@ def destinations(origin_coord, chess_board):
             ]
             if chess_board[up][origin_coord.column] != Piece.NONE:
                 break
-        # diagonal pra cima e pra esquerda
-        for i in range(min(origin_coord.row, origin_coord.column)):
-            pos = Coordinate(origin_coord.row - i, origin_coord.column - i)
-            allowed_destinations.append(pos)
-            if chess_board[pos.row][pos.column] != Piece.NONE:
-                break
-
-        # diagonal pra cima e pra direita
-        for i in range(min(origin_coord.row, 7 - origin_coord.column)):
-            pos = Coordinate(origin_coord.row - i, origin_coord.column + i)
-            allowed_destinations.append(pos)
-            if chess_board[pos.row][pos.column] != Piece.NONE:
-                break
-
-        # diagonal pra baixo e pra esquerda
-        for i in range(min(7 - origin_coord.row, origin_coord.column)):
-            pos = Coordinate(origin_coord.row + i, origin_coord.column - i)
-            allowed_destinations.append(pos)
-            if chess_board[pos.row][pos.column] != Piece.NONE:
-                break
-
-        # diagonal pra baixo e pra direita
-        for i in range(min(7 - origin_coord.row, 7 - origin_coord.column)):
-            pos = Coordinate(origin_coord.row + i, origin_coord.column + i)
-            allowed_destinations.append(pos)
-            if chess_board[pos.row][pos.column] != Piece.NONE:
-                break
+        allowed_destinations += diagonal_moves(chess_board, origin_coord)
 
     valid_destinations = [
         coord for coord in allowed_destinations

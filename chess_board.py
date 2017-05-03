@@ -1,4 +1,5 @@
 import os
+import copy
 
 import pygame
 from pygame.locals import *
@@ -7,6 +8,7 @@ from chess.core.models import Coordinate, Color, Piece
 from chess.core.utils import (initial_board, BLACK_PIECES, WHITE_PIECES)
 from chess.core.possible_destinations import destinations
 from chess.core.coloring import color_board
+from chess.ai.score import score_board
 
 # TODO: move to commons (confirm)
 SCREEN_TITLE = 'Chess'
@@ -137,12 +139,29 @@ def can_move_piece(clicked_piece, held_piece_coord):
 
 
 def move(origin, destination, board):
-    board = board.copy()
+    board = copy.copy(board)
     origin_piece = board[origin.row][origin.column]
     board[origin.row][origin.column] = Piece.NONE
     board[destination.row][destination.column] = origin_piece
 
     return board
+
+
+def greedy_move(board):
+    best_move = None
+    best_value = -200
+    for row in range(8):
+        for column in range(8):
+            piece = board[row][column]
+            if piece in BLACK_PIECES:
+                src = Coordinate(row, column)
+                dests = destinations(src, board)
+                for dest in dests:
+                    possible_board = move(src, dest, board)
+                    possible_value = score_board(possible_board)
+                    if possible_value > best_value:
+                        best_move = (src, dest)
+    return best_move
 
 
 def random_movement(board):
@@ -219,6 +238,7 @@ if __name__ == '__main__':
         colored_board = color_board(chess_board, possible_destinations)
 
         if not player_turn:
+            #movement = greedy_move(chess_board)
             movement = random_movement(chess_board)
             chess_board = move(movement[0], movement[1], chess_board)
             print("Computer moved!")

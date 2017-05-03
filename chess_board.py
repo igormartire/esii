@@ -139,7 +139,7 @@ def can_move_piece(clicked_piece, held_piece_coord):
 
 
 def move(origin, destination, board):
-    board = copy.copy(board)
+    board = copy.deepcopy(board)
     origin_piece = board[origin.row][origin.column]
     board[origin.row][origin.column] = Piece.NONE
     board[destination.row][destination.column] = origin_piece
@@ -160,6 +160,7 @@ def greedy_move(board):
                     possible_board = move(src, dest, board)
                     possible_value = score_board(possible_board)
                     if possible_value > best_value:
+                        best_value = possible_value
                         best_move = (src, dest)
     return best_move
 
@@ -238,8 +239,8 @@ if __name__ == '__main__':
         colored_board = color_board(chess_board, possible_destinations)
 
         if not player_turn:
-            #movement = greedy_move(chess_board)
-            movement = random_movement(chess_board)
+            movement = greedy_move(chess_board)
+            #movement = random_movement(chess_board)
             chess_board = move(movement[0], movement[1], chess_board)
             print("Computer moved!")
             player_turn = True

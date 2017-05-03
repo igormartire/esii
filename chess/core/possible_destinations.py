@@ -62,29 +62,36 @@ def destinations(origin_coord, chess_board):
 
     if piece == Piece.WHITE_PAWN:
         up_middle = Coordinate(origin_coord.row - 1, origin_coord.column - 0)
-        if chess_board[up_middle.row][up_middle.column] == Piece.NONE:
-            allowed_destinations = [
-                Coordinate(origin_coord.row - 1, origin_coord.column)
-            ]
         up_left = Coordinate(origin_coord.row - 1, origin_coord.column - 1)
         up_right = Coordinate(origin_coord.row - 1, origin_coord.column + 1)
-        if chess_board[up_left.row][up_left.column] != Piece.NONE:
-            allowed_destinations.append(up_left)
-        if chess_board[up_right.row][up_right.column] != Piece.NONE:
-            allowed_destinations.append(up_right)
+        if is_valid(piece, up_middle, chess_board):
+            if chess_board[up_middle.row][up_middle.column] == Piece.NONE:
+                allowed_destinations = [
+                    Coordinate(origin_coord.row - 1, origin_coord.column)
+                ]
+        if is_valid(piece, up_left, chess_board):
+            if chess_board[up_left.row][up_left.column] != Piece.NONE:
+                allowed_destinations.append(up_left)
+
+        if is_valid(piece, up_right, chess_board):
+            if chess_board[up_right.row][up_right.column] != Piece.NONE:
+                allowed_destinations.append(up_right)
 
     if piece == Piece.BLACK_PAWN:
         down_middle = Coordinate(origin_coord.row + 1, origin_coord.column - 0)
-        if chess_board[down_middle.row][down_middle.column] == Piece.NONE:
-            allowed_destinations = [
-                Coordinate(origin_coord.row + 1, origin_coord.column)
-            ]
         down_left = Coordinate(origin_coord.row+1, origin_coord.column-1)
         down_right = Coordinate(origin_coord.row+1, origin_coord.column+1)
-        if chess_board[down_left.row][down_left.column] != Piece.NONE:
-            allowed_destinations.append(down_left)
-        if chess_board[down_right.row][down_right.column] != Piece.NONE:
-            allowed_destinations.append(down_right)
+        if is_valid(piece, down_middle, chess_board):
+            if chess_board[down_middle.row][down_middle.column] == Piece.NONE:
+                allowed_destinations = [
+                    Coordinate(origin_coord.row + 1, origin_coord.column)
+                ]
+        if is_valid(piece, down_left, chess_board):
+            if chess_board[down_left.row][down_left.column] != Piece.NONE:
+                allowed_destinations.append(down_left)
+        if is_valid(piece, down_right, chess_board):
+            if chess_board[down_right.row][down_right.column] != Piece.NONE:
+                allowed_destinations.append(down_right)
 
     if piece == Piece.WHITE_KNIGHT or piece == Piece.BLACK_KNIGHT:
         allowed_destinations = [

@@ -58,6 +58,13 @@ def destinations(origin_coord, chess_board):
             Coordinate(origin_coord.row + 1, origin_coord.column + 1),
         ]
 
+    if piece == Piece.WHITE_ROOK or piece == Piece.BLACK_ROOK:
+        horizontal_destinations = [Coordinate(origin_coord.row, column)
+                                   for column in range(8)]
+        vertical_destiantions = [Coordinate(row, origin_coord.column)
+                                 for row in range(8)]
+        allowed_destinations = horizontal_destinations + vertical_destiantions
+
     valid_destinations = [
         coord for coord in allowed_destinations
         if is_valid(piece, coord, chess_board)]

@@ -46,6 +46,18 @@ def destinations(origin_coord, chess_board):
             Coordinate(origin_coord.row + 1, origin_coord.column + 2),
         ]
 
+    if piece == Piece.WHITE_KING or piece == Piece.BLACK_KING:
+        allowed_destinations = [
+            Coordinate(origin_coord.row - 1, origin_coord.column - 1),
+            Coordinate(origin_coord.row - 1, origin_coord.column - 0),
+            Coordinate(origin_coord.row - 1, origin_coord.column + 1),
+            Coordinate(origin_coord.row - 0, origin_coord.column - 1),
+            Coordinate(origin_coord.row - 0, origin_coord.column + 1),
+            Coordinate(origin_coord.row + 1, origin_coord.column - 1),
+            Coordinate(origin_coord.row + 1, origin_coord.column - 0),
+            Coordinate(origin_coord.row + 1, origin_coord.column + 1),
+        ]
+
     valid_destinations = [
         coord for coord in allowed_destinations
         if is_valid(piece, coord, chess_board)]

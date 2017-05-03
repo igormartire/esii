@@ -201,7 +201,6 @@ if __name__ == '__main__':
         if player_turn and is_holding_piece(held_piece_coord):
             piece = chess_board[held_piece_coord.row][held_piece_coord.column]
             possible_destinations = destinations(held_piece_coord, chess_board)
-            print(possible_destinations)
 
         colored_board = color_board(chess_board, possible_destinations)
 

@@ -23,8 +23,6 @@ class Coordinate:
             return False
         return True
 
-
-
     def __eq__(self, other):
         return self.row == other.row and self.column == other.column
 

@@ -1,12 +1,13 @@
 #!/usr/bin/python
 import os
+import copy
 
 import pygame
 from pygame.locals import *
 
 from chess.core.models import Coordinate, Color, Piece
 from chess.core.utils import INITIAL_BOARD, TEST_COLORED_BOARD
-from chess.core.possible_moviments import destinations
+from chess.core.possible_destinations import destinations
 from chess.core.coloring import color_board
 
 # TODO: move to commons (confirm)
@@ -196,16 +197,14 @@ if __name__ == '__main__':
                     print("Player moved!")
                     print("Computer turn...")
 
-"""
         possible_destinations = []
         if player_turn and is_holding_piece(held_piece_coord):
             piece = chess_board[held_piece_coord.row][held_piece_coord.column]
-            possible_destinations = destinations(
-                piece.value, held_piece_coord, chess_board)
-"""
+            #possible_destinations = [Coordinate(1, 1), Coordinate(2, 2), Coordinate(3, 3)]
+            possible_destinations = destinations(held_piece_coord, chess_board)
+            print(possible_destinations)
 
-        colored_board = color_board(chess_board, [
-            Coordinate(1, 1), Coordinate(2, 2), Coordinate(3, 3)])
+        colored_board = color_board(chess_board, possible_destinations)
 
         if not player_turn:
             print("Computer moved!")

@@ -15,6 +15,16 @@ class Coordinate:
 
         return coordinates
 
+    def inside_board(self, board):
+        if self.row < 0 \
+                or self.row >= len(board) \
+                or self.column < 0 \
+                or self.column >= len(board[0]):
+            return False
+        return True
+
+
+
     def __eq__(self, other):
         return self.row == other.row and self.column == other.column
 

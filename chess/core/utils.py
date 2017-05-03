@@ -36,6 +36,20 @@ TEST_COLORED_BOARD = [
     [0, 1, 0, 1, 0, 1, 0, 1]]  # 1
 #    a  b  c  d  e  f  g  h
 
+BLACK_PIECES = [Piece.BLACK_PAWN,
+                Piece.BLACK_BISHOP,
+                Piece.BLACK_KNIGHT,
+                Piece.BLACK_ROOK,
+                Piece.BLACK_QUEEN,
+                Piece.BLACK_KING]
+
+WHITE_PIECES = [Piece.WHITE_PAWN,
+                Piece.WHITE_BISHOP,
+                Piece.WHITE_KNIGHT,
+                Piece.WHITE_ROOK,
+                Piece.WHITE_QUEEN,
+                Piece.WHITE_KING]
+
 
 def print_board(board):
     for row in board:

@@ -6,6 +6,40 @@ class Coordinate:
         self.row = row
         self.column = column
 
+    @classmethod
+    def matrix_to_coordinates(cls, matrix):
+        coordinates = []
+        for row in matrix:
+            for column in row:
+                coordinates[row][column] = Coordinate(row, column)
+
+        return coordinates
+
+    def inside_board(self, board):
+        if self.row < 0 or self.row > 7 or self.column < 0 or self.column > 7:
+            return False
+        return True
+
+    def __key(self):
+        return self.row, self.column
+
+    def __hash__(self):
+        return hash(self.__key())
+
+    def __eq__(self, other):
+        return self.__key() == other.__key()
+
+    def __repr__(self):
+        return str(self.__key())
+
+
+class Board:
+    def __init__(self, cells_matrix):
+        self.matrix = cells_matrix
+        self.coordinates = Coordinate.matrix_to_coordinates(self.matrix)
+        self.width = len(cells_matrix[0])
+        self.height = len(cells_matrix)
+
 
 @unique
 class Color(Enum):
@@ -13,6 +47,21 @@ class Color(Enum):
     WHITE = 1
     GREEN = 2
     RED = 3
+    BLACK_RGB = (100, 100, 100)
+    WHITE_RGB = (230, 230, 230)
+    GREEN_RGB = (50, 200, 50)
+    RED_RGB = (200, 50, 50)
+
+    @classmethod
+    def get_rgb(cls, code):
+        if code == 0:
+            return Color.BLACK_RGB.value
+        if code == 1:
+            return Color.WHITE_RGB.value
+        if code == 2:
+            return Color.GREEN_RGB.value
+        if code == 3:
+            return Color.RED_RGB.value
 
 
 @unique

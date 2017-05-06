@@ -1,10 +1,14 @@
-#!/usr/bin/python
-import pygame
 import os
 import copy
-from pygame.locals import *
-from enum import Enum
 
+import pygame
+from pygame.locals import *
+
+from chess.core.models import Coordinate, Color, Piece
+from chess.core.utils import (initial_board, BLACK_PIECES, WHITE_PIECES)
+from chess.core.possible_destinations import destinations
+from chess.core.coloring import color_board
+from chess.ai.score import score_board
 
 # TODO: move to commons (confirm)
 SCREEN_TITLE = 'Chess'
@@ -13,54 +17,9 @@ SCREEN_HEIGHT = 640
 BOARD_SIZE = 640
 IMAGES_FOLDER_PATH = 'assets/images'
 
-# TODO: comment this and color_board after integration (as docs)
-board = [
-    ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'], # 8
-    ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], # 7
-    ['.', '.', '.', '.', '.', '.', '.', '.'], # 6
-    ['.', '.', '.', '.', '.', '.', '.', '.'], # 5
-    ['.', '.', '.', '.', '.', '.', '.', '.'], # 4
-    ['.', '.', '.', '.', '.', '.', '.', '.'], # 3
-    ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], # 2
-    ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'], # 1
-    # a    b    c    d    e    f    g    h
-]
-color_board = [
-    [1, 2, 1, 0, 1, 0, 1, 0], # 8
-    [0, 1, 0, 1, 0, 1, 0, 1], # 7
-    [1, 3, 1, 0, 1, 0, 1, 0], # 6
-    [0, 1, 0, 1, 0, 1, 0, 1], # 5
-    [1, 0, 1, 0, 1, 0, 1, 0], # 4
-    [0, 1, 0, 1, 0, 1, 0, 1], # 3
-    [1, 0, 1, 0, 1, 0, 1, 0], # 2
-    [0, 1, 0, 1, 0, 1, 0, 1], # 1
-    #a  b  c  d  e  f  g  h
-]
-
-
-class Color(Enum):
-    BLACK = (100, 100, 100)
-    WHITE = (230, 230, 230)
-    GREEN = (50, 200, 50)
-    RED = (200, 50, 50)
-
-    def get_rgb(code):
-        if code == 0:
-            return Color.BLACK.value
-        if code == 1:
-            return Color.WHITE.value
-        if code == 2:
-            return Color.GREEN.value
-        if code == 3:
-            return  Color.RED.value
-
 
 def load_png(file_name):
     """ Load image and return image object"""
-    """ 
-        Não precisa se preocupar com essa função, ela é só uma função auxiliar para garantir que
-        as imagens sejam carregadas no formato certo
-    """
     fullname = os.path.join(IMAGES_FOLDER_PATH, file_name + '.png')
     try:
         image = pygame.image.load(fullname)
@@ -68,68 +27,61 @@ def load_png(file_name):
             image = image.convert()
         else:
             image = image.convert_alpha()
-    except (pygame.error):
+    except pygame.error:
         print('Error loading image', fullname)
-        raise(pygame.error('a'))
+        raise(pygame.error('Error loading image', fullname))
     return image
 
 
 class ChessPiece(pygame.sprite.Sprite):
-    """"
-    Não precisa se preocupar muito com essa classe também, é apenas uma 'imagem'
-    """
     def __init__(self, name, image_surface, rect):
         pygame.sprite.Sprite.__init__(self)
         self.name = name
         self.image = image_surface
         self.rect = pygame.Rect(rect)
-        screen = pygame.display.get_surface()
+        self.screen = pygame.display.get_surface()
         self.area = screen.get_rect()
 
     def was_clicked(self, click_position):
         return self.rect.collidepoint(click_position)
 
 
-def create_chess_piece(piece_code, cell_size, cell_rect):
-    """
-    Uma factory de peças simplesmente
-    :returns ChessPiece
-    """
+def create_chess_piece(piece, cell_size, cell_rect):
     piece_image = None
-    if piece_code == 'P':
+    if piece == Piece.WHITE_PAWN:
         piece_image = WHITE_PAWN_IMAGE
         name = 'white pawn'
-    elif piece_code == 'R':
+    elif piece == Piece.WHITE_ROOK:
         piece_image = WHITE_ROOK_IMAGE
         name = 'white rook'
-    elif piece_code == 'N':
+    elif piece == Piece.WHITE_KNIGHT:
         piece_image = WHITE_KNIGHT_IMAGE
         name = 'white knight'
-    elif piece_code == 'B':
+    elif piece == Piece.WHITE_BISHOP:
         piece_image = WHITE_BISHOP_IMAGE
         name = 'white bishop'
-    elif piece_code == 'Q':
+    elif piece == Piece.WHITE_QUEEN:
         piece_image = WHITE_QUEEN_IMAGE
         name = 'white queen'
-    elif piece_code == 'K':
+    elif piece == Piece.WHITE_KING:
         piece_image = WHITE_KING_IMAGE
         name = 'white king'
-    elif piece_code == 'p':
+    elif piece == Piece.BLACK_PAWN:
         piece_image = BLACK_PAWN_IMAGE
         name = 'black pawn'
-    elif piece_code == 'r':
+    elif piece == Piece.BLACK_ROOK:
         piece_image = BLACK_ROOK_IMAGE
         name = 'black rook'
-    elif piece_code == 'n':
+    elif piece == Piece.BLACK_KNIGHT:
         piece_image = BLACK_KNIGHT_IMAGE
         name = 'black knight'
-    elif piece_code == 'b':
+    elif piece == Piece.BLACK_BISHOP:
         piece_image = BLACK_BISHOP_IMAGE
         name = 'black bishop'
-    elif piece_code == 'q':
+    elif piece == Piece.BLACK_QUEEN:
         piece_image = BLACK_QUEEN_IMAGE
         name = 'black queen'
-    elif piece_code == 'k':
+    elif piece == Piece.BLACK_KING:
         piece_image = BLACK_KING_IMAGE
         name = 'black king'
 
@@ -143,11 +95,6 @@ def create_chess_piece(piece_code, cell_size, cell_rect):
 
 
 def setup_board(board, color_board):
-    """
-    Recebe um board e um color_board (ambos são matrizes)
-    A partir deles, monta um tabuleiro com as respectivas peças e cores de cada célula
-    """
-    # Surface é a classe que representa uma imagem, basicamente, a qual pode ser pintada na tela
     board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
     chess_pieces = []
     num_of_cells = len(board)
@@ -157,18 +104,15 @@ def setup_board(board, color_board):
             cell_rect = (col * cell_size, row * cell_size, cell_size, cell_size)
             cell_color = Color.get_rgb(color_board[row][col])
             board_surface.fill(cell_color, cell_rect)
-            cell_code = board[row][col]
-            chess_piece = create_chess_piece(cell_code, cell_size, cell_rect)
+            cell_value = board[row][col]
+            chess_piece = create_chess_piece(cell_value, cell_size, cell_rect)
             if chess_piece is not None:
                 chess_pieces.append(chess_piece)
 
     return board_surface, chess_pieces
 
-def get_cell_by_position(position, board):
-    """
-    Pega a posição de uma célula dentro do board (0..7)x(0..7)
-    de acordo com a position
-    """
+
+def get_coordinates_by_position(position, board):
     num_of_cells = len(board)
     cell_size = BOARD_SIZE / num_of_cells
     for row in range(num_of_cells):
@@ -176,20 +120,69 @@ def get_cell_by_position(position, board):
             cell = (col * cell_size, row * cell_size, cell_size, cell_size)
             cell_rect = pygame.Rect(cell)
             if cell_rect.collidepoint(position):
-                return (row, col)
+                return Coordinate(row, col)
+
+
+def board_position():
+    return (SCREEN_WIDTH - BOARD_SIZE) / 2, (SCREEN_HEIGHT - BOARD_SIZE) / 2
+
+
+def is_holding_piece(piece_coord):
+    return piece_coord is not None
+
+
+def can_move_piece(clicked_piece, held_piece_coord):
+    if not is_holding_piece(held_piece_coord) and clicked_piece != Piece.NONE \
+            and clicked_piece in WHITE_PIECES:
+        return True
+    return False
+
+
+def move(origin, destination, board):
+    board = copy.deepcopy(board)
+    origin_piece = board[origin.row][origin.column]
+    board[origin.row][origin.column] = Piece.NONE
+    board[destination.row][destination.column] = origin_piece
+
+    return board
+
+
+def greedy_move(board):
+    best_move = None
+    best_value = -9999
+    for row in range(8):
+        for column in range(8):
+            piece = board[row][column]
+            if piece in BLACK_PIECES:
+                src = Coordinate(row, column)
+                dests = destinations(src, board)
+                for dest in dests:
+                    possible_board = move(src, dest, board)
+                    possible_value = score_board(possible_board)
+                    if possible_value > best_value:
+                        best_value = possible_value
+                        best_move = (src, dest)
+    return best_move
+
+
+def random_movement(board):
+    for row in range(8):
+        for column in range(8):
+            piece = board[row][column]
+            if piece in BLACK_PIECES:
+                src = Coordinate(row, column)
+                dests = destinations(src, board)
+                if (dests):
+                    return (src, dests[0])
 
 
 if __name__ == '__main__':
-    # Initialise screen
-    # Necessário para "rodar" o joguinho
+    chess_board = initial_board()
     pygame.init()
-    # A janela do jogo em si, com tamanho WIDTHxHEIGHT (lá em cima setados)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    # Título da janela
     pygame.display.set_caption(SCREEN_TITLE)
 
-    # Load sprites
-    # Ainda vou pensar em como tirar isso daqui e carregar em outro lugar hehe
+# region load sprites
     WHITE_PAWN_IMAGE = load_png('chess-pieces/white-pawn')
     WHITE_BISHOP_IMAGE = load_png('chess-pieces/white-bishop')
     WHITE_KING_IMAGE = load_png('chess-pieces/white-king')
@@ -202,66 +195,64 @@ if __name__ == '__main__':
     BLACK_KNIGHT_IMAGE = load_png('chess-pieces/black-knight')
     BLACK_QUEEN_IMAGE = load_png('chess-pieces/black-queen')
     BLACK_ROOK_IMAGE = load_png('chess-pieces/black-rook')
+# endregion
 
-    # Events loop
+# region game loop
     running = True
-    # Posição da última peça clicada
-    last_held_piece_pos = None
-
+    held_piece_coord = None
+    player_turn = True
+    print("Player turn...")
     while running:
-        # Pinta a tela de preto
-        screen.fill((0,0,0))
-        # Pega posição (x,y) do mouse
         mouse_position = pygame.mouse.get_pos()
-        # Pega a posição das células (a partir da posição do mouse)
-        cell_x, cell_y = get_cell_by_position(mouse_position, board)
-        # Para cada evento que ocorreu (cliques, teclas, etc.)
+        cell_coord = get_coordinates_by_position(
+            mouse_position, chess_board)
         for event in pygame.event.get():
-            # Se clicou para fechar a janela
             if event.type == QUIT:
                 running = False
-###### Início da lógica de movimentação #######
-            # Se apartou algum botão do mouse (ainda vou adicionar restrição para apenas o botão esquerdo)
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                # If wasn't holding a piece before AND clicked on a piece (that is, board value != '.')
-                if last_held_piece_pos is None \
-                        and board[cell_x][cell_y] != '.':
-                    # Hold the piece
-                    last_held_piece_pos = cell_x, cell_y
+            elif player_turn and event.type == pygame.MOUSEBUTTONDOWN:
+                clicked_piece = chess_board[cell_coord.row][cell_coord.column]
+                if can_move_piece(clicked_piece, held_piece_coord):
+                    held_piece_coord = Coordinate(
+                        cell_coord.row, cell_coord.column)
                     print("Clicked on cell: {} which contains a {}".format(
-                        last_held_piece_pos, board[cell_x][cell_y]))
-            # Se soltou algum botão do mouse E estava segurando alguma peça
-            elif event.type == pygame.MOUSEBUTTONUP \
-                    and last_held_piece_pos is not None:
-                # Substitui o valor do board na célula destino pelo valor da célula de origem
-                # Pega a posição de origem (para fazer swap)
-                origin_piece_x = last_held_piece_pos[0]
-                origin_piece_y = last_held_piece_pos[1]
-                # Pega o valor da posição de origem (letra da peça)
-                origin_piece = board[origin_piece_x][origin_piece_y]
-                # Remove peça de origem do tabuleiro (substitui por '.')
-                board[origin_piece_x][origin_piece_y] = '.'
-                # Substitui peça na célula de destino
-                board[cell_x][cell_y] = origin_piece
-                # "solta" a peça
-                last_held_piece_pos = None
-##### Fim da lógica de movimentação ######
+                        held_piece_coord, clicked_piece))
+            elif player_turn and event.type == pygame.MOUSEBUTTONUP:
+                if is_holding_piece(held_piece_coord):
+                    possible_destinations = destinations(
+                        held_piece_coord, chess_board)
+                    if cell_coord in possible_destinations:
+                        chess_board = move(
+                            held_piece_coord, cell_coord, chess_board)
+                        player_turn = False
+                        print("Player moved!")
+                        print("Computer turn...")
+                    else:
+                        print("You cannot do that!")
+                        print("Player turn still...")
+                    held_piece_coord = None
 
-        # give it a margin if board is smaller than screen
-        # somente por estética, pode ignorar
-        board_position = (
-            (SCREEN_WIDTH - BOARD_SIZE) / 2,
-            (SCREEN_HEIGHT - BOARD_SIZE) / 2,
-        )
+        possible_destinations = []
+        if player_turn and is_holding_piece(held_piece_coord):
+            piece = chess_board[held_piece_coord.row][held_piece_coord.column]
+            possible_destinations = destinations(held_piece_coord, chess_board)
 
-        # Pega nova surface atualizada pelas linhas acima
-        board_surface, chess_pieces = setup_board(board, color_board)
-        # Blitting => drawing updates to the screen
-        # pinta o tabuleiro
-        screen.blit(board_surface, board_position)
-        # pinta cada peça em sua respectiva nova posição
+        colored_board = color_board(chess_board, possible_destinations)
+
+        if not player_turn:
+            movement = greedy_move(chess_board)
+            #movement = random_movement(chess_board)
+            chess_board = move(movement[0], movement[1], chess_board)
+            print("Computer moved!")
+            player_turn = True
+            print("Player turn...")
+
+        board_surface, chess_pieces = setup_board(chess_board, colored_board)
+        screen.blit(board_surface, board_position())
         for chess_piece in chess_pieces:
             screen.blit(chess_piece.image, chess_piece.rect)
-
-        # updating everything (necessary)
         pygame.display.update()
+
+
+# endregion game loop
+    pygame.quit()
+

@@ -1,10 +1,13 @@
 from chess.core.models import Coordinate
+from chess.core.moving import move
 from chess.core.possible_destinations import destinations
+from chess.ai.score import score_board
 from chess.core.utils import BLACK_PIECES
+
 
 def greedy_move(board):
     best_move = None
-    best_value = -200
+    best_value = -10000
     for row in range(8):
         for column in range(8):
             piece = board[row][column]

@@ -11,7 +11,8 @@ def is_valid(piece, dest_coord, chess_board):
         return False
 
     # TODO: fazer isso decentemente...
-    if dest_coord.row >= 0 and dest_coord.row < 8 and dest_coord.column >= 0 and dest_coord.column < 8:
+    if (dest_coord.row >= 0 and dest_coord.row < 8 and
+       dest_coord.column >= 0 and dest_coord.column < 8):
         dest_piece = chess_board[dest_coord.row][dest_coord.column]
         if dest_piece != Piece.NONE:
             if piece in WHITE_PIECES and dest_piece in WHITE_PIECES:
@@ -25,28 +26,28 @@ def is_valid(piece, dest_coord, chess_board):
 def diagonal_moves(board, src):
     moves = set()
 
-    #diagonal pra cima e pra esquerda
+    # diagonal pra cima e pra esquerda
     for i in range(1, min(src.row, src.column) + 1):
         pos = Coordinate(src.row - i, src.column - i)
         moves.add(pos)
         if board[pos.row][pos.column] != Piece.NONE:
             break
 
-    #diagonal pra cima e pra direita
+    # diagonal pra cima e pra direita
     for i in range(1, min(src.row, 7 - src.column) + 1):
         pos = Coordinate(src.row - i, src.column + i)
         moves.add(pos)
         if board[pos.row][pos.column] != Piece.NONE:
             break
 
-    #diagonal pra baixo e pra esquerda
+    # diagonal pra baixo e pra esquerda
     for i in range(1, min(7 - src.row, src.column) + 1):
         pos = Coordinate(src.row + i, src.column - i)
         moves.add(pos)
         if board[pos.row][pos.column] != Piece.NONE:
             break
 
-    #diagonal pra baixo e pra direita
+    # diagonal pra baixo e pra direita
     for i in range(1, min(7 - src.row, 7 - src.column) + 1):
         pos = Coordinate(src.row + i, src.column + i)
         moves.add(pos)
@@ -56,7 +57,7 @@ def diagonal_moves(board, src):
     return set(moves)
 
 
-def destinations(origin_coord, chess_board):
+def destinations(chess_board, origin_coord):
     piece = chess_board[origin_coord.row][origin_coord.column]
     allowed_destinations = []
 
@@ -79,8 +80,8 @@ def destinations(origin_coord, chess_board):
 
     if piece == Piece.BLACK_PAWN:
         down_middle = Coordinate(origin_coord.row + 1, origin_coord.column - 0)
-        down_left = Coordinate(origin_coord.row+1, origin_coord.column-1)
-        down_right = Coordinate(origin_coord.row+1, origin_coord.column+1)
+        down_left = Coordinate(origin_coord.row + 1, origin_coord.column - 1)
+        down_right = Coordinate(origin_coord.row + 1, origin_coord.column + 1)
         if is_valid(piece, down_middle, chess_board):
             if chess_board[down_middle.row][down_middle.column] == Piece.NONE:
                 allowed_destinations = [
@@ -120,25 +121,25 @@ def destinations(origin_coord, chess_board):
         ]
 
     if piece == Piece.WHITE_ROOK or piece == Piece.BLACK_ROOK:
-        for left in range(origin_coord.column-1, -1, -1):
+        for left in range(origin_coord.column - 1, -1, -1):
             allowed_destinations += [
                 Coordinate(origin_coord.row, left)
             ]
             if chess_board[origin_coord.row][left] != Piece.NONE:
                 break
-        for right in range(origin_coord.column+1, 8, 1):
+        for right in range(origin_coord.column + 1, 8, 1):
             allowed_destinations += [
                 Coordinate(origin_coord.row, right)
             ]
             if chess_board[origin_coord.row][right] != Piece.NONE:
                 break
-        for down in range(origin_coord.row+1, 8, 1):
+        for down in range(origin_coord.row + 1, 8, 1):
             allowed_destinations += [
                 Coordinate(down, origin_coord.column)
             ]
             if chess_board[down][origin_coord.column] != Piece.NONE:
                 break
-        for up in range(origin_coord.row-1, -1, -1):
+        for up in range(origin_coord.row - 1, -1, -1):
             allowed_destinations += [
                 Coordinate(up, origin_coord.column)
             ]
@@ -149,25 +150,25 @@ def destinations(origin_coord, chess_board):
         allowed_destinations = diagonal_moves(chess_board, origin_coord)
 
     if piece == Piece.WHITE_QUEEN or piece == Piece.BLACK_QUEEN:
-        for left in range(origin_coord.column-1, -1, -1):
+        for left in range(origin_coord.column - 1, -1, -1):
             allowed_destinations += [
                 Coordinate(origin_coord.row, left)
             ]
             if chess_board[origin_coord.row][left] != Piece.NONE:
                 break
-        for right in range(origin_coord.column+1, 8, 1):
+        for right in range(origin_coord.column + 1, 8, 1):
             allowed_destinations += [
                 Coordinate(origin_coord.row, right)
             ]
             if chess_board[origin_coord.row][right] != Piece.NONE:
                 break
-        for down in range(origin_coord.row+1, 8, 1):
+        for down in range(origin_coord.row + 1, 8, 1):
             allowed_destinations += [
                 Coordinate(down, origin_coord.column)
             ]
             if chess_board[down][origin_coord.column] != Piece.NONE:
                 break
-        for up in range(origin_coord.row-1, -1, -1):
+        for up in range(origin_coord.row - 1, -1, -1):
             allowed_destinations += [
                 Coordinate(up, origin_coord.column)
             ]

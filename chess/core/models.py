@@ -79,6 +79,3 @@ class Piece(Enum):
     BLACK_ROOK = 'r'
     BLACK_QUEEN = 'q'
     BLACK_KING = 'k'
-
-
-

@@ -9,7 +9,7 @@ PIECES_SCORE = {
     Piece.WHITE_QUEEN: -9,
     Piece.WHITE_KING: -9001,
     Piece.BLACK_PAWN: 1,
-    Piece.BLACK_BISHOP: 3 ,
+    Piece.BLACK_BISHOP: 3,
     Piece.BLACK_KNIGHT: 3,
     Piece.BLACK_ROOK: 5,
     Piece.BLACK_QUEEN: 9,

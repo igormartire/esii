@@ -57,7 +57,7 @@ def diagonal_moves(board, src):
     return set(moves)
 
 
-def destinations(chess_board, origin_coord):
+def destinations(origin_coord, chess_board):
     piece = chess_board[origin_coord.row][origin_coord.column]
     allowed_destinations = []
 

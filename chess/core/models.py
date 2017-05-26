@@ -52,16 +52,16 @@ class Color(Enum):
     GREEN_RGB = (50, 200, 50)
     RED_RGB = (200, 50, 50)
 
-    @classmethod
-    def get_rgb(cls, code):
-        if code == 0:
-            return Color.BLACK_RGB.value
-        if code == 1:
-            return Color.WHITE_RGB.value
-        if code == 2:
-            return Color.GREEN_RGB.value
-        if code == 3:
-            return Color.RED_RGB.value
+    @property
+    def rgb(self):
+        if self == Color.BLACK:
+            return (100, 100, 100)
+        if self == Color.WHITE:
+            return (230, 230, 230)
+        if self == Color.GREEN:
+            return (50, 200, 50)
+        if self == Color.RED:
+            return (200, 50, 50)
 
 
 @unique

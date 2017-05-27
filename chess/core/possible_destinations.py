@@ -47,9 +47,10 @@ def destinations(chess_board, origin_coord):
                 allowed_destinations.append(up_right)
 
         if (origin_coord.row == 6):  # double step condition
-            double_step_coordinate = origin_coord.up.up
-            if piece_at(chess_board, double_step_coordinate) == Piece.NONE:
-                allowed_destinations.append(double_step_coordinate)
+            double_step_coord = origin_coord.up.up
+            if (piece_at(chess_board, double_step_coord) == Piece.NONE and
+               piece_at(chess_board, origin_coord.up) == Piece.NONE):
+                allowed_destinations.append(double_step_coord)
 
     if piece == Piece.BLACK_PAWN:
         down_middle = Coordinate(origin_coord.row + 1, origin_coord.column - 0)
@@ -68,9 +69,10 @@ def destinations(chess_board, origin_coord):
                 allowed_destinations.append(down_right)
 
         if (origin_coord.row == 1):  # double step condition
-            double_step_coordinate = origin_coord.down.down
-            if piece_at(chess_board, double_step_coordinate) == Piece.NONE:
-                allowed_destinations.append(double_step_coordinate)
+            double_step_coord = origin_coord.down.down
+            if (piece_at(chess_board, double_step_coord) == Piece.NONE and
+               piece_at(chess_board, origin_coord.down) == Piece.NONE):
+                allowed_destinations.append(double_step_coord)
 
     if piece == Piece.WHITE_KNIGHT or piece == Piece.BLACK_KNIGHT:
         allowed_destinations = [

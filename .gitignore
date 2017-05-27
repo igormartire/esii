@@ -96,3 +96,5 @@ pip-selfcheck.json
 
 # PyCharm
 .idea/
+
+*.DS_Store

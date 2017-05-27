@@ -63,10 +63,10 @@ class UI:
         board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
         chess_pieces = []
         num_of_cells = len(board)
-        cell_size = BOARD_SIZE / num_of_cells
+        cell_size = (BOARD_SIZE / num_of_cells)
         for row in range(num_of_cells):
             for col in range(num_of_cells):
-                cell_rect = (col * cell_size, row * cell_size, cell_size, cell_size)
+                cell_rect = (col * cell_size + 5, row * cell_size + 5, cell_size - 5, cell_size - 5)
                 cell_color_rgb = color_board[row][col].rgb
                 print(cell_color_rgb)
                 board_surface.fill(cell_color_rgb, cell_rect)

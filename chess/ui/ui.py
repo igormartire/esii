@@ -39,7 +39,8 @@ class UI:
         }
 
     def refresh(self, chess_board, colored_board):
-        board_surface, chess_pieces = self.setup_board(chess_board, colored_board)
+        board_surface, chess_pieces = self.setup_board(
+            chess_board, colored_board)
         self.screen.blit(board_surface, board_position())
         for chess_piece in chess_pieces:
             self.screen.blit(chess_piece.image, chess_piece.rect)
@@ -63,15 +64,17 @@ class UI:
         board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
         chess_pieces = []
         num_of_cells = len(board)
-        cell_size = BOARD_SIZE / num_of_cells
+        cell_size = (BOARD_SIZE / num_of_cells)
         for row in range(num_of_cells):
             for col in range(num_of_cells):
-                cell_rect = (col * cell_size, row * cell_size, cell_size, cell_size)
+                cell_rect = (col * cell_size, row * cell_size,
+                             cell_size - 5, cell_size - 5)
                 cell_color_rgb = color_board[row][col].rgb
                 print(cell_color_rgb)
                 board_surface.fill(cell_color_rgb, cell_rect)
                 cell_value = board[row][col]
-                chess_piece = self.create_chess_piece(cell_value, cell_size, cell_rect)
+                chess_piece = self.create_chess_piece(
+                    cell_value, cell_size, cell_rect)
                 if chess_piece is not None:
                     chess_pieces.append(chess_piece)
 
@@ -132,7 +135,7 @@ def greedy_move(board):
             piece = board[row][column]
             if piece in BLACK_PIECES:
                 src = Coordinate(row, column)
-                dests = destinations(src, board)
+                dests = destinations(board, src)
                 for dest in dests:
                     possible_board = move(board, src, dest)
                     possible_value = score_board(possible_board)
@@ -148,7 +151,7 @@ def random_movement(board):
             piece = board[row][column]
             if piece in BLACK_PIECES:
                 src = Coordinate(row, column)
-                dests = destinations(src, board)
+                dests = destinations(board, src)
                 if (dests):
                     return (src, dests[0])
 
@@ -179,7 +182,7 @@ def run():
             elif player_turn and event.type == pygame.MOUSEBUTTONUP:
                 if is_holding_piece(held_piece_coord):
                     possible_destinations = destinations(
-                        held_piece_coord, chess_board)
+                        chess_board, held_piece_coord)
                     if cell_coord in possible_destinations:
                         chess_board = move(
                             chess_board, held_piece_coord, cell_coord)
@@ -194,13 +197,12 @@ def run():
         possible_destinations = []
         if player_turn and is_holding_piece(held_piece_coord):
             piece = chess_board[held_piece_coord.row][held_piece_coord.column]
-            possible_destinations = destinations(held_piece_coord, chess_board)
+            possible_destinations = destinations(chess_board, held_piece_coord)
 
         colored_board = color_board(chess_board, possible_destinations)
 
         if not player_turn:
             movement = greedy_move(chess_board)
-            #movement = random_movement(chess_board)
             chess_board = move(chess_board, movement[0], movement[1])
             print("Computer moved!")
             player_turn = True
@@ -210,4 +212,3 @@ def run():
 # endregion game loop
 
     pygame.quit()
-

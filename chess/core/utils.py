@@ -14,39 +14,6 @@ r = Piece.BLACK_ROOK
 q = Piece.BLACK_QUEEN
 k = Piece.BLACK_KING
 
-
-def initial_board():
-    return [[r, n, b, q, k, b, n, r],
-            [p, p, p, p, p, p, p, p],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [P, P, P, P, P, P, P, P],
-            [R, N, B, Q, K, B, N, R]]
-
-
-def empty_board():
-    return [[o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o],
-            [o, o, o, o, o, o, o, o]]
-
-
-TEST_COLORED_BOARD = [
-    [1, 2, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 3, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1]]
-
 BLACK_PIECES = [Piece.BLACK_PAWN,
                 Piece.BLACK_BISHOP,
                 Piece.BLACK_KNIGHT,
@@ -60,6 +27,50 @@ WHITE_PIECES = [Piece.WHITE_PAWN,
                 Piece.WHITE_ROOK,
                 Piece.WHITE_QUEEN,
                 Piece.WHITE_KING]
+
+
+def initial_board():
+    return [[r, n, b, q, k, b, n, r],
+            [p, p, p, p, p, p, p, p],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [P, P, P, P, P, P, P, P],
+            [R, N, B, Q, K, B, N, R]]
+
+
+def initial_conds():
+    return {
+        "en passant": None,
+        "moved white king": False,
+        "moved white rook": False,
+        "moved black king": False,
+        "moved black rook": False,
+    }
+
+
+def initial_game_state():
+    return GameState(initial_board(), initial_conds())
+
+
+def empty_board():
+    return [[o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o],
+            [o, o, o, o, o, o, o, o]]
+
+
+def piece_at(board, coordinate):
+    return board[coordinate.row][coordinate.column]
+
+
+def set_at(board, coordinate, value):
+    board[coordinate.row][coordinate.column] = value
 
 
 def print_board(board):

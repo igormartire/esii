@@ -1,5 +1,6 @@
 from chess.core.models import Coordinate, Piece
-from chess.core.utils import BLACK_PIECES, WHITE_PIECES, initial_board, piece_at
+from chess.core.utils import (BLACK_PIECES, WHITE_PIECES,
+                              initial_board, piece_at)
 from chess.core.moving import diagonal_moves
 
 
@@ -13,7 +14,7 @@ def is_valid(piece, dest_coord, chess_board):
 
     # TODO: fazer isso decentemente...
     if (dest_coord.row >= 0 and dest_coord.row < 8 and
-       dest_coord.column >= 0 and dest_coord.column < 8):
+            dest_coord.column >= 0 and dest_coord.column < 8):
         dest_piece = chess_board[dest_coord.row][dest_coord.column]
         if dest_piece != Piece.NONE:
             if piece in WHITE_PIECES and dest_piece in WHITE_PIECES:
@@ -22,6 +23,7 @@ def is_valid(piece, dest_coord, chess_board):
                 return False
         return True
     return False
+
 
 def destinations(chess_board, origin_coord):
     piece = chess_board[origin_coord.row][origin_coord.column]
@@ -44,11 +46,10 @@ def destinations(chess_board, origin_coord):
             if chess_board[up_right.row][up_right.column] != Piece.NONE:
                 allowed_destinations.append(up_right)
 
-        if (origin_coord.row == 6): # double step condition
+        if (origin_coord.row == 6):  # double step condition
             double_step_coordinate = origin_coord.up.up
             if piece_at(chess_board, double_step_coordinate) == Piece.NONE:
                 allowed_destinations.append(double_step_coordinate)
-
 
     if piece == Piece.BLACK_PAWN:
         down_middle = Coordinate(origin_coord.row + 1, origin_coord.column - 0)
@@ -66,7 +67,7 @@ def destinations(chess_board, origin_coord):
             if chess_board[down_right.row][down_right.column] != Piece.NONE:
                 allowed_destinations.append(down_right)
 
-        if (origin_coord.row == 1): # double step condition
+        if (origin_coord.row == 1):  # double step condition
             double_step_coordinate = origin_coord.down.down
             if piece_at(chess_board, double_step_coordinate) == Piece.NONE:
                 allowed_destinations.append(double_step_coordinate)

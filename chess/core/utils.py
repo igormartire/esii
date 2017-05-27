@@ -14,6 +14,20 @@ r = Piece.BLACK_ROOK
 q = Piece.BLACK_QUEEN
 k = Piece.BLACK_KING
 
+BLACK_PIECES = [Piece.BLACK_PAWN,
+                Piece.BLACK_BISHOP,
+                Piece.BLACK_KNIGHT,
+                Piece.BLACK_ROOK,
+                Piece.BLACK_QUEEN,
+                Piece.BLACK_KING]
+
+WHITE_PIECES = [Piece.WHITE_PAWN,
+                Piece.WHITE_BISHOP,
+                Piece.WHITE_KNIGHT,
+                Piece.WHITE_ROOK,
+                Piece.WHITE_QUEEN,
+                Piece.WHITE_KING]
+
 
 def initial_board():
     return [[r, n, b, q, k, b, n, r],
@@ -50,33 +64,13 @@ def empty_board():
             [o, o, o, o, o, o, o, o],
             [o, o, o, o, o, o, o, o]]
 
+
 def piece_at(board, coordinate):
     return board[coordinate.row][coordinate.column]
 
 
-TEST_COLORED_BOARD = [
-    [1, 2, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 3, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 1, 0, 1]]
-
-BLACK_PIECES = [Piece.BLACK_PAWN,
-                Piece.BLACK_BISHOP,
-                Piece.BLACK_KNIGHT,
-                Piece.BLACK_ROOK,
-                Piece.BLACK_QUEEN,
-                Piece.BLACK_KING]
-
-WHITE_PIECES = [Piece.WHITE_PAWN,
-                Piece.WHITE_BISHOP,
-                Piece.WHITE_KNIGHT,
-                Piece.WHITE_ROOK,
-                Piece.WHITE_QUEEN,
-                Piece.WHITE_KING]
+def set_at(board, coordinate, value):
+    board[coordinate.row][coordinate.column] = value
 
 
 def print_board(board):

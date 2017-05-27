@@ -40,6 +40,14 @@ class Coordinate:
     def down(self):
         return Coordinate(self.row + 1, self.column)
 
+    @property
+    def left(self):
+        return Coordinate(self.row, self.column - 1)
+
+    @property
+    def right(self):
+        return Coordinate(self.row, self.column + 1)
+
 
 @unique
 class Color(Enum):

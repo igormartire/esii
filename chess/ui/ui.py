@@ -39,7 +39,8 @@ class UI:
         }
 
     def refresh(self, chess_board, colored_board):
-        board_surface, chess_pieces = self.setup_board(chess_board, colored_board)
+        board_surface, chess_pieces = self.setup_board(
+            chess_board, colored_board)
         self.screen.blit(board_surface, board_position())
         for chess_piece in chess_pieces:
             self.screen.blit(chess_piece.image, chess_piece.rect)
@@ -66,12 +67,14 @@ class UI:
         cell_size = (BOARD_SIZE / num_of_cells)
         for row in range(num_of_cells):
             for col in range(num_of_cells):
-                cell_rect = (col * cell_size + 5, row * cell_size + 5, cell_size - 5, cell_size - 5)
+                cell_rect = (col * cell_size, row * cell_size,
+                             cell_size - 5, cell_size - 5)
                 cell_color_rgb = color_board[row][col].rgb
                 print(cell_color_rgb)
                 board_surface.fill(cell_color_rgb, cell_rect)
                 cell_value = board[row][col]
-                chess_piece = self.create_chess_piece(cell_value, cell_size, cell_rect)
+                chess_piece = self.create_chess_piece(
+                    cell_value, cell_size, cell_rect)
                 if chess_piece is not None:
                     chess_pieces.append(chess_piece)
 
@@ -200,7 +203,6 @@ def run():
 
         if not player_turn:
             movement = greedy_move(chess_board)
-            #movement = random_movement(chess_board)
             chess_board = move(chess_board, movement[0], movement[1])
             print("Computer moved!")
             player_turn = True
@@ -210,4 +212,3 @@ def run():
 # endregion game loop
 
     pygame.quit()
-

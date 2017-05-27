@@ -1,5 +1,6 @@
-from .models import Coordinate, Piece
-from .utils import BLACK_PIECES, WHITE_PIECES, initial_board
+from chess.core.models import Coordinate, Piece
+from chess.core.utils import BLACK_PIECES, WHITE_PIECES, initial_board, piece_at
+from chess.core.moving import diagonal_moves
 
 
 # TODO: mover movimentação para funções
@@ -22,42 +23,7 @@ def is_valid(piece, dest_coord, chess_board):
         return True
     return False
 
-
-def diagonal_moves(board, src):
-    moves = set()
-
-    # diagonal pra cima e pra esquerda
-    for i in range(1, min(src.row, src.column) + 1):
-        pos = Coordinate(src.row - i, src.column - i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra cima e pra direita
-    for i in range(1, min(src.row, 7 - src.column) + 1):
-        pos = Coordinate(src.row - i, src.column + i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra baixo e pra esquerda
-    for i in range(1, min(7 - src.row, src.column) + 1):
-        pos = Coordinate(src.row + i, src.column - i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra baixo e pra direita
-    for i in range(1, min(7 - src.row, 7 - src.column) + 1):
-        pos = Coordinate(src.row + i, src.column + i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    return set(moves)
-
-
-def destinations(origin_coord, chess_board):
+def destinations(chess_board, origin_coord):
     piece = chess_board[origin_coord.row][origin_coord.column]
     allowed_destinations = []
 
@@ -78,6 +44,12 @@ def destinations(origin_coord, chess_board):
             if chess_board[up_right.row][up_right.column] != Piece.NONE:
                 allowed_destinations.append(up_right)
 
+        if (origin_coord.row == 6): # double step condition
+            double_step_coordinate = origin_coord.up.up
+            if piece_at(chess_board, double_step_coordinate) == Piece.NONE:
+                allowed_destinations.append(double_step_coordinate)
+
+
     if piece == Piece.BLACK_PAWN:
         down_middle = Coordinate(origin_coord.row + 1, origin_coord.column - 0)
         down_left = Coordinate(origin_coord.row + 1, origin_coord.column - 1)
@@ -93,6 +65,11 @@ def destinations(origin_coord, chess_board):
         if is_valid(piece, down_right, chess_board):
             if chess_board[down_right.row][down_right.column] != Piece.NONE:
                 allowed_destinations.append(down_right)
+
+        if (origin_coord.row == 1): # double step condition
+            double_step_coordinate = origin_coord.down.down
+            if piece_at(chess_board, double_step_coordinate) == Piece.NONE:
+                allowed_destinations.append(double_step_coordinate)
 
     if piece == Piece.WHITE_KNIGHT or piece == Piece.BLACK_KNIGHT:
         allowed_destinations = [

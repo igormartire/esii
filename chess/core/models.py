@@ -32,13 +32,13 @@ class Coordinate:
     def __repr__(self):
         return str(self.__key())
 
+    @property
+    def up(self):
+        return Coordinate(self.row - 1, self.column)
 
-class Board:
-    def __init__(self, cells_matrix):
-        self.matrix = cells_matrix
-        self.coordinates = Coordinate.matrix_to_coordinates(self.matrix)
-        self.width = len(cells_matrix[0])
-        self.height = len(cells_matrix)
+    @property
+    def down(self):
+        return Coordinate(self.row + 1, self.column)
 
 
 @unique

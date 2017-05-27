@@ -132,7 +132,7 @@ def greedy_move(board):
             piece = board[row][column]
             if piece in BLACK_PIECES:
                 src = Coordinate(row, column)
-                dests = destinations(src, board)
+                dests = destinations(board, src)
                 for dest in dests:
                     possible_board = move(board, src, dest)
                     possible_value = score_board(possible_board)
@@ -148,7 +148,7 @@ def random_movement(board):
             piece = board[row][column]
             if piece in BLACK_PIECES:
                 src = Coordinate(row, column)
-                dests = destinations(src, board)
+                dests = destinations(board, src)
                 if (dests):
                     return (src, dests[0])
 
@@ -179,7 +179,7 @@ def run():
             elif player_turn and event.type == pygame.MOUSEBUTTONUP:
                 if is_holding_piece(held_piece_coord):
                     possible_destinations = destinations(
-                        held_piece_coord, chess_board)
+                        chess_board, held_piece_coord)
                     if cell_coord in possible_destinations:
                         chess_board = move(
                             chess_board, held_piece_coord, cell_coord)
@@ -194,7 +194,7 @@ def run():
         possible_destinations = []
         if player_turn and is_holding_piece(held_piece_coord):
             piece = chess_board[held_piece_coord.row][held_piece_coord.column]
-            possible_destinations = destinations(held_piece_coord, chess_board)
+            possible_destinations = destinations(chess_board, held_piece_coord)
 
         colored_board = color_board(chess_board, possible_destinations)
 

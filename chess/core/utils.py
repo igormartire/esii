@@ -26,6 +26,20 @@ def initial_board():
             [R, N, B, Q, K, B, N, R]]
 
 
+def initial_conds():
+    return {
+        "en passant": None,
+        "moved white king": False,
+        "moved white rook": False,
+        "moved black king": False,
+        "moved black rook": False,
+    }
+
+
+def initial_game_state():
+    return GameState(initial_board(), initial_conds())
+
+
 def empty_board():
     return [[o, o, o, o, o, o, o, o],
             [o, o, o, o, o, o, o, o],
@@ -35,6 +49,9 @@ def empty_board():
             [o, o, o, o, o, o, o, o],
             [o, o, o, o, o, o, o, o],
             [o, o, o, o, o, o, o, o]]
+
+def piece_at(board, coordinate):
+    return board[coordinate.row][coordinate.column]
 
 
 TEST_COLORED_BOARD = [

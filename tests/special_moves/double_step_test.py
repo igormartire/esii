@@ -29,7 +29,7 @@ def test_white_pawn_can_double_step_and_still_eat_diagonally():
     board = empty_board()
     pawn_coordinate = Coordinate(6, 3)
     set_at(board, pawn_coordinate, Piece.WHITE_PAWN)
-    set_at(board, pawn_coordinate.up.left, Piece.BLACK_QUEEN)
+    set_at(board, pawn_coordinate.up().left(), Piece.BLACK_QUEEN)
 
     actual_destinations = destinations(board, pawn_coordinate)
 
@@ -41,7 +41,7 @@ def test_black_pawn_can_double_step_and_still_eat_diagonally():
     board = empty_board()
     pawn_coordinate = Coordinate(1, 5)
     set_at(board, pawn_coordinate, Piece.BLACK_PAWN)
-    set_at(board, pawn_coordinate.down.left, Piece.WHITE_ROOK)
+    set_at(board, pawn_coordinate.down().left(), Piece.WHITE_ROOK)
 
     actual_destinations = destinations(board, pawn_coordinate)
 
@@ -53,7 +53,7 @@ def test_white_pawn_cannot_eat_with_double_step():
     board = empty_board()
     pawn_coordinate = Coordinate(6, 3)
     set_at(board, pawn_coordinate, Piece.WHITE_PAWN)
-    set_at(board, pawn_coordinate.up.up, Piece.BLACK_QUEEN)
+    set_at(board, pawn_coordinate.up(2), Piece.BLACK_QUEEN)
 
     actual_destinations = destinations(board, pawn_coordinate)
 
@@ -64,7 +64,7 @@ def test_black_pawn_cannot_eat_with_double_step():
     board = empty_board()
     pawn_coordinate = Coordinate(1, 5)
     set_at(board, pawn_coordinate, Piece.BLACK_PAWN)
-    set_at(board, pawn_coordinate.down.down, Piece.WHITE_ROOK)
+    set_at(board, pawn_coordinate.down(2), Piece.WHITE_ROOK)
 
     actual_destinations = destinations(board, pawn_coordinate)
 
@@ -99,7 +99,7 @@ def test_white_pawn_cannot_double_step_when_path_is_blocked():
     actual_destinations = destinations(board, pawn_coordinate)
     assert Coordinate(4, 0) in actual_destinations
 
-    set_at(board, pawn_coordinate.up, Piece.BLACK_PAWN)
+    set_at(board, pawn_coordinate.up(), Piece.BLACK_PAWN)
 
     actual_destinations = destinations(board, pawn_coordinate)
     assert Coordinate(4, 0) not in actual_destinations
@@ -113,7 +113,7 @@ def test_black_pawn_cannot_double_step_when_path_is_blocked():
     actual_destinations = destinations(board, pawn_coordinate)
     assert Coordinate(3, 0) in actual_destinations
 
-    set_at(board, pawn_coordinate.down, Piece.WHITE_PAWN)
+    set_at(board, pawn_coordinate.down(), Piece.WHITE_PAWN)
 
     actual_destinations = destinations(board, pawn_coordinate)
     assert Coordinate(3, 0) not in actual_destinations

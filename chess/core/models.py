@@ -32,21 +32,17 @@ class Coordinate:
     def __repr__(self):
         return str(self.__key())
 
-    @property
-    def up(self):
-        return Coordinate(self.row - 1, self.column)
+    def up(self, n = 1):
+        return Coordinate(self.row - n, self.column)
 
-    @property
-    def down(self):
-        return Coordinate(self.row + 1, self.column)
+    def down(self, n = 1):
+        return Coordinate(self.row + n, self.column)
 
-    @property
-    def left(self):
-        return Coordinate(self.row, self.column - 1)
+    def left(self, n = 1):
+        return Coordinate(self.row, self.column - n)
 
-    @property
-    def right(self):
-        return Coordinate(self.row, self.column + 1)
+    def right(self, n = 1):
+        return Coordinate(self.row, self.column + n)
 
 
 @unique
@@ -70,6 +66,12 @@ class Color(Enum):
             return (50, 200, 50)
         if self == Color.RED:
             return (200, 50, 50)
+
+
+@unique
+class Player(Enum):
+    BLACK = 0
+    WHITE = 1
 
 
 @unique

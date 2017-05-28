@@ -4,9 +4,11 @@ import copy
 import pygame
 from pygame.locals import *
 
-from chess.core.models import Coordinate, Color, Piece
+from chess.core.models import Coordinate, Color, Piece, Player
 from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
-from chess.core.possible_destinations import destinations
+from chess.core.possible_destinations import (destinations,
+                                              is_check_for_player,
+                                              is_check_mate_for_player)
 from chess.core.coloring import color_board
 from chess.core.moving import move
 from chess.ai.score import score_board
@@ -157,8 +159,14 @@ def run():
                         game, held_piece_coord)
                     if cell_coord in possible_destinations:
                         move(game, held_piece_coord, cell_coord)
-                        player_turn = False
                         print("Player moved!")
+                        if is_check_mate_for_player(game, Player.BLACK):
+                            print('WHITE player wins!')
+                            running = False
+                            break
+                        elif is_check_for_player(game, Player.BLACK):
+                            print('BLACK player is in check!')
+                        player_turn = False
                         print("Computer turn...")
                     else:
                         print("You cannot do that!")
@@ -172,13 +180,25 @@ def run():
 
         colored_board = color_board(board, possible_destinations)
 
+        ui.refresh(board, colored_board)
+
+        if not running:
+            break
+
         if not player_turn:
             movement = greedy_move(game)
             move(game, movement[0], movement[1])
             print("Computer moved!")
+            if is_check_mate_for_player(game, Player.WHITE):
+                print('BLACK player wins!')
+                running = False
+                break
+            elif is_check_for_player(game, Player.WHITE):
+                print('BLACK player is in check!')
             player_turn = True
             print("Player turn...")
 
         ui.refresh(board, colored_board)
 
+    input("Press a key to exit.")
     pygame.quit()

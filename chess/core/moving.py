@@ -18,7 +18,7 @@ def castling(game, src, dest):
 
     if (piece == Piece.WHITE_KING and
         src == Coordinate(7, 4) and
-        dest == Coordinate(7, 6)):
+            dest == Coordinate(7, 6)):
         board[7][5] = Piece.WHITE_ROOK
         board[7][7] = Piece.NONE
     elif (piece == Piece.WHITE_KING and
@@ -37,11 +37,8 @@ def castling(game, src, dest):
         board[0][3] = Piece.BLACK_ROOK
         board[0][0] = Piece.NONE
 
-    if (piece == Piece.WHITE_KING):
-        print(game.state.allow_castling_white_king)
-
     if (piece == Piece.WHITE_KING and
-        game.state.allow_castling_white_king):
+            game.state.allow_castling_white_king):
         game.state.allow_castling_white_king = False
     elif (piece == Piece.WHITE_ROOK and
           src == Coordinate(7, 0) and
@@ -62,9 +59,6 @@ def castling(game, src, dest):
           src == Coordinate(0, 7) and
           game.state.allow_castling_right_black_rook):
         game.state.allow_castling_right_black_rook = False
-
-    if (piece == Piece.WHITE_KING):
-        print(game.state.allow_castling_white_king)
 
 
 def diagonal_moves(board, src):

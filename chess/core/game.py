@@ -1,9 +1,11 @@
 from chess.core.utils import initial_board
 
+
 class Game:
     def __init__(self):
         self.board = initial_board()
         self.state = GameState()
+
 
 class GameState:
     def __init__(self):

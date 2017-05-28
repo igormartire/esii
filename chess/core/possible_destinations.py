@@ -46,7 +46,7 @@ def destinations(game, src):
         if (src.row == 6):  # double step condition
             double_step_coord = src.up(2)
             if (piece_at(board, double_step_coord) == Piece.NONE and
-               piece_at(board, src.up()) == Piece.NONE):
+                    piece_at(board, src.up()) == Piece.NONE):
                 allowed_destinations.append(double_step_coord)
 
     if piece == Piece.BLACK_PAWN:
@@ -68,7 +68,7 @@ def destinations(game, src):
         if (src.row == 1):  # double step condition
             double_step_coord = src.down(2)
             if (piece_at(board, double_step_coord) == Piece.NONE and
-               piece_at(board, src.down()) == Piece.NONE):
+                    piece_at(board, src.down()) == Piece.NONE):
                 allowed_destinations.append(double_step_coord)
 
     if piece == Piece.WHITE_KNIGHT or piece == Piece.BLACK_KNIGHT:
@@ -98,38 +98,38 @@ def destinations(game, src):
         ]
 
         if (piece == Piece.WHITE_KING and
-            game.state.allow_castling_white_king):
+                game.state.allow_castling_white_king):
             if (game.state.allow_castling_left_white_rook and
                 not check(src, Player.WHITE) and
                 not check(src.left(1), Player.WHITE) and
                 not check(src.left(2), Player.WHITE) and
                 empty_at(game.board, src.left(1)) and
                 empty_at(game.board, src.left(2)) and
-                empty_at(game.board, src.left(3))):
+                    empty_at(game.board, src.left(3))):
                 allowed_destinations.append(src.left(2))
             if (game.state.allow_castling_right_white_rook and
                 not check(src, Player.WHITE) and
                 not check(src.right(1), Player.WHITE) and
                 not check(src.right(2), Player.WHITE) and
                 empty_at(game.board, src.right(1)) and
-                empty_at(game.board, src.right(2))):
+                    empty_at(game.board, src.right(2))):
                 allowed_destinations.append(src.right(2))
         elif (piece == Piece.BLACK_KING and
-            game.state.allow_castling_black_king):
+              game.state.allow_castling_black_king):
             if (game.state.allow_castling_left_black_rook and
                 not check(src, Player.BLACK) and
                 not check(src.left(1), Player.BLACK) and
                 not check(src.left(2), Player.BLACK) and
                 empty_at(game.board, src.left(1)) and
                 empty_at(game.board, src.left(2)) and
-                empty_at(game.board, src.left(3))):
+                    empty_at(game.board, src.left(3))):
                 allowed_destinations.append(src.left(2))
             if (game.state.allow_castling_right_black_rook and
                 not check(src, Player.BLACK) and
                 not check(src.right(1), Player.BLACK) and
                 not check(src.right(2), Player.BLACK) and
                 empty_at(game.board, src.right(1)) and
-                empty_at(game.board, src.right(2))):
+                    empty_at(game.board, src.right(2))):
                 allowed_destinations.append(src.right(2))
 
     if piece == Piece.WHITE_ROOK or piece == Piece.BLACK_ROOK:

@@ -32,16 +32,16 @@ class Coordinate:
     def __repr__(self):
         return str(self.__key())
 
-    def up(self, n = 1):
+    def up(self, n=1):
         return Coordinate(self.row - n, self.column)
 
-    def down(self, n = 1):
+    def down(self, n=1):
         return Coordinate(self.row + n, self.column)
 
-    def left(self, n = 1):
+    def left(self, n=1):
         return Coordinate(self.row, self.column - n)
 
-    def right(self, n = 1):
+    def right(self, n=1):
         return Coordinate(self.row, self.column + n)
 
 

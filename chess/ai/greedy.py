@@ -17,8 +17,6 @@ def greedy_move(game):
                 dests = destinations(game, src)
                 for dest in dests:
                     possible_game = copy.deepcopy(game)
-                    print(possible_game.board)
-                    print()
                     move(possible_game, src, dest)
                     possible_value = score_board(possible_game.board)
                     if possible_value > best_value:

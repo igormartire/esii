@@ -4,6 +4,9 @@ run:
 pep:
 	pep8 chess/ tests/
 
+autopep:
+	make pep | grep -o '^.*py' | xargs autopep8 --in-place
+
 test:
 	python -m pytest tests/
 

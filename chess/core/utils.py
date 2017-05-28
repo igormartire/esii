@@ -50,6 +50,7 @@ def empty_board():
             [o, o, o, o, o, o, o, o],
             [o, o, o, o, o, o, o, o]]
 
+
 def empty_at(board, coordinate):
     return board[coordinate.row][coordinate.column] == Piece.NONE
 

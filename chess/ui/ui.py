@@ -193,10 +193,12 @@ def run():
                             print("Player moved!")
                             if is_check_mate_for_player(game, Player.BLACK):
                                 print('WHITE player wins!')
+                                ui.display_text("WHITE player wins!")
                                 running = False
                                 break
                             elif is_check_for_player(game, Player.BLACK):
                                 print('BLACK player is in check!')
+                                ui.display_text("BLACK player is in check!")
                             player_turn = False
                             print("Computer turn...")
                         else:
@@ -219,15 +221,17 @@ def run():
                 movement = greedy_move(game)
                 move(game, movement[0], movement[1])
                 print("Computer moved!")
+                ui.display_text("Your turn...")
                 if is_check_mate_for_player(game, Player.WHITE):
                     print('BLACK player wins!')
+                    ui.display_text("BLACK player wins!")
                     running = False
                     break
                 elif is_check_for_player(game, Player.WHITE):
-                    print('BLACK player is in check!')
+                    print('WHITE player is in check!')
+                    ui.display_text("Your turn... (CHECK!)")
                 player_turn = True
                 print("Player turn...")
-                ui.display_text("Your turn...")
 
             ui.refresh(board, colored_board)
         pygame.display.update()

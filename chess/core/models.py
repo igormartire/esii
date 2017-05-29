@@ -15,7 +15,7 @@ class Coordinate:
 
         return coordinates
 
-    def inside_board(self, board):
+    def inside_board(self):
         if self.row < 0 or self.row > 7 or self.column < 0 or self.column > 7:
             return False
         return True

@@ -16,9 +16,10 @@ from chess.ai.greedy import greedy_move
 from chess.core.game import Game
 
 SCREEN_TITLE = 'Chess'
-SCREEN_WIDTH = 740
+SCREEN_WIDTH = 940
 SCREEN_HEIGHT = 740
 BOARD_SIZE = 640
+CELL_BORDER = 3
 IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
 
 
@@ -74,11 +75,18 @@ class UI:
                 cell_rect = (
                     col * cell_size,
                     row * cell_size,
-                    cell_size - 5,
-                    cell_size - 5)
+                    cell_size - CELL_BORDER,
+                    cell_size - CELL_BORDER)
                 cell_color_rgb = color_board[row][col].rgb
                 board_surface.fill(cell_color_rgb, cell_rect)
                 cell_value = board[row][col]
+
+                cell_rect = (
+                    col * cell_size + board_position()[0],
+                    row * cell_size + board_position()[1],
+                    cell_size - 3,
+                    cell_size - 3)
+
                 chess_piece = self.create_chess_piece(
                     cell_value, cell_size, cell_rect)
                 if chess_piece is not None:
@@ -112,7 +120,9 @@ def get_coordinates_by_position(position, board):
     cell_size = BOARD_SIZE / num_of_cells
     for row in range(num_of_cells):
         for col in range(num_of_cells):
-            cell = (col * cell_size, row * cell_size, cell_size, cell_size)
+            cell = (col * cell_size + board_position()[0],
+                    row * cell_size + board_position()[1],
+                    cell_size, cell_size)
             cell_rect = pygame.Rect(cell)
             if cell_rect.collidepoint(position):
                 return Coordinate(row, col)

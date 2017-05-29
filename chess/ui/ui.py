@@ -44,12 +44,13 @@ class UI:
             "BLACK_ROOK_IMAGE": self.load_png('chess-pieces/black-rook')
         }
 
-        self.displayed_text = None
+        self.__displayed_text = self.font.render("", 1, (255, 255, 255))
 
-    def display_text(self, text, x, y):
-        self.displayed_text = self.font.render(text, 1, (255, 255, 255))
-        self.screen.blit(self.displayed_text, (x, y))
+    def display_text(self, text):
+        self.__displayed_text = self.font.render(text, 1, (255, 255, 255))
 
+    def erase_displayed_text(self):
+        self.__displayed_text = self.font.render("", 1, (255, 255, 255))
 
     def refresh(self, chess_board, colored_board):
         # Erase screen
@@ -62,10 +63,10 @@ class UI:
             self.screen.blit(chess_piece.image, chess_piece.rect)
 
         # Foreground
-        self.display_text("oi", 200, 50)
+        self.screen.blit(self.__displayed_text, (200, 50))
 
     def create_chess_piece(self, piece, cell_size, cell_rect):
-        if (piece == Piece.NONE):
+        if piece == Piece.NONE:
             piece_image = None
         else:
             piece_image = self.sprites[piece.name + '_IMAGE']
@@ -165,6 +166,7 @@ def run():
     held_piece_coord = None
     player_turn = True
     print("Player turn...")
+    ui.display_text("Your turn...")
     while running:
         if True:
             mouse_position = pygame.mouse.get_pos()
@@ -204,7 +206,6 @@ def run():
 
             possible_destinations = []
             if player_turn and is_holding_piece(held_piece_coord):
-                piece = board[held_piece_coord.row][held_piece_coord.column]
                 possible_destinations = destinations(game, held_piece_coord)
 
             colored_board = color_board(board, possible_destinations)
@@ -226,6 +227,7 @@ def run():
                     print('BLACK player is in check!')
                 player_turn = True
                 print("Player turn...")
+                ui.display_text("Your turn...")
 
             ui.refresh(board, colored_board)
         pygame.display.update()

@@ -4,12 +4,16 @@ import copy
 import pygame
 from pygame.locals import *
 
-from chess.core.models import Coordinate, Color, Piece
+from chess.core.models import Coordinate, Color, Piece, Player
 from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
-from chess.core.possible_destinations import destinations
+from chess.core.possible_destinations import (destinations,
+                                              is_check_for_player,
+                                              is_check_mate_for_player)
 from chess.core.coloring import color_board
 from chess.core.moving import move
 from chess.ai.score import score_board
+from chess.ai.greedy import greedy_move
+from chess.core.game import Game
 
 SCREEN_TITLE = 'Chess'
 SCREEN_WIDTH = 740
@@ -73,7 +77,6 @@ class UI:
                     cell_size - 5,
                     cell_size - 5)
                 cell_color_rgb = color_board[row][col].rgb
-                print(cell_color_rgb)
                 board_surface.fill(cell_color_rgb, cell_rect)
                 cell_value = board[row][col]
                 chess_piece = self.create_chess_piece(
@@ -130,40 +133,11 @@ def can_move_piece(clicked_piece, held_piece_coord):
     return False
 
 
-def greedy_move(board):
-    best_move = None
-    best_value = -9999
-    for row in range(8):
-        for column in range(8):
-            piece = board[row][column]
-            if piece in BLACK_PIECES:
-                src = Coordinate(row, column)
-                dests = destinations(board, src)
-                for dest in dests:
-                    possible_board = move(board, src, dest)
-                    possible_value = score_board(possible_board)
-                    if possible_value > best_value:
-                        best_value = possible_value
-                        best_move = (src, dest)
-    return best_move
-
-
-def random_movement(board):
-    for row in range(8):
-        for column in range(8):
-            piece = board[row][column]
-            if piece in BLACK_PIECES:
-                src = Coordinate(row, column)
-                dests = destinations(board, src)
-                if (dests):
-                    return (src, dests[0])
-
-
 def run():
     ui = UI()
-    chess_board = initial_board()
+    game = Game()
+    board = game.board
 
-# region game loop
     running = True
     held_piece_coord = None
     player_turn = True
@@ -233,4 +207,5 @@ def run():
             ui.refresh(board, colored_board)
         pygame.display.update()
 
+    input("Press a key to exit.")
     pygame.quit()

@@ -16,8 +16,8 @@ from chess.ai.greedy import greedy_move
 from chess.core.game import Game
 
 SCREEN_TITLE = 'Chess'
-SCREEN_WIDTH = 940
-SCREEN_HEIGHT = 740
+SCREEN_WIDTH = 640
+SCREEN_HEIGHT = 840
 BOARD_SIZE = 640
 CELL_BORDER = 3
 IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
@@ -26,6 +26,7 @@ IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
 class UI:
     def __init__(self):
         pygame.init()
+        self.font = pygame.font.SysFont("monospace", 50)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption(SCREEN_TITLE)
         self.sprites = {
@@ -43,13 +44,25 @@ class UI:
             "BLACK_ROOK_IMAGE": self.load_png('chess-pieces/black-rook')
         }
 
+        self.displayed_text = None
+
+    def display_text(self, text, x, y):
+        self.displayed_text = self.font.render(text, 1, (255, 255, 255))
+        self.screen.blit(self.displayed_text, (x, y))
+
+
     def refresh(self, chess_board, colored_board):
+        # Erase screen
         self.screen.fill((0,0,0))
+
         board_surface, chess_pieces = self.setup_board(
             chess_board, colored_board)
         self.screen.blit(board_surface, board_position())
         for chess_piece in chess_pieces:
             self.screen.blit(chess_piece.image, chess_piece.rect)
+
+        # Foreground
+        self.display_text("oi", 200, 50)
 
     def create_chess_piece(self, piece, cell_size, cell_rect):
         if (piece == Piece.NONE):

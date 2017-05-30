@@ -78,8 +78,8 @@ class UI:
                     cell_value = board[row][col]
                     chess_piece = self.create_chess_piece(
                         cell_value, cell_size, piece_cell_rect)
-                if chess_piece is not None:
-                    chess_pieces.append(chess_piece)
+                    if chess_piece is not None:
+                        chess_pieces.append(chess_piece)
 
             self.screen.blit(board_surface, board_position())
             for chess_piece in chess_pieces:
@@ -89,7 +89,7 @@ class UI:
 
     def refresh(self, chess_board, colored_board):
         # Erase screen
-        self.screen.fill((0,0,0))
+        self.screen.fill((0, 0, 0))
 
         board_surface, chess_pieces = self.setup_board(
             chess_board, colored_board)
@@ -260,7 +260,6 @@ def run():
                     else:
                         print("You cannot do that!")
                         print("Player turn still...")
-                        ui.display_text("Player turn still...")
                     held_piece_coord = None
 
         possible_destinations = []

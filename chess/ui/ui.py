@@ -250,7 +250,12 @@ def run_game(ui, game, board):
     while game_running:
         for event in pygame.event.get():
             if event.type == QUIT:
-                return
+                quit = True
+                return quit
+            if event.type == pygame.KEYDOWN and event.key == \
+                    pygame.K_ESCAPE:
+                quit = False
+                return quit
             if player_turn:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     cell_coord = get_coordinates_by_position(
@@ -321,10 +326,12 @@ def run():
     running = True
     while running:
         quit = menu(ui)
-        if quit == False:
+        if not quit:
             game = Game()
             board = game.board
-            run_game(ui, game, board)
+            quit = run_game(ui, game, board)
+            if quit:
+                break
             ui.refresh(board, color_board(board, []))
         else:
             break

@@ -79,6 +79,7 @@ class UI:
         diff_h = dest.row - src.row
 
         while time <= 1000:
+            # To assure 1000/1000 = 1 (line 102)
             if time >= 1000:
                 time = 1000
             animate_clock.tick()
@@ -98,8 +99,14 @@ class UI:
 
                     if dest.row == row and dest.column == col:
                         cell_rect = (
-                            (dest.column + (time/1000) * diff_w) * cell_size + board_position()[0],
-                            (dest.row + (time/1000) * diff_h) * cell_size + board_position()[1],
+                            (src.column + (time/1000) * diff_w)
+                            * cell_size
+                            + board_position()[0]
+                            ,
+                            (src.row + (time/1000) * diff_h)
+                            * cell_size
+                            + board_position()[1]
+                            ,
                             cell_size - 3,
                             cell_size - 3)
                     else:

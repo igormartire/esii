@@ -244,6 +244,8 @@ def run_game(ui, game, board):
     print("Player turn...")
     ui.display_text("Your turn...")
 
+    colored_board = []
+
     game_running = True
     end_game = False
 
@@ -282,6 +284,7 @@ def run_game(ui, game, board):
                             print("Player moved!")
                             if is_check_mate_for_player(game, Player.BLACK):
                                 print('WHITE player wins!')
+                                # TODO: verify why it' not being displayed before the delay
                                 ui.display_text("WHITE player wins!")
                                 end_game = True
                             elif is_check_for_player(game, Player.BLACK):
@@ -320,6 +323,8 @@ def run_game(ui, game, board):
         if end_game:
             game_running = False
 
+    ui.refresh(board, colored_board)
+    pygame.time.delay(1000)
 
 def run():
     ui = UI()

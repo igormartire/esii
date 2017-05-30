@@ -66,6 +66,67 @@ class UI:
         text_rect = self.__displayed_text.get_rect(center=(SCREEN_WIDTH/2, 50))
         self.screen.blit(self.__displayed_text, text_rect)
 
+    def animate(self, chess_board, colored_board, diff):
+        animate_clock = pygame.time.Clock()
+        src, dest = diff[0], diff[1]
+        board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
+        chess_pieces = []
+        num_of_cells = len(chess_board)
+        cell_size = (BOARD_SIZE / num_of_cells)
+
+        time = 0
+        diff_w = dest.column - src.column
+        diff_h = dest.row - src.row
+
+        while time <= 1000:
+            if time >= 1000:
+                time = 1000
+            animate_clock.tick()
+
+            # Erase screen
+            self.screen.fill((0, 0, 0))
+            for row in range(num_of_cells):
+                for col in range(num_of_cells):
+                    cell_rect = (
+                        col * cell_size,
+                        row * cell_size,
+                        cell_size - CELL_BORDER,
+                        cell_size - CELL_BORDER)
+                    cell_color_rgb = colored_board[row][col].rgb
+                    board_surface.fill(cell_color_rgb, cell_rect)
+                    cell_value = chess_board[row][col]
+
+                    if dest.row == row and dest.column == col:
+                        cell_rect = (
+                            (dest.column + (time/1000) * diff_w) * cell_size + board_position()[0],
+                            (dest.row + (time/1000) * diff_h) * cell_size + board_position()[1],
+                            cell_size - 3,
+                            cell_size - 3)
+                    else:
+                        cell_rect = (
+                            col * cell_size + board_position()[0],
+                            row * cell_size + board_position()[1],
+                            cell_size - 3,
+                            cell_size - 3)
+
+                    chess_piece = self.create_chess_piece(
+                        cell_value, cell_size, cell_rect)
+                    if chess_piece is not None:
+                        chess_pieces.append(chess_piece)
+
+            self.screen.blit(board_surface, board_position())
+            for chess_piece in chess_pieces:
+                self.screen.blit(chess_piece.image, chess_piece.rect)
+
+            # Foreground
+            text_rect = self.__displayed_text.get_rect(
+                center=(SCREEN_WIDTH / 2, 50))
+            self.screen.blit(self.__displayed_text, text_rect)
+
+            time += animate_clock.get_time()
+            pygame.display.update()
+            pygame.time.wait(30)
+
     def create_chess_piece(self, piece, cell_size, cell_rect):
         if piece == Piece.NONE:
             piece_image = None
@@ -241,29 +302,20 @@ def run():
 
             if not player_turn:
                 movement = greedy_move(game)
-                if not cpu_is_moving:
-                    ui.display_text("Computer turn...")
-                    cpu_is_moving = True
-                    cpu_move_timer = 1000
-                if cpu_move_timer > 0:
-                    cpu_move_timer -= clock.get_time()
-                    # Move piece slowly
-                    dest_rect = get_rect_by_coordinates(movement[1], board)
-                else:
-                    move(game, movement[0], movement[1])
-                    print("Computer moved!")
-                    cpu_is_moving = False
-                    ui.display_text("Your turn...")
-                    if is_check_mate_for_player(game, Player.WHITE):
-                        print('BLACK player wins!')
-                        ui.display_text("BLACK player wins!", color=(255, 0, 0))
-                        running = False
-                        break
-                    elif is_check_for_player(game, Player.WHITE):
-                        print('WHITE player is in check!')
-                        ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
-                    player_turn = True
-                    print("Player turn...")
+                move(game, movement[0], movement[1])
+                ui.animate(board, colored_board, movement)
+                print("Computer moved!")
+                ui.display_text("Your turn...")
+                if is_check_mate_for_player(game, Player.WHITE):
+                    print('BLACK player wins!')
+                    ui.display_text("BLACK player wins!", color=(255, 0, 0))
+                    running = False
+                    break
+                elif is_check_for_player(game, Player.WHITE):
+                    print('WHITE player is in check!')
+                    ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
+                player_turn = True
+                print("Player turn...")
 
             ui.refresh(board, colored_board)
         pygame.display.update()

@@ -143,9 +143,21 @@ def get_coordinates_by_position(position, board):
                 return Coordinate(row, col)
 
 
+def get_rect_by_coordinates(coordinates, board):
+    num_of_cells = len(board)
+    cell_size = BOARD_SIZE / num_of_cells
+    board_x, board_y = board_position()
+    rect = pygame.Rect(board_x + coordinates.column * cell_size,
+                       board_y + coordinates.row * cell_size,
+                       BOARD_SIZE / 8, BOARD_SIZE / 8)
+
+    return rect
+
+
 def board_position():
-    return (SCREEN_WIDTH - BOARD_SIZE) / 2,\
-           (SCREEN_HEIGHT - BOARD_SIZE) / 2 + 50
+    return (
+        (SCREEN_WIDTH - BOARD_SIZE) / 2,
+        (SCREEN_HEIGHT - BOARD_SIZE) / 2 + 50)
 
 
 def is_holding_piece(piece_coord):
@@ -166,8 +178,7 @@ def run():
 
     clock = pygame.time.Clock()
     cpu_is_moving = False
-    finished_cpu_move = False
-    cpu_move_timer = 1
+    cpu_move_timer = 1000
 
 
     running = True
@@ -237,6 +248,7 @@ def run():
                 if cpu_move_timer > 0:
                     cpu_move_timer -= clock.get_time()
                     # Move piece slowly
+                    dest_rect = get_rect_by_coordinates(movement[1], board)
                 else:
                     move(game, movement[0], movement[1])
                     print("Computer moved!")

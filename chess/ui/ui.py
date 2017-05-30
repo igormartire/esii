@@ -209,18 +209,6 @@ def can_move_piece(clicked_piece, held_piece_coord):
 
 
 def menu(ui):
-    done = False
-
-    while not done:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                done = True
-
-        pygame.draw.rect(ui.screen, (0, 128, 255), pygame.Rect(30, 30, 60, 60))
-        pygame.display.update()
-
-
-def menu(ui):
     print("menu")
     menu = True
     while menu:
@@ -233,8 +221,17 @@ def menu(ui):
                 return False
 
         ui.screen.fill((0, 0, 0,))
-        pygame.draw.rect(ui.screen, (0, 128, 255),
-                         pygame.Rect(30, 30, 60, 60))
+
+        font = pygame.font.SysFont("monospace", 50)
+        text = font.render("Press (ENTER) to Start", 1, (255, 255, 255))
+        text_rect = text.get_rect(
+            center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        ui.screen.blit(text, text_rect)
+        pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
+                (0, 0), (SCREEN_WIDTH, 0),
+                (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
+            ], 10)
+
         pygame.display.update()
 
 

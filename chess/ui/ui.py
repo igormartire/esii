@@ -211,14 +211,15 @@ def can_move_piece(clicked_piece, held_piece_coord):
 def menu(ui):
     print("menu")
     menu = True
-    while menu:
+    quit = False
+    while menu and not quit:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and event.key == \
                     pygame.K_RETURN:
                 menu = False
+                quit = False
             if event.type == pygame.QUIT:
-                pygame.quit()
-                return False
+                quit = True
 
         ui.screen.fill((0, 0, 0,))
 
@@ -233,6 +234,8 @@ def menu(ui):
             ], 10)
 
         pygame.display.update()
+
+    return quit
 
 
 def run_game(ui, game, board):
@@ -318,10 +321,12 @@ def run():
     running = True
     while running:
         quit = menu(ui)
-        if not quit:
+        if quit == False:
             game = Game()
             board = game.board
             run_game(ui, game, board)
             ui.refresh(board, color_board(board, []))
+        else:
+            break
 
     pygame.quit()

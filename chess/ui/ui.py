@@ -164,6 +164,8 @@ def run():
     game = Game()
     board = game.board
 
+
+
     running = True
     held_piece_coord = None
     player_turn = True
@@ -177,6 +179,7 @@ def run():
             for event in pygame.event.get():
                 if event.type == QUIT:
                     running = False
+                    return
                 elif player_turn and event.type == pygame.MOUSEBUTTONDOWN:
                     if cell_coord is not None:
                         clicked_piece = board[cell_coord.row][cell_coord.column]

@@ -208,8 +208,31 @@ def can_move_piece(clicked_piece, held_piece_coord):
     return False
 
 
+def menu(ui):
+    done = False
+
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                done = True
+
+        pygame.draw.rect(ui.screen, (0, 128, 255), pygame.Rect(30, 30, 60, 60))
+        pygame.display.update()
+
+
+
 def run():
     ui = UI()
+    menu = True
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                menu = False
+
+        pygame.draw.rect(ui.screen, (0, 128, 255), pygame.Rect(30, 30, 60, 60))
+        pygame.display.update()
+
+
     game = Game()
     board = game.board
 

@@ -164,6 +164,10 @@ def run():
     game = Game()
     board = game.board
 
+    clock = pygame.time.Clock()
+    cpu_is_moving = False
+    finished_cpu_move = False
+    cpu_move_timer = 1
 
 
     running = True
@@ -172,6 +176,7 @@ def run():
     print("Player turn...")
     ui.display_text("Your turn...")
     while running:
+        clock.tick()
         if True:
             mouse_position = pygame.mouse.get_pos()
             cell_coord = get_coordinates_by_position(
@@ -225,19 +230,28 @@ def run():
 
             if not player_turn:
                 movement = greedy_move(game)
-                move(game, movement[0], movement[1])
-                print("Computer moved!")
-                ui.display_text("Your turn...")
-                if is_check_mate_for_player(game, Player.WHITE):
-                    print('BLACK player wins!')
-                    ui.display_text("BLACK player wins!", color=(255, 0, 0))
-                    running = False
-                    break
-                elif is_check_for_player(game, Player.WHITE):
-                    print('WHITE player is in check!')
-                    ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
-                player_turn = True
-                print("Player turn...")
+                if not cpu_is_moving:
+                    ui.display_text("Computer turn...")
+                    cpu_is_moving = True
+                    cpu_move_timer = 1000
+                if cpu_move_timer > 0:
+                    cpu_move_timer -= clock.get_time()
+                    # Move piece slowly
+                else:
+                    move(game, movement[0], movement[1])
+                    print("Computer moved!")
+                    cpu_is_moving = False
+                    ui.display_text("Your turn...")
+                    if is_check_mate_for_player(game, Player.WHITE):
+                        print('BLACK player wins!')
+                        ui.display_text("BLACK player wins!", color=(255, 0, 0))
+                        running = False
+                        break
+                    elif is_check_for_player(game, Player.WHITE):
+                        print('WHITE player is in check!')
+                        ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
+                    player_turn = True
+                    print("Player turn...")
 
             ui.refresh(board, colored_board)
         pygame.display.update()

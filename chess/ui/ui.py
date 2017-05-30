@@ -220,66 +220,67 @@ def menu(ui):
         pygame.display.update()
 
 
-
-def run():
-    ui = UI()
+def menu(ui):
+    print("menu")
     menu = True
     while menu:
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            if event.type == pygame.KEYDOWN and event.key == \
+                    pygame.K_RETURN:
                 menu = False
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return False
 
-        pygame.draw.rect(ui.screen, (0, 128, 255), pygame.Rect(30, 30, 60, 60))
+        ui.screen.fill((0, 0, 0,))
+        pygame.draw.rect(ui.screen, (0, 128, 255),
+                         pygame.Rect(30, 30, 60, 60))
         pygame.display.update()
 
 
-    game = Game()
-    board = game.board
-
-    running = True
+def run_game(ui, game, board):
     held_piece_coord = None
     player_turn = True
     print("Player turn...")
     ui.display_text("Your turn...")
-    while running:
-        mouse_position = pygame.mouse.get_pos()
-        cell_coord = get_coordinates_by_position(
-            mouse_position, board)
+
+    game_running = True
+    end_game = False
+
+    while game_running:
         for event in pygame.event.get():
             if event.type == QUIT:
-                running = False
                 return
-            elif player_turn and event.type == pygame.MOUSEBUTTONDOWN:
-                if cell_coord is not None:
-                    clicked_piece = board[cell_coord.row][cell_coord.column]
-                    if can_move_piece(clicked_piece, held_piece_coord):
-                        held_piece_coord = Coordinate(
-                            cell_coord.row, cell_coord.column)
-                        print("Clicked on cell: {} which contains a {}".format(
-                            held_piece_coord, clicked_piece))
-            elif player_turn and event.type == pygame.MOUSEBUTTONUP:
-                if is_holding_piece(held_piece_coord):
-                    possible_destinations = destinations(
-                        game, held_piece_coord)
-                    if cell_coord is not None and \
-                            cell_coord in possible_destinations:
-                        move(game, held_piece_coord, cell_coord)
-                        move_diff = (held_piece_coord, cell_coord)
-                        ui.animate(board, color_board(board, []), move_diff)
-                        print("Player moved!")
-                        if is_check_mate_for_player(game, Player.BLACK):
-                            print('WHITE player wins!')
-                            ui.display_text("WHITE player wins!",
-                                            color=(0, 255, 0))
-                            running = False
-                            break
-                        elif is_check_for_player(game, Player.BLACK):
-                            print('BLACK player is in check!')
-                            ui.display_text("BLACK player is in check!",
-                                            color=(0, 255, 0))
-                        player_turn = False
-                        print("Computer turn...")
-                        ui.display_text("Computer turn...")
+            if player_turn:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    cell_coord = get_coordinates_by_position(
+                        pygame.mouse.get_pos(), board)
+                    if cell_coord is not None:
+                        clicked_piece = board[cell_coord.row][cell_coord.column]
+                        if can_move_piece(clicked_piece, held_piece_coord):
+                            held_piece_coord = Coordinate(
+                                cell_coord.row, cell_coord.column)
+                            print(
+                                "Clicked on cell: {} which contains a {}"
+                                .format(held_piece_coord, clicked_piece))
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    cell_coord = get_coordinates_by_position(
+                        pygame.mouse.get_pos(), board)
+                    if is_holding_piece(held_piece_coord):
+                        possible_destinations = destinations(
+                            game, held_piece_coord)
+                        if cell_coord in possible_destinations:
+                            move(game, held_piece_coord, cell_coord)
+                            player_turn = False
+                            #move_diff = (held_piece_coord, cell_coord)
+                            #ui.animate(board, color_board(board, []), move_diff)
+                            print("Player moved!")
+                            if is_check_mate_for_player(game, Player.BLACK):
+                                print('WHITE player wins!')
+                                ui.display_text("WHITE player wins!")
+                                end_game = True
+                            elif is_check_for_player(game, Player.BLACK):
+                                ui.display_text("BLACK player is in CHECK")
                     else:
                         print("You cannot do that!")
                         print("Player turn still...")
@@ -288,33 +289,42 @@ def run():
         possible_destinations = []
         if player_turn and is_holding_piece(held_piece_coord):
             possible_destinations = destinations(game, held_piece_coord)
-
         colored_board = color_board(board, possible_destinations)
 
-        ui.refresh(board, colored_board)
-
-        if not running:
-            break
-
-        if not player_turn:
+        if not end_game and not player_turn:
+            print("Computer turn")
+            ui.display_text("Computer turn...")
             movement = greedy_move(game)
             move(game, movement[0], movement[1])
-            move_diff = (movement[0], movement[1])
-            ui.animate(board, colored_board, move_diff)
+            #move_diff = (movement[0], movement[1])
+            #ui.animate(board, colored_board, move_diff)
             print("Computer moved!")
-            ui.display_text("Your turn...")
             if is_check_mate_for_player(game, Player.WHITE):
                 print('BLACK player wins!')
                 ui.display_text("BLACK player wins!", color=(255, 0, 0))
-                running = False
-                break
+                end_game = True
             elif is_check_for_player(game, Player.WHITE):
                 print('WHITE player is in check!')
                 ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
+            else:
+                print("Player turn")
+                ui.display_text("Your turn...")
             player_turn = True
-            print("Your turn...")
 
         ui.refresh(board, colored_board)
+        if end_game:
+            game_running = False
 
-    input("Press a key to exit.")
+
+def run():
+    ui = UI()
+    running = True
+    while running:
+        quit = menu(ui)
+        if not quit:
+            game = Game()
+            board = game.board
+            run_game(ui, game, board)
+            ui.refresh(board, color_board(board, []))
+
     pygame.quit()

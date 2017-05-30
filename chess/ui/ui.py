@@ -17,7 +17,7 @@ from chess.core.game import Game
 
 SCREEN_TITLE = 'Chess'
 SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 840
+SCREEN_HEIGHT = 740
 BOARD_SIZE = 640
 CELL_BORDER = 3
 IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
@@ -46,8 +46,8 @@ class UI:
 
         self.__displayed_text = self.font.render("", 1, (255, 255, 255))
 
-    def display_text(self, text):
-        self.__displayed_text = self.font.render(text, 1, (255, 255, 255))
+    def display_text(self, text, color=(255, 255, 255)):
+        self.__displayed_text = self.font.render(text, 1, color)
 
     def erase_displayed_text(self):
         self.__displayed_text = self.font.render("", 1, (255, 255, 255))
@@ -63,7 +63,8 @@ class UI:
             self.screen.blit(chess_piece.image, chess_piece.rect)
 
         # Foreground
-        self.screen.blit(self.__displayed_text, (200, 50))
+        text_rect = self.__displayed_text.get_rect(center=(SCREEN_WIDTH/2, 50))
+        self.screen.blit(self.__displayed_text, text_rect)
 
     def create_chess_piece(self, piece, cell_size, cell_rect):
         if piece == Piece.NONE:
@@ -143,7 +144,8 @@ def get_coordinates_by_position(position, board):
 
 
 def board_position():
-    return (SCREEN_WIDTH - BOARD_SIZE) / 2, (SCREEN_HEIGHT - BOARD_SIZE) / 2
+    return (SCREEN_WIDTH - BOARD_SIZE) / 2,\
+           (SCREEN_HEIGHT - BOARD_SIZE) / 2 + 50
 
 
 def is_holding_piece(piece_coord):
@@ -193,7 +195,8 @@ def run():
                             print("Player moved!")
                             if is_check_mate_for_player(game, Player.BLACK):
                                 print('WHITE player wins!')
-                                ui.display_text("WHITE player wins!")
+                                ui.display_text("WHITE player wins!",
+                                                color=(0, 255, 0))
                                 running = False
                                 break
                             elif is_check_for_player(game, Player.BLACK):
@@ -224,12 +227,12 @@ def run():
                 ui.display_text("Your turn...")
                 if is_check_mate_for_player(game, Player.WHITE):
                     print('BLACK player wins!')
-                    ui.display_text("BLACK player wins!")
+                    ui.display_text("BLACK player wins!", color=(255, 0, 0))
                     running = False
                     break
                 elif is_check_for_player(game, Player.WHITE):
                     print('WHITE player is in check!')
-                    ui.display_text("Your turn... (CHECK!)")
+                    ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
                 player_turn = True
                 print("Player turn...")
 

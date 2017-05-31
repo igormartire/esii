@@ -239,6 +239,7 @@ def menu(ui):
 
 
 def run_game(ui, game, board):
+
     held_piece_coord = None
     player_turn = True
     print("Player turn...")
@@ -284,8 +285,9 @@ def run_game(ui, game, board):
                             print("Player moved!")
                             if is_check_mate_for_player(game, Player.BLACK):
                                 print('WHITE player wins!')
-                                # TODO: verify why it' not being displayed before the delay
-                                ui.display_text("WHITE player wins!")
+                                ui.display_text(
+                                    "WHITE player wins! (Press ESC)",
+                                    color=(0, 255, 0))
                                 end_game = True
                             elif is_check_for_player(game, Player.BLACK):
                                 ui.display_text("BLACK player is in CHECK")
@@ -309,7 +311,8 @@ def run_game(ui, game, board):
             print("Computer moved!")
             if is_check_mate_for_player(game, Player.WHITE):
                 print('BLACK player wins!')
-                ui.display_text("BLACK player wins!", color=(255, 0, 0))
+                ui.display_text("BLACK player wins! (Press ESC)",
+                                color=(255, 0, 0))
                 end_game = True
             elif is_check_for_player(game, Player.WHITE):
                 print('WHITE player is in check!')
@@ -319,12 +322,9 @@ def run_game(ui, game, board):
                 ui.display_text("Your turn...")
             player_turn = True
 
-        ui.refresh(board, colored_board)
         if end_game:
-            game_running = False
-
-    ui.refresh(board, colored_board)
-    pygame.time.delay(1000)
+            player_turn = False
+        ui.refresh(board, colored_board)
 
 def run():
     ui = UI()

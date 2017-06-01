@@ -97,7 +97,8 @@ class UI:
             self.screen.blit(chess_piece.image, chess_piece.rect)
 
         # Foreground
-        text_rect = self.__displayed_text.get_rect(center=(SCREEN_WIDTH/2, 50))
+        text_rect = self.__displayed_text.get_rect(
+            center=(SCREEN_WIDTH / 2, 50))
         self.screen.blit(self.__displayed_text, text_rect)
 
         pygame.display.update()
@@ -226,7 +227,7 @@ def promotion_callback_factory(ui):
         text_rect.centery = top_notification_surface.get_rect().centery
         text_rect.left = 50
         top_notification_surface.blit(promotion_text, text_rect)
-        ui.screen.blit(top_notification_surface, (0,0))
+        ui.screen.blit(top_notification_surface, (0, 0))
 
         initialx = text_rect.right + 50
         y = 10
@@ -234,10 +235,10 @@ def promotion_callback_factory(ui):
         space = 11
 
         pieces_rects = [
-            (initialx+((size+11)*0), y, size, size),
-            (initialx+((size+11)*1), y, size, size),
-            (initialx+((size+11)*2), y, size, size),
-            (initialx+((size+11)*3), y, size, size)
+            (initialx + ((size + space) * 0), y, size, size),
+            (initialx + ((size + space) * 1), y, size, size),
+            (initialx + ((size + space) * 2), y, size, size),
+            (initialx + ((size + space) * 3), y, size, size)
         ]
 
         selected_piece = None
@@ -258,10 +259,12 @@ def promotion_callback_factory(ui):
                 elif event.type == pygame.MOUSEMOTION:
                     for piece in chess_pieces:
                         if piece.rect.collidepoint(pygame.mouse.get_pos()):
-                            pygame.draw.rect(top_notification_surface, green, piece.rect, 5)
+                            pygame.draw.rect(
+                                top_notification_surface, green, piece.rect, 5)
                         else:
-                            pygame.draw.rect(top_notification_surface, black, piece.rect, 5)
-                    ui.screen.blit(top_notification_surface, (0,0))
+                            pygame.draw.rect(
+                                top_notification_surface, black, piece.rect, 5)
+                    ui.screen.blit(top_notification_surface, (0, 0))
 
             for chess_piece in chess_pieces:
                 ui.screen.blit(chess_piece.image, chess_piece.rect)
@@ -292,9 +295,9 @@ def menu(ui):
             center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
         ui.screen.blit(text, text_rect)
         pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
-                (0, 0), (SCREEN_WIDTH, 0),
-                (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
-            ], 10)
+            (0, 0), (SCREEN_WIDTH, 0),
+            (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
+        ], 10)
 
         pygame.display.update()
 

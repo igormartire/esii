@@ -11,7 +11,7 @@ def test_promotion_change_to_specified_piece():
     white_pawn_coordinate_dest = white_pawn_coordinate_src.up()
     set_at(game.board, white_pawn_coordinate_src, Piece.WHITE_PAWN)
 
-    def promotion_callback():
+    def promotion_callback(board):
         return Piece.WHITE_KNIGHT
 
     move(game,

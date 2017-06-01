@@ -208,6 +208,18 @@ def can_move_piece(clicked_piece, held_piece_coord):
     return False
 
 
+def select_promotion_piece():
+    selected_piece = None
+
+    while selected_piece is None:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    selected_piece = Piece.WHITE_QUEEN
+
+    return selected_piece
+
+
 def menu(ui):
     print("menu")
     menu = True
@@ -279,7 +291,8 @@ def run_game(ui, game, board):
                         possible_destinations = destinations(
                             game, held_piece_coord)
                         if cell_coord in possible_destinations:
-                            move(game, held_piece_coord, cell_coord)
+                            move(game, held_piece_coord, cell_coord,
+                                 select_promotion_piece)
                             player_turn = False
                             print("Player moved!")
                             if is_check_mate_for_player(game, Player.BLACK):

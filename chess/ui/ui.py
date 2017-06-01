@@ -1,5 +1,6 @@
 import os
 import copy
+import time
 
 import pygame
 from pygame.locals import *
@@ -17,14 +18,16 @@ from chess.core.game import Game
 
 SCREEN_TITLE = 'Chess'
 SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 640
+SCREEN_HEIGHT = 740
 BOARD_SIZE = 640
+CELL_BORDER = 3
 IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
 
 
 class UI:
     def __init__(self):
         pygame.init()
+        self.font = pygame.font.SysFont("monospace", 50)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption(SCREEN_TITLE)
         self.sprites = {
@@ -42,16 +45,66 @@ class UI:
             "BLACK_ROOK_IMAGE": self.load_png('chess-pieces/black-rook')
         }
 
+        self.__displayed_text = self.font.render("", 1, (255, 255, 255))
+
+    def display_text(self, text, color=(255, 255, 255)):
+        self.__displayed_text = self.font.render(text, 1, color)
+
+    def erase_displayed_text(self):
+        self.__displayed_text = self.font.render("", 1, (255, 255, 255))
+
+    def animate(self, board, colored_board, move_diff):
+        dH = move_diff[1].row - move_diff[0].row
+        dL = move_diff[1].column - move_diff[0].column
+        for i in range(10):
+            t = i / 10.0
+            board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
+            chess_pieces = []
+            num_of_cells = len(board)
+            cell_size = (BOARD_SIZE / num_of_cells)
+            for row in range(num_of_cells):
+                for col in range(num_of_cells):
+                    cell_rect = (col * cell_size, row * cell_size,
+                                 cell_size - 5, cell_size - 5)
+                    if row == move_diff[1].row and col == move_diff[1].column:
+                        piece_cell_rect = (
+                            (move_diff[0].column + t * dL) * cell_size,
+                            (move_diff[0].row + t * dH) * cell_size,
+                            cell_size - 5, cell_size - 5)
+                    else:
+                        piece_cell_rect = cell_rect
+                    cell_color_rgb = colored_board[row][col].rgb
+                    board_surface.fill(cell_color_rgb, cell_rect)
+                    cell_value = board[row][col]
+                    chess_piece = self.create_chess_piece(
+                        cell_value, cell_size, piece_cell_rect)
+                    if chess_piece is not None:
+                        chess_pieces.append(chess_piece)
+
+            self.screen.blit(board_surface, board_position())
+            for chess_piece in chess_pieces:
+                self.screen.blit(chess_piece.image, chess_piece.rect)
+            pygame.display.update()
+            time.sleep(0.03)
+
     def refresh(self, chess_board, colored_board):
+        # Erase screen
+        self.screen.fill((0, 0, 0))
+
         board_surface, chess_pieces = self.setup_board(
             chess_board, colored_board)
         self.screen.blit(board_surface, board_position())
         for chess_piece in chess_pieces:
             self.screen.blit(chess_piece.image, chess_piece.rect)
+
+        # Foreground
+        text_rect = self.__displayed_text.get_rect(center=(SCREEN_WIDTH/2, 50))
+        self.screen.blit(self.__displayed_text, text_rect)
+
         pygame.display.update()
 
     def create_chess_piece(self, piece, cell_size, cell_rect):
-        if (piece == Piece.NONE):
+        if piece == Piece.NONE:
             piece_image = None
         else:
             piece_image = self.sprites[piece.name + '_IMAGE']
@@ -71,13 +124,23 @@ class UI:
         cell_size = (BOARD_SIZE / num_of_cells)
         for row in range(num_of_cells):
             for col in range(num_of_cells):
-                cell_rect = (col * cell_size, row * cell_size,
-                             cell_size - 5, cell_size - 5)
+                cell_rect = (
+                    col * cell_size,
+                    row * cell_size,
+                    cell_size - CELL_BORDER,
+                    cell_size - CELL_BORDER)
                 cell_color_rgb = color_board[row][col].rgb
                 board_surface.fill(cell_color_rgb, cell_rect)
                 cell_value = board[row][col]
+
+                piece_rect = (
+                    col * cell_size + board_position()[0],
+                    row * cell_size + board_position()[1],
+                    cell_size - CELL_BORDER,
+                    cell_size - CELL_BORDER)
+
                 chess_piece = self.create_chess_piece(
-                    cell_value, cell_size, cell_rect)
+                    cell_value, cell_size, piece_rect)
                 if chess_piece is not None:
                     chess_pieces.append(chess_piece)
 
@@ -109,14 +172,29 @@ def get_coordinates_by_position(position, board):
     cell_size = BOARD_SIZE / num_of_cells
     for row in range(num_of_cells):
         for col in range(num_of_cells):
-            cell = (col * cell_size, row * cell_size, cell_size, cell_size)
+            cell = (col * cell_size + board_position()[0],
+                    row * cell_size + board_position()[1],
+                    cell_size, cell_size)
             cell_rect = pygame.Rect(cell)
             if cell_rect.collidepoint(position):
                 return Coordinate(row, col)
 
 
+def get_rect_by_coordinates(coordinates, board):
+    num_of_cells = len(board)
+    cell_size = BOARD_SIZE / num_of_cells
+    board_x, board_y = board_position()
+    rect = pygame.Rect(board_x + coordinates.column * cell_size,
+                       board_y + coordinates.row * cell_size,
+                       BOARD_SIZE / 8, BOARD_SIZE / 8)
+
+    return rect
+
+
 def board_position():
-    return (SCREEN_WIDTH - BOARD_SIZE) / 2, (SCREEN_HEIGHT - BOARD_SIZE) / 2
+    return (
+        (SCREEN_WIDTH - BOARD_SIZE) / 2,
+        (SCREEN_HEIGHT - BOARD_SIZE) / 2 + 50)
 
 
 def is_holding_piece(piece_coord):
@@ -130,44 +208,88 @@ def can_move_piece(clicked_piece, held_piece_coord):
     return False
 
 
-def run():
-    ui = UI()
-    game = Game()
-    board = game.board
+def menu(ui):
+    print("menu")
+    menu = True
+    quit = False
+    while menu and not quit:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == \
+                    pygame.K_RETURN:
+                menu = False
+                quit = False
+            if event.type == pygame.QUIT:
+                quit = True
 
-    running = True
+        ui.screen.fill((0, 0, 0,))
+
+        font = pygame.font.SysFont("monospace", 50)
+        text = font.render("Press (ENTER) to Start", 1, (255, 255, 255))
+        text_rect = text.get_rect(
+            center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
+        ui.screen.blit(text, text_rect)
+        pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
+                (0, 0), (SCREEN_WIDTH, 0),
+                (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
+            ], 10)
+
+        pygame.display.update()
+
+    return quit
+
+
+def run_game(ui, game, board):
+
     held_piece_coord = None
     player_turn = True
     print("Player turn...")
-    while running:
-        mouse_position = pygame.mouse.get_pos()
-        cell_coord = get_coordinates_by_position(
-            mouse_position, board)
+    ui.display_text("Your turn...")
+
+    colored_board = []
+
+    game_running = True
+    end_game = False
+
+    while game_running:
         for event in pygame.event.get():
             if event.type == QUIT:
-                running = False
-            elif player_turn and event.type == pygame.MOUSEBUTTONDOWN:
-                clicked_piece = board[cell_coord.row][cell_coord.column]
-                if can_move_piece(clicked_piece, held_piece_coord):
-                    held_piece_coord = Coordinate(
-                        cell_coord.row, cell_coord.column)
-                    print("Clicked on cell: {} which contains a {}".format(
-                        held_piece_coord, clicked_piece))
-            elif player_turn and event.type == pygame.MOUSEBUTTONUP:
-                if is_holding_piece(held_piece_coord):
-                    possible_destinations = destinations(
-                        game, held_piece_coord)
-                    if cell_coord in possible_destinations:
-                        move(game, held_piece_coord, cell_coord)
-                        print("Player moved!")
-                        if is_check_mate_for_player(game, Player.BLACK):
-                            print('WHITE player wins!')
-                            running = False
-                            break
-                        elif is_check_for_player(game, Player.BLACK):
-                            print('BLACK player is in check!')
-                        player_turn = False
-                        print("Computer turn...")
+                quit = True
+                return quit
+            if event.type == pygame.KEYDOWN and event.key == \
+                    pygame.K_ESCAPE:
+                quit = False
+                return quit
+            if player_turn:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    cell_coord = get_coordinates_by_position(
+                        pygame.mouse.get_pos(), board)
+                    if cell_coord is not None:
+                        clicked_piece = \
+                            board[cell_coord.row][cell_coord.column]
+                        if can_move_piece(clicked_piece, held_piece_coord):
+                            held_piece_coord = Coordinate(
+                                cell_coord.row, cell_coord.column)
+                            print(
+                                "Clicked on cell: {} which contains a {}"
+                                .format(held_piece_coord, clicked_piece))
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    cell_coord = get_coordinates_by_position(
+                        pygame.mouse.get_pos(), board)
+                    if is_holding_piece(held_piece_coord):
+                        possible_destinations = destinations(
+                            game, held_piece_coord)
+                        if cell_coord in possible_destinations:
+                            move(game, held_piece_coord, cell_coord)
+                            player_turn = False
+                            print("Player moved!")
+                            if is_check_mate_for_player(game, Player.BLACK):
+                                print('WHITE player wins!')
+                                ui.display_text(
+                                    "WHITE player wins! (Press ESC)",
+                                    color=(0, 255, 0))
+                                end_game = True
+                            elif is_check_for_player(game, Player.BLACK):
+                                ui.display_text("BLACK player is in CHECK")
                     else:
                         print("You cannot do that!")
                         print("Player turn still...")
@@ -175,30 +297,46 @@ def run():
 
         possible_destinations = []
         if player_turn and is_holding_piece(held_piece_coord):
-            piece = board[held_piece_coord.row][held_piece_coord.column]
             possible_destinations = destinations(game, held_piece_coord)
-
         colored_board = color_board(board, possible_destinations)
 
-        ui.refresh(board, colored_board)
-
-        if not running:
-            break
-
-        if not player_turn:
+        if not end_game and not player_turn:
+            print("Computer turn")
+            ui.display_text("Computer turn...")
             movement = greedy_move(game)
             move(game, movement[0], movement[1])
             print("Computer moved!")
             if is_check_mate_for_player(game, Player.WHITE):
                 print('BLACK player wins!')
-                running = False
-                break
+                ui.display_text("BLACK player wins! (Press ESC)",
+                                color=(255, 0, 0))
+                end_game = True
             elif is_check_for_player(game, Player.WHITE):
-                print('BLACK player is in check!')
+                print('WHITE player is in check!')
+                ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
+            else:
+                print("Player turn")
+                ui.display_text("Your turn...")
             player_turn = True
-            print("Player turn...")
 
+        if end_game:
+            player_turn = False
         ui.refresh(board, colored_board)
 
-    input("Press a key to exit.")
+
+def run():
+    ui = UI()
+    running = True
+    while running:
+        quit = menu(ui)
+        if not quit:
+            game = Game()
+            board = game.board
+            quit = run_game(ui, game, board)
+            if quit:
+                break
+            ui.refresh(board, color_board(board, []))
+        else:
+            break
+
     pygame.quit()

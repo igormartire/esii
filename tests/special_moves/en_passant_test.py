@@ -18,7 +18,7 @@ def test_en_passant_right_after_double_step():
 
     move(game, black_pawn_coordinate_src, black_pawn_coordinate_dest)
 
-    assert(white_pawn_coordinate_dest in 
+    assert(white_pawn_coordinate_dest in
            destinations(game, white_pawn_coordinate_src))
 
     move(game, white_pawn_coordinate_src, white_pawn_coordinate_dest)
@@ -28,6 +28,7 @@ def test_en_passant_right_after_double_step():
 
     assert(piece_at(game.board, white_pawn_coordinate_dest.down()) ==
            Piece.NONE)
+
 
 def test_no_en_passant_if_single_step():
     game = Game()
@@ -43,8 +44,9 @@ def test_no_en_passant_if_single_step():
 
     move(game, black_pawn_coordinate_src, black_pawn_coordinate_dest)
 
-    assert(white_pawn_coordinate_dest not in 
+    assert(white_pawn_coordinate_dest not in
            destinations(game, white_pawn_coordinate_src))
+
 
 def test_no_en_passant_after_a_turn():
     game = Game()
@@ -59,12 +61,11 @@ def test_no_en_passant_after_a_turn():
 
     move(game, black_pawn_coordinate_src, black_pawn_coordinate_dest)
 
-    assert(white_pawn_coordinate_dest in 
+    assert(white_pawn_coordinate_dest in
            destinations(game, white_pawn_coordinate_src))
 
-    move(game, Coordinate(7,1), Coordinate(5, 2)) # white knight move
-    move(game, Coordinate(0,1), Coordinate(2, 2)) # black knight move
+    move(game, Coordinate(7, 1), Coordinate(5, 2))  # white knight move
+    move(game, Coordinate(0, 1), Coordinate(2, 2))  # black knight move
 
     assert(white_pawn_coordinate_dest not in
            destinations(game, white_pawn_coordinate_src))
-    

@@ -225,6 +225,16 @@ def promotion_callback_factory(ui):
             ui.create_chess_piece(Piece.WHITE_ROOK, 80, (520, 740, 80, 80)),
         ]
 
+        print('WHITE player Promotion!')
+        promotion_text = ui.font.render("Select a Promoted Piece",
+                                        1, (0, 255, 0))
+        text_rect = promotion_text.get_rect(
+                center=(SCREEN_WIDTH / 2, 50))
+        pygame.draw.rect(ui.screen, (0, 0, 0),
+                         pygame.Rect(0, 0, SCREEN_WIDTH, 50))
+        ui.erase_displayed_text()
+
+        ui.screen.blit(promotion_text, text_rect)
         while selected_piece is None:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -247,8 +257,8 @@ def menu(ui):
     quit = False
     while menu and not quit:
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == \
-                    pygame.K_RETURN:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN \
+                    or event.type == pygame.MOUSEBUTTONDOWN:
                 menu = False
                 quit = False
             if event.type == pygame.QUIT:

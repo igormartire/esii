@@ -215,14 +215,18 @@ def promotion_callback_factory(ui):
     def promotion_callback(board):
         ui.refresh(board, color_board(board, []))
 
-        top_notification_surface = pygame.Surface((BOARD_SIZE, 100)).convert()
-        top_notification_surface.fill(pygame.color.Color('Black'),
-                                      (0, 0, BOARD_SIZE, 100))
+        black = pygame.color.Color('Black')
         green = pygame.color.Color('Green')
+        red = pygame.color.Color('Red')
+
+        top_notification_surface = pygame.Surface((BOARD_SIZE, 100)).convert()
+        top_notification_surface.fill(black, (0, 0, BOARD_SIZE, 100))
         promotion_text = ui.font.render("Promote: ", 1, green)
         text_rect = promotion_text.get_rect()
         text_rect.centery = top_notification_surface.get_rect().centery
         text_rect.left = 50
+        top_notification_surface.blit(promotion_text, text_rect)
+        ui.screen.blit(top_notification_surface, (0,0))
 
         initialx = text_rect.right + 50
         y = 10
@@ -236,24 +240,13 @@ def promotion_callback_factory(ui):
             (initialx+((size+11)*3), y, size, size)
         ]
 
-        bot_notification_surface = pygame.Surface((BOARD_SIZE, 100)).convert()
-        bot_notification_surface.fill(pygame.color.Color('Yellow'))
-        red = pygame.color.Color('Red')
-        pygame.draw.rect(top_notification_surface, red, pieces_rects[0], 5)
-        pygame.draw.rect(top_notification_surface, red, pieces_rects[1], 5)
-        pygame.draw.rect(top_notification_surface, red, pieces_rects[2], 5)
-        pygame.draw.rect(top_notification_surface, red, pieces_rects[3], 5)
-
-        ui.screen.blit(top_notification_surface, (0,0))
-        ui.screen.blit(promotion_text, text_rect)
-
         selected_piece = None
 
         chess_pieces = [
-            ui.create_chess_piece(Piece.WHITE_BISHOP, 80, pieces_rects[0]),
-            ui.create_chess_piece(Piece.WHITE_KNIGHT, 80, pieces_rects[1]),
-            ui.create_chess_piece(Piece.WHITE_QUEEN, 80, pieces_rects[2]),
-            ui.create_chess_piece(Piece.WHITE_ROOK, 80, pieces_rects[3]),
+            ui.create_chess_piece(Piece.WHITE_QUEEN, size, pieces_rects[0]),
+            ui.create_chess_piece(Piece.WHITE_ROOK, size, pieces_rects[1]),
+            ui.create_chess_piece(Piece.WHITE_KNIGHT, size, pieces_rects[2]),
+            ui.create_chess_piece(Piece.WHITE_BISHOP, size, pieces_rects[3])
         ]
 
         while selected_piece is None:
@@ -262,6 +255,13 @@ def promotion_callback_factory(ui):
                     for piece in chess_pieces:
                         if piece.was_clicked(pygame.mouse.get_pos()):
                             return piece.symbol
+                elif event.type == pygame.MOUSEMOTION:
+                    for piece in chess_pieces:
+                        if piece.rect.collidepoint(pygame.mouse.get_pos()):
+                            pygame.draw.rect(top_notification_surface, green, piece.rect, 5)
+                        else:
+                            pygame.draw.rect(top_notification_surface, black, piece.rect, 5)
+                    ui.screen.blit(top_notification_surface, (0,0))
 
             for chess_piece in chess_pieces:
                 ui.screen.blit(chess_piece.image, chess_piece.rect)

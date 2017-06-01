@@ -1,10 +1,12 @@
 import os
 import copy
 import time
+from functools import partial
 
 import pygame
 from pygame.locals import *
 
+import chess.core.utils
 from chess.core.models import Coordinate, Color, Piece, Player
 from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
 from chess.core.possible_destinations import (destinations,
@@ -113,7 +115,7 @@ class UI:
         if piece_image is not None:
             chess_piece_image = pygame.transform.scale(
                 piece_image, (int(cell_size), int(cell_size)))
-            chess_piece = ChessPiece(chess_piece_image, cell_rect)
+            chess_piece = ChessPiece(chess_piece_image, cell_rect, piece)
 
         return chess_piece
 
@@ -158,13 +160,17 @@ class UI:
 
 
 class ChessPiece(pygame.sprite.Sprite):
-    def __init__(self, image_surface, rect):
+    def __init__(self, image_surface, rect, symbol=''):
         pygame.sprite.Sprite.__init__(self)
         self.image = image_surface
         self.rect = pygame.Rect(rect)
+        self.symbol = symbol
 
     def was_clicked(self, click_position):
         return self.rect.collidepoint(click_position)
+
+    def __str__(self):
+        return self.symbol.value
 
 
 def get_coordinates_by_position(position, board):
@@ -208,16 +214,31 @@ def can_move_piece(clicked_piece, held_piece_coord):
     return False
 
 
-def select_promotion_piece():
-    selected_piece = None
+def promotion_callback_factory(ui):
+    def promotion_callback():
+        selected_piece = None
 
-    while selected_piece is None:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    selected_piece = Piece.WHITE_QUEEN
+        chess_pieces = [
+            ui.create_chess_piece(Piece.WHITE_BISHOP, 80, (40, 740, 80, 80)),
+            ui.create_chess_piece(Piece.WHITE_KNIGHT, 80, (200, 740, 80, 80)),
+            ui.create_chess_piece(Piece.WHITE_QUEEN, 80, (360, 740, 80, 80)),
+            ui.create_chess_piece(Piece.WHITE_ROOK, 80, (520, 740, 80, 80)),
+        ]
 
-    return selected_piece
+        while selected_piece is None:
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    for piece in chess_pieces:
+                        if piece.was_clicked(pygame.mouse.get_pos()):
+                            print(piece)
+
+            for chess_piece in chess_pieces:
+                ui.screen.blit(chess_piece.image, chess_piece.rect)
+
+            pygame.display.update()
+
+        return selected_piece
+    return promotion_callback
 
 
 def menu(ui):
@@ -292,7 +313,7 @@ def run_game(ui, game, board):
                             game, held_piece_coord)
                         if cell_coord in possible_destinations:
                             move(game, held_piece_coord, cell_coord,
-                                 select_promotion_piece)
+                                 promotion_callback_factory(ui))
                             player_turn = False
                             print("Player moved!")
                             if is_check_mate_for_player(game, Player.BLACK):

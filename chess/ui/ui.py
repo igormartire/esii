@@ -170,7 +170,7 @@ class ChessPiece(pygame.sprite.Sprite):
         return self.rect.collidepoint(click_position)
 
     def __str__(self):
-        return self.symbol.value
+        return self.symbol
 
 
 def get_coordinates_by_position(position, board):
@@ -230,7 +230,7 @@ def promotion_callback_factory(ui):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     for piece in chess_pieces:
                         if piece.was_clicked(pygame.mouse.get_pos()):
-                            print(piece)
+                            return piece.symbol
 
             for chess_piece in chess_pieces:
                 ui.screen.blit(chess_piece.image, chess_piece.rect)

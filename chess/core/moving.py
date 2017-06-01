@@ -2,7 +2,7 @@ from chess.core.models import Piece, Coordinate
 import copy
 
 
-def move(game, src, dest):
+def move(game, src, dest, promotion_callback=None):
     board = game.board
     piece = board[src.row][src.column]
 
@@ -10,6 +10,25 @@ def move(game, src, dest):
 
     board[src.row][src.column] = Piece.NONE
     board[dest.row][dest.column] = piece
+
+    promotion(game, dest, promotion_callback)
+
+
+def promotion(game, dest, promotion_callback):
+    board = game.board
+    piece = board[dest.row][dest.column]
+
+    promoted_piece = None
+    if piece == Piece.WHITE_PAWN and dest.row == 0:
+        if promotion_callback is None:
+            promoted_piece = Piece.WHITE_QUEEN
+        else:
+            promoted_piece = promotion_callback()
+    elif piece == Piece.BLACK_PAWN and dest.row == 7:
+        promoted_piece = Piece.BLACK_QUEEN
+
+    if promoted_piece is not None:
+        board[dest.row][dest.column] = promoted_piece
 
 
 def castling(game, src, dest):

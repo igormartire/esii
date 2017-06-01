@@ -20,7 +20,7 @@ from chess.core.game import Game
 
 SCREEN_TITLE = 'Chess'
 SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 840
+SCREEN_HEIGHT = 740
 BOARD_SIZE = 640
 CELL_BORDER = 3
 IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
@@ -197,7 +197,7 @@ def get_rect_by_coordinates(coordinates, board):
 def board_position():
     return (
         (SCREEN_WIDTH - BOARD_SIZE) / 2,
-        (SCREEN_HEIGHT - BOARD_SIZE) / 2)
+        (SCREEN_HEIGHT - BOARD_SIZE) / 2 + 50)
 
 
 def is_holding_piece(piece_coord):

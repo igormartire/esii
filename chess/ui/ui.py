@@ -68,9 +68,9 @@ class UI:
                                  cell_size - 5, cell_size - 5)
                     if row == move_diff[1].row and col == move_diff[1].column:
                         piece_cell_rect = (
-                        (move_diff[0].column + t * dL) * cell_size,
-                        (move_diff[0].row + t * dH) * cell_size,
-                        cell_size - 5, cell_size - 5)
+                            (move_diff[0].column + t * dL) * cell_size,
+                            (move_diff[0].row + t * dH) * cell_size,
+                            cell_size - 5, cell_size - 5)
                     else:
                         piece_cell_rect = cell_rect
                     cell_color_rgb = colored_board[row][col].rgb
@@ -264,7 +264,8 @@ def run_game(ui, game, board):
                     cell_coord = get_coordinates_by_position(
                         pygame.mouse.get_pos(), board)
                     if cell_coord is not None:
-                        clicked_piece = board[cell_coord.row][cell_coord.column]
+                        clicked_piece = \
+                            board[cell_coord.row][cell_coord.column]
                         if can_move_piece(clicked_piece, held_piece_coord):
                             held_piece_coord = Coordinate(
                                 cell_coord.row, cell_coord.column)
@@ -280,8 +281,6 @@ def run_game(ui, game, board):
                         if cell_coord in possible_destinations:
                             move(game, held_piece_coord, cell_coord)
                             player_turn = False
-                            #move_diff = (held_piece_coord, cell_coord)
-                            #ui.animate(board, color_board(board, []), move_diff)
                             print("Player moved!")
                             if is_check_mate_for_player(game, Player.BLACK):
                                 print('WHITE player wins!')
@@ -306,8 +305,6 @@ def run_game(ui, game, board):
             ui.display_text("Computer turn...")
             movement = greedy_move(game)
             move(game, movement[0], movement[1])
-            #move_diff = (movement[0], movement[1])
-            #ui.animate(board, colored_board, move_diff)
             print("Computer moved!")
             if is_check_mate_for_player(game, Player.WHITE):
                 print('BLACK player wins!')
@@ -325,6 +322,7 @@ def run_game(ui, game, board):
         if end_game:
             player_turn = False
         ui.refresh(board, colored_board)
+
 
 def run():
     ui = UI()

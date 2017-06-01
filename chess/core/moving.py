@@ -48,7 +48,7 @@ def promotion(game, dest, promotion_callback):
         if promotion_callback is None:
             promoted_piece = Piece.WHITE_QUEEN
         else:
-            promoted_piece = promotion_callback()
+            promoted_piece = promotion_callback(board)
     elif piece == Piece.BLACK_PAWN and dest.row == 7:
         promoted_piece = Piece.BLACK_QUEEN
 

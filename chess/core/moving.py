@@ -12,6 +12,31 @@ def move(game, src, dest, promotion_callback=None):
     board[dest.row][dest.column] = piece
 
     promotion(game, dest, promotion_callback)
+    en_passant(game, src, dest)
+
+
+def en_passant(game, src, dest):
+    board = game.board
+    piece = board[dest.row][dest.column]
+
+    # handle previous en passant
+    if game.state.en_passant_destination is not None:
+        if dest == game.state.en_passant_destination:
+            if piece == Piece.WHITE_PAWN:
+                board[dest.row + 1][dest.column] = Piece.NONE
+            else:  # black pawn did the en passant
+                board[dest.row - 1][dest.column] = Piece.NONE
+
+        # the en passant opportunity is now over
+        game.state.en_passant_destination = None
+
+    # verify if new en passant
+    if piece == Piece.WHITE_PAWN:
+        if abs(src.row - dest.row) == 2:  # double step
+            game.state.en_passant_destination = dest.down()
+    elif piece == Piece.BLACK_PAWN:
+        if abs(src.row - dest.row) == 2:  # double step
+            game.state.en_passant_destination = dest.up()
 
 
 def promotion(game, dest, promotion_callback):

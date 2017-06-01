@@ -89,10 +89,14 @@ def destinations(game, src, offensive_only=False):
                 if board[up_middle.row][up_middle.column] == Piece.NONE:
                     allowed_destinations.append(up_middle)
             if up_left.inside_board():
-                if board[up_left.row][up_left.column] != Piece.NONE:
+                if ((board[up_left.row][up_left.column] != Piece.NONE) or
+                    (game.state.en_passant_destination is not None and
+                     up_left == game.state.en_passant_destination)):
                     allowed_destinations.append(up_left)
             if up_right.inside_board():
-                if board[up_right.row][up_right.column] != Piece.NONE:
+                if (board[up_right.row][up_right.column] != Piece.NONE or
+                    (game.state.en_passant_destination is not None and
+                     up_right == game.state.en_passant_destination)):
                     allowed_destinations.append(up_right)
             # double step
             if (src.row == 6):
@@ -113,10 +117,14 @@ def destinations(game, src, offensive_only=False):
                 if board[down_middle.row][down_middle.column] == Piece.NONE:
                     allowed_destinations.append(down_middle)
             if down_left.inside_board():
-                if board[down_left.row][down_left.column] != Piece.NONE:
+                if (board[down_left.row][down_left.column] != Piece.NONE or
+                    (game.state.en_passant_destination is not None and
+                     down_left == game.state.en_passant_destination)):
                     allowed_destinations.append(down_left)
             if down_right.inside_board():
-                if board[down_right.row][down_right.column] != Piece.NONE:
+                if (board[down_right.row][down_right.column] != Piece.NONE or
+                    (game.state.en_passant_destination is not None and
+                     down_right == game.state.en_passant_destination)):
                     allowed_destinations.append(down_right)
             # double step
             if (src.row == 1):

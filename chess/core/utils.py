@@ -65,4 +65,6 @@ def set_at(board, coordinate, value):
 
 def print_board(board):
     for row in board:
-        print(row)
+        for piece in row:
+            print(piece.value, end='')
+        print()

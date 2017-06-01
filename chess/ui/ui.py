@@ -52,9 +52,6 @@ class UI:
     def display_text(self, text, color=(255, 255, 255)):
         self.__displayed_text = self.font.render(text, 1, color)
 
-    def erase_displayed_text(self):
-        self.__displayed_text = self.font.render("", 1, (255, 255, 255))
-
     def animate(self, board, colored_board, move_diff):
         dH = move_diff[1].row - move_diff[0].row
         dL = move_diff[1].column - move_diff[0].column
@@ -215,26 +212,50 @@ def can_move_piece(clicked_piece, held_piece_coord):
 
 
 def promotion_callback_factory(ui):
-    def promotion_callback():
+    def promotion_callback(board):
+        ui.refresh(board, color_board(board, []))
+
+        top_notification_surface = pygame.Surface((BOARD_SIZE, 100)).convert()
+        top_notification_surface.fill(pygame.color.Color('Black'),
+                                      (0, 0, BOARD_SIZE, 100))
+        green = pygame.color.Color('Green')
+        promotion_text = ui.font.render("Promote: ", 1, green)
+        text_rect = promotion_text.get_rect()
+        text_rect.centery = top_notification_surface.get_rect().centery
+        text_rect.left = 50
+
+        initialx = text_rect.right + 50
+        y = 10
+        size = 80
+        space = 11
+
+        pieces_rects = [
+            (initialx+((size+11)*0), y, size, size),
+            (initialx+((size+11)*1), y, size, size),
+            (initialx+((size+11)*2), y, size, size),
+            (initialx+((size+11)*3), y, size, size)
+        ]
+
+        bot_notification_surface = pygame.Surface((BOARD_SIZE, 100)).convert()
+        bot_notification_surface.fill(pygame.color.Color('Yellow'))
+        red = pygame.color.Color('Red')
+        pygame.draw.rect(top_notification_surface, red, pieces_rects[0], 5)
+        pygame.draw.rect(top_notification_surface, red, pieces_rects[1], 5)
+        pygame.draw.rect(top_notification_surface, red, pieces_rects[2], 5)
+        pygame.draw.rect(top_notification_surface, red, pieces_rects[3], 5)
+
+        ui.screen.blit(top_notification_surface, (0,0))
+        ui.screen.blit(promotion_text, text_rect)
+
         selected_piece = None
 
         chess_pieces = [
-            ui.create_chess_piece(Piece.WHITE_BISHOP, 80, (40, 740, 80, 80)),
-            ui.create_chess_piece(Piece.WHITE_KNIGHT, 80, (200, 740, 80, 80)),
-            ui.create_chess_piece(Piece.WHITE_QUEEN, 80, (360, 740, 80, 80)),
-            ui.create_chess_piece(Piece.WHITE_ROOK, 80, (520, 740, 80, 80)),
+            ui.create_chess_piece(Piece.WHITE_BISHOP, 80, pieces_rects[0]),
+            ui.create_chess_piece(Piece.WHITE_KNIGHT, 80, pieces_rects[1]),
+            ui.create_chess_piece(Piece.WHITE_QUEEN, 80, pieces_rects[2]),
+            ui.create_chess_piece(Piece.WHITE_ROOK, 80, pieces_rects[3]),
         ]
 
-        print('WHITE player Promotion!')
-        promotion_text = ui.font.render("Select a Promoted Piece",
-                                        1, (0, 255, 0))
-        text_rect = promotion_text.get_rect(
-                center=(SCREEN_WIDTH / 2, 50))
-        pygame.draw.rect(ui.screen, (0, 0, 0),
-                         pygame.Rect(0, 0, SCREEN_WIDTH, 50))
-        ui.erase_displayed_text()
-
-        ui.screen.blit(promotion_text, text_rect)
         while selected_piece is None:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -266,8 +287,7 @@ def menu(ui):
 
         ui.screen.fill((0, 0, 0,))
 
-        font = pygame.font.SysFont("monospace", 50)
-        text = font.render("Press (ENTER) to Start", 1, (255, 255, 255))
+        text = ui.font.render("Press (ENTER) to Start", 1, Color.WHITE.rgb)
         text_rect = text.get_rect(
             center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
         ui.screen.blit(text, text_rect)

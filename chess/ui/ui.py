@@ -14,7 +14,7 @@ from chess.core.moving import move
 from chess.ai.score import score_board
 from chess.ai.minimax import Minimax
 from chess.core.game import Game
-from chess.core.state import State
+from chess.ai.state import State
 
 SCREEN_TITLE = 'Chess'
 SCREEN_WIDTH = 640
@@ -135,9 +135,9 @@ def run():
     ui = UI()
     game = Game()
     board = game.board
-    eval = 0
-    state = State(board, game, eval)
-    cpu = Minimax(state, state.game)
+    value = 0
+    state = State(game, value)
+    cpu = Minimax(state)
     running = True
     held_piece_coord = None
     player_turn = True
@@ -190,7 +190,7 @@ def run():
 
         if not player_turn:
             movement = cpu.cpu_move()
-            move(game, movement[0], movement[1])
+            move(game, movement[1], movement[2])
             print("Computer moved!")
             if is_check_mate_for_player(game, Player.WHITE):
                 print('BLACK player wins!')

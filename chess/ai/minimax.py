@@ -21,9 +21,6 @@ class Minimax:
 
     # Realiza a jogada do PC, devolvendo um array [pos_x, pos_y] com as posições da jogada
     def cpu_move(self):
-        """
-            Interessa apenas a jogada e não o seu valor, por isso retorna apenas max_value()[1]
-        """
         return self.max_value(self.state, float('-inf'), float('inf'), 4)
 
     # Minimiza a jogada do oponente	(peça branca)
@@ -38,23 +35,8 @@ class Minimax:
         
         v = [float("inf"), None, None]
         v_list = []
-        
-        destinations_list = []
-        d = (None, None)
-        
-        for row in range(8):
-            for column in range(8):
-                piece = state.game.board[row][column]
 
-                if piece in WHITE_PIECES:
-
-                    src = Coordinate(row, column)
-                    
-                    for movs in destinations(state.game, src, False):
-                        destinations_list.append((src, movs))
-
-
-        for movement in destinations_list:
+        for movement in self.valid_movements(self.state, WHITE_PIECES):
             source = movement[0]
             
             minstate = deepcopy(state)
@@ -76,7 +58,8 @@ class Minimax:
             v[2] = movement[1]
 
             v_list.append(v)
-            
+            print("Min")
+            print(min(v_list, key=lambda v: v[0]))
             if v[0] <= alfa:
                 return min(v_list, key=lambda v: v[0])
             
@@ -98,20 +81,7 @@ class Minimax:
         v = [float("-inf"), None, None]
         v_list = []
         
-        destinations_list = []
-        d = (None, None)
-        
-        for row in range(8):
-            for column in range(8):
-                piece = state.game.board[row][column]
-                if piece in BLACK_PIECES:
-                    
-                    src = Coordinate(row, column)
-
-                    for movs in destinations(state.game, src, False):
-                        destinations_list.append((src, movs))
-
-        for movement in destinations_list:
+        for movement in self.valid_movements(self.state, BLACK_PIECES):
             source = movement[0]
             maxstate = deepcopy(state)
             # faz a jogada
@@ -132,7 +102,8 @@ class Minimax:
             v[2] = movement[1]
 
             v_list.append(v)
-            print(v_list)
+            print("Max")
+            print(max(v_list, key=lambda v: v[0]))
             if v[0] >= beta:
                 return max(v_list, key=lambda v: v[0])
             
@@ -149,3 +120,19 @@ class Minimax:
 
     	return 0
 
+    def valid_movements(self, state, piece_type):
+        destinations_list = []
+        
+        for row in range(8):
+            for column in range(8):
+                piece = state.game.board[row][column]
+                if piece in piece_type:
+                    
+                    src = Coordinate(row, column)
+
+                    for dest in destinations(state.game, src):
+                    	
+                        destinations_list.append((src, dest))
+                        
+
+        return destinations_list

@@ -17,8 +17,7 @@ def move(game, src, dest, promotion_callback=None, draw_allowed_callback=None):
     board[src.row][src.column] = Piece.NONE
     board[dest.row][dest.column] = piece
 
-    if (promotion_callback is not None):
-        promotion(game, dest, promotion_callback)
+    promotion(game, dest, promotion_callback)
     en_passant(game, src, dest)
 
 

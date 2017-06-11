@@ -30,14 +30,14 @@ WHITE_PIECES = [Piece.WHITE_PAWN,
 
 
 def initial_board():
-    return [[_, _, _, _, _, _, _, _],
-            [_, _, _, k, _, _, _, _],
+    return [[r, n, b, q, k, b, n, r],
+            [p, p, p, p, p, p, p, p],
             [_, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _],
             [_, _, _, _, _, _, _, _],
-            [_, _, _, _, K, Q, Q, _],
-            [_, _, _, _, _, _, _, _]]
+            [P, P, P, P, P, P, P, P],
+            [R, N, B, Q, K, B, N, R]]
 
 
 def empty_board():

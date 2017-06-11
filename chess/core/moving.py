@@ -1,5 +1,6 @@
 from chess.core.models import Piece, Coordinate, Color
-from chess.core.utils import remaining_pieces, piece_at, WHITE_PIECES, BLACK_PIECES
+from chess.core.utils import (remaining_pieces, piece_at,
+                              WHITE_PIECES, BLACK_PIECES)
 import copy
 
 
@@ -9,14 +10,14 @@ def move(game, src, dest, promotion_callback=None, draw_allowed_callback=None):
 
     castling(game, src, dest)
 
-    if (draw_allowed_callback != None):
+    if (draw_allowed_callback is not None):
         threefold_repetition(game, src, dest, draw_allowed_callback)
         fifty_move_rule(game, src, dest, draw_allowed_callback)
 
     board[src.row][src.column] = Piece.NONE
     board[dest.row][dest.column] = piece
 
-    if (promotion_callback != None):
+    if (promotion_callback is not None):
         promotion(game, dest, promotion_callback)
     en_passant(game, src, dest)
 
@@ -29,7 +30,7 @@ def threefold_repetition(game, src, dest, draw_allowed_callback):
         # it is impossible to repeat a board after a capture
         game.clear_threefold_history()
     else:
-        repetition_count = 1 # this current state
+        repetition_count = 1  # this current state
         history = game.get_threefold_history()
         for previous_state in history:
             if game.is_identical_to(previous_state):
@@ -41,12 +42,12 @@ def threefold_repetition(game, src, dest, draw_allowed_callback):
 
 def fifty_move_rule(game, src, dest, draw_allowed_callback):
     piece = piece_at(game.board, src)
-    if (piece not in [Piece.WHITE_PAWN, Piece.BLACK_PAWN]
-        and piece_at(game.board, dest) == Piece.NONE):
+    if (piece not in [Piece.WHITE_PAWN, Piece.BLACK_PAWN] and
+            piece_at(game.board, dest) == Piece.NONE):
         piece_color = Color.WHITE if piece in WHITE_PIECES else Color.BLACK
         game.fift_move_rule_count[piece_color] += 1
-        if (game.fift_move_rule_count[Color.WHITE] >= 50
-            and game.fift_move_rule_count[Color.BLACK] >= 50):
+        if (game.fift_move_rule_count[Color.WHITE] >= 50 and
+                game.fift_move_rule_count[Color.BLACK] >= 50):
             draw_allowed_callback()
     else:
         game.fift_move_rule_count[piece_color] = 0

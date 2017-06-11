@@ -84,24 +84,23 @@ def impossible_check_mate(game):
     if len(remaining_white_pieces) == 1 and len(remaining_black_pieces) == 1:
         king_versus_king = True
     elif (len(remaining_white_pieces) == 1 and
-             set(remaining_black_pieces) == set([Piece.BLACK_KING,
-                                                 Piece.BLACK_BISHOP])):
+          set(remaining_black_pieces) == set([Piece.BLACK_KING,
+                                              Piece.BLACK_BISHOP])):
         king_and_bishop_versus_king = True
     elif (len(remaining_black_pieces) == 1 and
-             set(remaining_white_pieces) == set([Piece.WHITE_KING,
-                                                 Piece.WHITE_BISHOP])):
+          set(remaining_white_pieces) == set([Piece.WHITE_KING,
+                                              Piece.WHITE_BISHOP])):
         king_and_bishop_versus_king = True
     elif (len(remaining_white_pieces) == 1 and
-             set(remaining_black_pieces) == set([Piece.BLACK_KING,
-                                                 Piece.BLACK_KNIGHT])):
+          set(remaining_black_pieces) == set([Piece.BLACK_KING,
+                                              Piece.BLACK_KNIGHT])):
         king_and_knight_versus_king = True
     elif (len(remaining_black_pieces) == 1 and
-             set(remaining_white_pieces) == set([Piece.WHITE_KING,
-                                                 Piece.WHITE_KNIGHT])):
+          set(remaining_white_pieces) == set([Piece.WHITE_KING,
+                                              Piece.WHITE_KNIGHT])):
         king_and_knight_versus_king = True
     elif (set(remaining_white_pieces) == set([Piece.WHITE_KING,
-                                              Piece.WHITE_BISHOP])
-          and
+                                              Piece.WHITE_BISHOP]) and
           set(remaining_black_pieces) == set([Piece.BLACK_KING,
                                               Piece.BLACK_BISHOP])):
         white_bishop_pos = get_piece_coordinate(game.board, Piece.WHITE_BISHOP)
@@ -125,8 +124,8 @@ def is_attacked(game, pos, attacked_player):
         for column in range(8):
             coord = Coordinate(row, column)
             piece = piece_at(game.board, coord)
-            if (piece in attacker_pieces
-                and pos in destinations(game, coord, offensive_only=True)):
+            if (piece in attacker_pieces and
+                    pos in destinations(game, coord, offensive_only=True)):
                 return True
 
 

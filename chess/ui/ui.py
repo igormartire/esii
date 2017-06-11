@@ -358,12 +358,18 @@ def run_game(ui, game, board):
                                     color=(0, 255, 0))
                                 end_game = True
                             elif is_check_for_player(game, Player.BLACK):
-                                ui.display_text("BLACK player is in CHECK", color=(0, 255, 0))
+                                ui.display_text(
+                                    "BLACK player is in CHECK",
+                                    color=(0, 255, 0))
                             elif is_stalemate_for_player(game, Player.BLACK):
-                                ui.display_text("Draw by Stalemate!", color=(255, 0, 0))
+                                ui.display_text(
+                                    "Draw by Stalemate!",
+                                    color=(255, 0, 0))
                                 end_game = True
                             elif impossible_check_mate(game):
-                                ui.display_text("Draw by Impossibility!", color=(255, 0, 0))
+                                ui.display_text(
+                                    "Draw by Impossibility!",
+                                    color=(255, 0, 0))
                                 end_game = True
                     else:
                         print("You cannot do that!")

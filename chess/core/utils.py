@@ -71,7 +71,7 @@ def print_board(board):
 
 
 def remaining_pieces(board, color=None):
-    if color == None:
+    if color is None:
         color_pieces = WHITE_PIECES + BLACK_PIECES
     elif color == Color.WHITE:
         color_pieces = WHITE_PIECES

@@ -28,7 +28,7 @@ class Minimax:
             depth = 3
         elif self.difficulty == "very hard":
             depth = 4
-        print(depth)
+        
         return depth
 
     # Realiza a jogada do PC, devolvendo um array [pos_x, pos_y] com as posições da jogada

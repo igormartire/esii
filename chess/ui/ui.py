@@ -137,7 +137,8 @@ def run():
     board = game.board
     value = 0
     state = State(game, value)
-    cpu = Minimax(state)
+    difficulty = "medium"
+    cpu = Minimax(state, difficulty)
     running = True
     held_piece_coord = None
     player_turn = True

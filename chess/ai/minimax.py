@@ -14,24 +14,40 @@ from chess.core.possible_destinations import (destinations,
 from copy import deepcopy
 
 class Minimax:
-    def __init__(self, state, depth):
+    def __init__(self, state, difficulty):
         self.state = state
-        self.depth = depth
+        self.difficulty = difficulty
+
+    def difficulty_check(self, difficulty):
+        depth = 0
+        if self.difficulty == "easy":
+            depth = 1
+        elif self.difficulty == "medium":
+            depth = 2
+        elif self.difficulty == "hard":
+            depth = 3
+        elif self.difficulty == "very hard":
+            depth = 4
+        print(depth)
+        return depth
 
     # Realiza a jogada do PC, devolvendo um array [pos_x, pos_y] com as posições da jogada
     def cpu_move(self):
-        return self.max_value(self.state, float('-inf'), float('inf'), self.depth)
+        return self.max_value(self.state, float('-inf'), float('inf'), self.difficulty_check(self.difficulty))
 
     # Minimiza a jogada do oponente	(peça branca)
     def min_value(self, state, alfa, beta, depth):
         # o algoritmo para quando chega na profundidade especificada e retorna o valor da ultima jogada e para a recursão
-        if depth == 0:
+        if self.cutoff_test(depth):
         	return [state.value, None, None]
+
+        if is_check_mate_for_player(self.state.game, Player.BLACK):
+            return [-self.VICTORY, None]
 
         v_list = []
 
         for movement in self.valid_movements(state, WHITE_PIECES):
-            v = [None, None, None]
+            v = [float("inf"), None, None]
             source = movement[0]
             
             minstate = deepcopy(state)
@@ -55,25 +71,28 @@ class Minimax:
             v[2] = movement[1]
 
             v_list.append(v)
-
-            if v[0] <= alfa and v_list != None:
+            
+            if v[0] <= alfa:
                 return min(v_list, key=lambda v: v[0])
             
             beta = min(v[0], beta)
-
+            
         return min(v_list, key=lambda v: v[0])
 
     # Maximiza a jogada do PC (peça preta)
     def max_value(self, state, alfa, beta, depth):
         # o algoritmo para quando chega na profundidade especificada e retorna o valor da ultima jogada e para a recursão
-        if depth == 0:
+        if self.cutoff_test(depth):
         	return [state.value, None, None]
-        
+
+        if is_check_mate_for_player(self.state.game, Player.BLACK):
+            return [-self.VICTORY, None]
+
         v_list = []
         
         vm = self.valid_movements(state, BLACK_PIECES)
         for movement in vm:
-            v = [None, None, None]
+            v = [float("-inf"), None, None]
             source = movement[0]
             maxstate = deepcopy(state)
             # faz a jogada
@@ -94,12 +113,12 @@ class Minimax:
             v[2] = movement[1]
 
             v_list.append(v)
-
-            if v[0] >= beta and v_list != None:
+            
+            if v[0] >= beta:
                 return max(v_list, key=lambda v: v[0])
             
             alfa = max(v[0], alfa)
-
+            
         return max(v_list, key=lambda v: v[0])
 
 
@@ -119,3 +138,9 @@ class Minimax:
                         
 
         return destinations_list
+
+    def cutoff_test(self, depth):
+        if depth == 0:
+            return True
+
+        return False

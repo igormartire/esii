@@ -111,7 +111,7 @@ def castling(game, src, dest):
           src == Coordinate(0, 4) and
           dest == Coordinate(0, 6)):
         board[0][5] = Piece.BLACK_ROOK
-        board[0][0] = Piece.NONE
+        board[0][7] = Piece.NONE
     elif (piece == Piece.BLACK_KING and
           src == Coordinate(0, 4) and
           dest == Coordinate(0, 2)):

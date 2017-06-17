@@ -11,9 +11,9 @@ from chess.core.models import Coordinate, Color, Piece, Player
 from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
 from chess.core.possible_destinations import (destinations,
                                               is_check_for_player,
-                                              is_check_mate_for_player,
+                                              is_checkmate_for_player,
                                               is_stalemate_for_player,
-                                              impossible_check_mate)
+                                              is_impossible_checkmate)
 from chess.core.coloring import color_board
 from chess.core.moving import move
 from chess.ai.score import score_board
@@ -351,7 +351,7 @@ def run_game(ui, game, board):
                                  promotion_callback_factory(ui))
                             player_turn = False
                             print("Player moved!")
-                            if is_check_mate_for_player(game, Player.BLACK):
+                            if is_checkmate_for_player(game, Player.BLACK):
                                 print('WHITE player wins!')
                                 ui.display_text(
                                     "WHITE player wins! (Press ESC)",
@@ -366,7 +366,7 @@ def run_game(ui, game, board):
                                     "Draw by Stalemate!",
                                     color=(255, 0, 0))
                                 end_game = True
-                            elif impossible_check_mate(game):
+                            elif is_impossible_checkmate(game):
                                 ui.display_text(
                                     "Draw by Impossibility!",
                                     color=(255, 0, 0))
@@ -387,7 +387,7 @@ def run_game(ui, game, board):
             movement = greedy_move(game)
             move(game, movement[0], movement[1])
             print("Computer moved!")
-            if is_check_mate_for_player(game, Player.WHITE):
+            if is_checkmate_for_player(game, Player.WHITE):
                 print('BLACK player wins!')
                 ui.display_text("BLACK player wins! (Press ESC)",
                                 color=(255, 0, 0))
@@ -398,7 +398,7 @@ def run_game(ui, game, board):
             elif is_stalemate_for_player(game, Player.WHITE):
                 ui.display_text("Draw by Stalemate!", color=(255, 0, 0))
                 end_game = True
-            elif impossible_check_mate(game):
+            elif is_impossible_checkmate(game):
                 ui.display_text("Draw by Impossibility!", color=(255, 0, 0))
                 end_game = True
             else:

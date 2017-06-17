@@ -42,7 +42,7 @@ def is_check_for_player(game, checked_player):
         return is_attacked(game, king_pos, checked_player)
 
 
-def is_check_mate_for_player(game, player):
+def is_checkmate_for_player(game, player):
     pieces = (WHITE_PIECES
               if player == Player.WHITE
               else BLACK_PIECES)
@@ -72,7 +72,7 @@ def is_stalemate_for_player(game, player):
     return not is_check_for_player(game, player)
 
 
-def impossible_check_mate(game):
+def is_impossible_checkmate(game):
     king_versus_king = False
     king_and_bishop_versus_king = False
     king_and_knight_versus_king = False

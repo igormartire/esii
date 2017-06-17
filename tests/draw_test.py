@@ -2,7 +2,7 @@ from chess.core.moving import move
 from chess.core.models import Player, Coordinate
 from chess.core.game import Game
 from chess.core.possible_destinations import (is_stalemate_for_player,
-                                              impossible_check_mate)
+                                              is_impossible_checkmate)
 from chess.core.utils import _, k, R, Q, K, print_board
 
 

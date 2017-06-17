@@ -73,3 +73,22 @@ def test_draw_by_impossible_checkmate_king_vs_king_bishop():
     move(game, white_king_src, white_king_dest)
 
     assert(is_impossible_checkmate(game))
+
+def test_draw_by_impossible_checkmate_king_vs_king_knight():
+    game = new_game_with_no_castling()
+    game.board = [[_, _, _, _, k, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, b, _, _, _, _, _, _],
+                  [_, n, _, _, _, _, _, _],
+                  [K, _, _, _, _, _, _, _]]
+    white_king_src = Coordinate(7, 0)
+    white_king_dest = Coordinate(6, 1)
+
+    assert(not is_impossible_checkmate(game))
+
+    move(game, white_king_src, white_king_dest)
+
+    assert(is_impossible_checkmate(game))

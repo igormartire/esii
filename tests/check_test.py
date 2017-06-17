@@ -1,8 +1,7 @@
 from chess.core.moving import move
 from chess.core.models import Player, Coordinate
 from chess.core.game import Game
-from chess.core.destinations import (is_check_for_player,
-                                              is_checkmate_for_player)
+from chess.core.check import is_check_for_player, is_checkmate_for_player
 from chess.core.utils import _, K, k, Q, q, R, r, N, n, B, b, P, p
 
 

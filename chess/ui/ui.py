@@ -9,7 +9,7 @@ from pygame.locals import *
 import chess.core.utils
 from chess.core.models import Coordinate, Color, Piece, Player
 from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
-from chess.core.destinations import (destinations,
+from chess.core.query import (destinations,
                                      is_check_for_player,
                                      is_checkmate_for_player,
                                      is_stalemate_for_player,

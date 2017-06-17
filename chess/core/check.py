@@ -1,6 +1,7 @@
-from chess.core.destinations import destinations
-from chess.core.utils import get_piece_coordinate, piece_at
-from chess.core.models import Coordiante, Piece, Player
+from chess.core.query import destinations
+from chess.core.utils import (get_piece_coordinate, piece_at,
+                              WHITE_PIECES, BLACK_PIECES)
+from chess.core.models import Coordinate, Piece, Player
 
 
 def is_check_for_player(game, checked_player):

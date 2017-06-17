@@ -2,64 +2,34 @@ from chess.core.models import Coordinate, Piece, Player, Color
 from chess.core.utils import (BLACK_PIECES, WHITE_PIECES,
                               piece_at, remaining_pieces, color_by_pos,
                               get_piece_coordinate)
-from chess.core.destinations import destinations, is_check_for_player
 
 
-def is_stalemate_for_player(game, player):
-    pieces = (WHITE_PIECES
-              if player == Player.WHITE
-              else BLACK_PIECES)
+def threefold_repetition(game, src, dest, draw_allowed_callback):
+    if piece_at(game.board, src) in [Piece.WHITE_PAWN, Piece.BLACK_PAWN]:
+        # it is impossible to repeat a board after a pawn movement
+        game.clear_threefold_history()
+    elif piece_at(game.board, dest) != Piece.NONE:
+        # it is impossible to repeat a board after a capture
+        game.clear_threefold_history()
+    else:
+        repetition_count = 1  # this current state
+        history = game.get_threefold_history()
+        for previous_state in history:
+            if game.is_identical_to(previous_state):
+                repetition_count += 1
+        if repetition_count >= 3:
+            draw_allowed_callback()
+    game.add_to_history(copy.deepcopy(game))
 
-    for row in range(8):
-        for column in range(8):
-            pos = Coordinate(row, column)
-            if piece_at(game.board, pos) in pieces:
-                if len(destinations(game, pos)) > 0:
-                    return False
 
-    # stalemate only when not in check but no possible moves
-    return not is_check_for_player(game, player)
-
-
-def is_impossible_checkmate(game):
-    king_versus_king = False
-    king_and_bishop_versus_king = False
-    king_and_knight_versus_king = False
-    king_and_bishop_versus_king_and_bishop_on_same_color = False
-    remaining_white_pieces = remaining_pieces(game.board, Color.WHITE)
-    remaining_black_pieces = remaining_pieces(game.board, Color.BLACK)
-    if len(remaining_white_pieces) > 2 or len(remaining_black_pieces) > 2:
-        return False
-    if len(remaining_white_pieces) == 1 and len(remaining_black_pieces) == 1:
-        king_versus_king = True
-    elif (len(remaining_white_pieces) == 1 and
-          set(remaining_black_pieces) == set([Piece.BLACK_KING,
-                                              Piece.BLACK_BISHOP])):
-        king_and_bishop_versus_king = True
-    elif (len(remaining_black_pieces) == 1 and
-          set(remaining_white_pieces) == set([Piece.WHITE_KING,
-                                              Piece.WHITE_BISHOP])):
-        king_and_bishop_versus_king = True
-    elif (len(remaining_white_pieces) == 1 and
-          set(remaining_black_pieces) == set([Piece.BLACK_KING,
-                                              Piece.BLACK_KNIGHT])):
-        king_and_knight_versus_king = True
-    elif (len(remaining_black_pieces) == 1 and
-          set(remaining_white_pieces) == set([Piece.WHITE_KING,
-                                              Piece.WHITE_KNIGHT])):
-        king_and_knight_versus_king = True
-    elif (set(remaining_white_pieces) == set([Piece.WHITE_KING,
-                                              Piece.WHITE_BISHOP]) and
-          set(remaining_black_pieces) == set([Piece.BLACK_KING,
-                                              Piece.BLACK_BISHOP])):
-        white_bishop_pos = get_piece_coordinate(game.board, Piece.WHITE_BISHOP)
-        black_bishop_pos = get_piece_coordinate(game.board, Piece.BLACK_BISHOP)
-        color_white_bishop_on = color_by_pos(white_bishop_pos)
-        color_black_bishop_on = color_by_pos(black_bishop_pos)
-        king_and_bishop_versus_king_and_bishop_on_same_color = (
-            color_white_bishop_on == color_black_bishop_on)
-
-    return (king_versus_king or
-            king_and_bishop_versus_king or
-            king_and_knight_versus_king or
-            king_and_bishop_versus_king_and_bishop_on_same_color)
+def fifty_move_rule(game, src, dest, draw_allowed_callback):
+    piece = piece_at(game.board, src)
+    if (piece not in [Piece.WHITE_PAWN, Piece.BLACK_PAWN] and
+            piece_at(game.board, dest) == Piece.NONE):
+        piece_color = Color.WHITE if piece in WHITE_PIECES else Color.BLACK
+        game.fift_move_rule_count[piece_color] += 1
+        if (game.fift_move_rule_count[Color.WHITE] >= 50 and
+                game.fift_move_rule_count[Color.BLACK] >= 50):
+            draw_allowed_callback()
+    else:
+        game.fift_move_rule_count[piece_color] = 0

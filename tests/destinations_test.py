@@ -1,4 +1,4 @@
-from chess.core.destinations import diagonal_moves
+from chess.core.query import diagonal_moves
 from chess.core.models import Piece, Coordinate
 from chess.core.utils import empty_board
 from chess.core.game import Game

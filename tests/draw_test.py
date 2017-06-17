@@ -1,7 +1,7 @@
 from chess.core.moving import move
 from chess.core.models import Player, Coordinate
 from chess.core.game import Game
-from chess.core.draw import (is_stalemate_for_player, is_impossible_checkmate)
+from chess.core.query import is_stalemate_for_player, is_impossible_checkmate
 from chess.core.utils import _, K, k, Q, q, R, r, N, n, B, b, P, p
 
 

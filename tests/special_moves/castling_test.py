@@ -1,7 +1,7 @@
 from chess.core.moving import move
 from chess.core.models import Coordinate, Piece
 from chess.core.game import Game
-from chess.core.destinations import destinations
+from chess.core.query import destinations
 from chess.core.utils import _, K, k, Q, q, R, r, N, n, B, b, P, p, piece_at
 
 

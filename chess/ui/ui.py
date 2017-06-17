@@ -24,6 +24,9 @@ SCREEN_HEIGHT = 740
 BOARD_SIZE = 640
 CELL_BORDER = 3
 IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
+GAME_DIFFICULTY = 0
+
+clock = pygame.time.Clock()
 
 
 class UI:
@@ -275,25 +278,82 @@ def promotion_callback_factory(ui):
     return promotion_callback
 
 
+def chosen_difficulty():
+    difficulty_map = {
+        0: 'Easy',
+        1: 'Medium',
+        2: 'Hard',
+    }
+    return difficulty_map[GAME_DIFFICULTY]
+
 def menu(ui):
     print("menu")
     menu = True
+    difficulty = False
     quit = False
+
+    # TODO: create a class to encapsulate each menu option
+    menu_options = []
+    play_text = 'Play ({})'.format(chosen_difficulty())
+    play_menu = ui.font.render(play_text, 1, Color.WHITE.rgb)
+    play_menu_rect = play_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 100)
+    )
+    difficulty_text = 'Difficulty'
+    difficulty_menu = ui.font.render(difficulty_text, 1, Color.WHITE.rgb)
+    difficulty_menu_rect = difficulty_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    )
+    quit_text = 'Quit'
+    quit_menu = ui.font.render(quit_text, 1, Color.WHITE.rgb)
+    quit_menu_rect = quit_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 100)
+    )
+    menu_options.append(
+        (play_text, play_menu, play_menu_rect))
+    menu_options.append(
+        (difficulty_text, difficulty_menu, difficulty_menu_rect))
+    menu_options.append(
+        (quit_text, quit_menu, quit_menu_rect))
+
+
+    menu_choice = 0
     while menu and not quit:
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN \
-                    or event.type == pygame.MOUSEBUTTONDOWN:
-                menu = False
-                quit = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    menu_choice += 1
+                    menu_choice = menu_choice % len(menu_options)
+                if event.key == pygame.K_UP:
+                    menu_choice -= 1
+                    if menu_choice < 0:
+                        menu_choice = len(menu_options) - 1
+                if event.key == pygame.K_RETURN:
+                    if menu_choice == 0:
+                        menu = False
+                    if menu_choice == 1:
+                        pass
+                    if menu_choice == 2:
+                        quit = True
             if event.type == pygame.QUIT:
                 quit = True
 
         ui.screen.fill((0, 0, 0,))
 
-        text = ui.font.render("Press (ENTER) to Start", 1, Color.WHITE.rgb)
-        text_rect = text.get_rect(
-            center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-        ui.screen.blit(text, text_rect)
+        # Terrible code... when MenuOption class is created it's going to be
+        # more legible .-.
+        for i in range(len(menu_options)):
+            text = menu_options[i][0]
+            render_text = menu_options[i][1]
+            rect = menu_options[i][2]
+
+            if i == menu_choice:
+                render_text = ui.font.render(text, 1, Color.RED.rgb)
+            else:
+                render_text = ui.font.render(text, 1, Color.WHITE.rgb)
+
+            ui.screen.blit(render_text, rect)
+
         pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
             (0, 0), (SCREEN_WIDTH, 0),
             (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
@@ -356,7 +416,19 @@ def run_game(ui, game, board):
                                     color=(0, 255, 0))
                                 end_game = True
                             elif is_check_for_player(game, Player.BLACK):
-                                ui.display_text("BLACK player is in CHECK")
+                                ui.display_text(
+                                    "BLACK player is in CHECK",
+                                    color=(0, 255, 0))
+                            elif is_stalemate_for_player(game, Player.BLACK):
+                                ui.display_text(
+                                    "Draw by Stalemate!",
+                                    color=(255, 0, 0))
+                                end_game = True
+                            elif impossible_check_mate(game):
+                                ui.display_text(
+                                    "Draw by Impossibility!",
+                                    color=(255, 0, 0))
+                                end_game = True
                     else:
                         print("You cannot do that!")
                         print("Player turn still...")
@@ -381,6 +453,12 @@ def run_game(ui, game, board):
             elif is_check_for_player(game, Player.WHITE):
                 print('WHITE player is in check!')
                 ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
+            elif is_stalemate_for_player(game, Player.WHITE):
+                ui.display_text("Draw by Stalemate!", color=(255, 0, 0))
+                end_game = True
+            elif impossible_check_mate(game):
+                ui.display_text("Draw by Impossibility!", color=(255, 0, 0))
+                end_game = True
             else:
                 print("Player turn")
                 ui.display_text("Your turn...")

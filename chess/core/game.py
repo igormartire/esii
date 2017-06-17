@@ -5,6 +5,10 @@ class Game:
     def __init__(self):
         self.board = initial_board()
         self.state = GameState()
+        self.draw_allowed_callback = None
+
+    def register_draw_allowed_callback(callback):
+        self.draw_allowed_callback = callback
 
 
 class GameState:

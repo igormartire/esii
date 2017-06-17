@@ -5,13 +5,13 @@ from chess.core.draw import (threefold_repetition, fifty_move_rule)
 import copy
 
 
-def move(game, src, dest, promotion_callback=None, draw_allowed_callback=None):
+def move(game, src, dest, promotion_callback=None):
     board = game.board
     piece = board[src.row][src.column]
 
     castling(game, src, dest)
 
-    if (draw_allowed_callback is not None):
+    if (game.draw_allowed_callback is not None):
         threefold_repetition(game, src, dest, draw_allowed_callback)
         fifty_move_rule(game, src, dest, draw_allowed_callback)
 

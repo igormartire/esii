@@ -36,6 +36,7 @@ def test_draw_by_stalemate():
 
     assert(is_stalemate_for_player(game, Player.BLACK))
 
+
 def test_draw_by_impossible_checkmate_king_vs_king():
     game = new_game_with_no_castling()
     game.board = [[_, _, _, _, k, _, _, _],
@@ -54,6 +55,7 @@ def test_draw_by_impossible_checkmate_king_vs_king():
     move(game, white_king_src, white_king_dest)
 
     assert(is_impossible_checkmate(game))
+
 
 def test_draw_by_impossible_checkmate_king_vs_king_bishop():
     game = new_game_with_no_castling()
@@ -74,6 +76,7 @@ def test_draw_by_impossible_checkmate_king_vs_king_bishop():
 
     assert(is_impossible_checkmate(game))
 
+
 def test_draw_by_impossible_checkmate_king_vs_king_knight():
     game = new_game_with_no_castling()
     game.board = [[_, _, _, _, k, _, _, _],
@@ -93,7 +96,9 @@ def test_draw_by_impossible_checkmate_king_vs_king_knight():
 
     assert(is_impossible_checkmate(game))
 
-def test_draw_by_impossible_checkmate_king_bishop_vs_king_bishop__bishops_on_same_colors():
+
+def test_draw_by_impossible_checkmate_king_bishop_vs_king_bishop():
+    # bishops_on_the_same_color
     game = new_game_with_no_castling()
     game.board = [[_, _, _, _, k, _, _, _],
                   [_, _, _, _, _, _, _, _],
@@ -112,7 +117,9 @@ def test_draw_by_impossible_checkmate_king_bishop_vs_king_bishop__bishops_on_sam
 
     assert(is_impossible_checkmate(game))
 
-def test_not_draw_by_impossible_checkmate_king_bishop_vs_king_bishop__bishops_on_different_colors():
+
+def test_not_draw_by_impossible_checkmate_king_bishop_vs_king_bishop():
+    # bishops_on_different_colors
     game = new_game_with_no_castling()
     game.board = [[_, _, _, _, k, _, _, _],
                   [_, _, _, _, _, _, _, _],

@@ -6,8 +6,8 @@ class Coordinate:
         self.row = row
         self.column = column
 
-    @classmethod
-    def matrix_to_coordinates(cls, matrix):
+    @staticmethod
+    def matrix_to_coordinates(matrix):
         coordinates = []
         for row in matrix:
             for column in row:

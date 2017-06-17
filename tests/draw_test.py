@@ -3,7 +3,7 @@ from chess.core.models import Player, Coordinate
 from chess.core.game import Game
 from chess.core.possible_destinations import (is_stalemate_for_player,
                                               is_impossible_checkmate)
-from chess.core.utils import _, k, R, Q, K, print_board
+from chess.core.utils import _, K, k, Q, q, R, r, N, n, B, b, P, p, print_board
 
 
 def new_game_with_no_castling():
@@ -35,3 +35,22 @@ def test_draw_by_stalemate():
     move(game, white_queen_src, white_queen_dest)
 
     assert(is_stalemate_for_player(game, Player.BLACK))
+
+def test_draw_by_impossible_checkmate_king_vs_king():
+    game = new_game_with_no_castling()
+    game.board = [[_, _, _, _, k, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, q, _, _, _, _, _, _],
+                  [K, _, _, _, _, _, _, _]]
+    white_king_src = Coordinate(7, 0)
+    white_king_dest = Coordinate(6, 1)
+
+    assert(not is_impossible_checkmate(game))
+
+    move(game, white_king_src, white_king_dest)
+
+    assert(is_impossible_checkmate(game))

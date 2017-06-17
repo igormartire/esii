@@ -24,7 +24,6 @@ SCREEN_HEIGHT = 740
 BOARD_SIZE = 640
 CELL_BORDER = 3
 IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
-GAME_DIFFICULTY = 0
 
 clock = pygame.time.Clock()
 
@@ -51,6 +50,8 @@ class UI:
         }
 
         self.__displayed_text = self.font.render("", 1, (255, 255, 255))
+
+        self.game_difficulty = 0
 
     def display_text(self, text, color=(255, 255, 255)):
         self.__displayed_text = self.font.render(text, 1, color)
@@ -278,13 +279,13 @@ def promotion_callback_factory(ui):
     return promotion_callback
 
 
-def chosen_difficulty():
+def chosen_difficulty(game_difficulty):
     difficulty_map = {
         0: 'Easy',
         1: 'Medium',
         2: 'Hard',
     }
-    return difficulty_map[GAME_DIFFICULTY]
+    return difficulty_map[game_difficulty]
 
 def menu(ui):
     print("menu")
@@ -292,9 +293,10 @@ def menu(ui):
     difficulty = False
     quit = False
 
+    #region Main Menu
     # TODO: create a class to encapsulate each menu option
     menu_options = []
-    play_text = 'Play ({})'.format(chosen_difficulty())
+    play_text = 'Play ({})'.format(chosen_difficulty(ui.game_difficulty))
     play_menu = ui.font.render(play_text, 1, Color.WHITE.rgb)
     play_menu_rect = play_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 100)
@@ -315,6 +317,32 @@ def menu(ui):
         (difficulty_text, difficulty_menu, difficulty_menu_rect))
     menu_options.append(
         (quit_text, quit_menu, quit_menu_rect))
+    #endregion
+
+    #region Difficulty Menu
+    diff_options = []
+    easy_text = 'Easy'
+    easy_menu = ui.font.render(easy_text, 1, Color.WHITE.rgb)
+    easy_menu_rect = easy_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 100)
+    )
+    medium_text = 'Medium'
+    medium_menu = ui.font.render(medium_text, 1, Color.WHITE.rgb)
+    medium_menu_rect = medium_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    )
+    hard_text = 'Hard'
+    hard_menu = ui.font.render(hard_text, 1, Color.WHITE.rgb)
+    hard_menu_rect = hard_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 100)
+    )
+    diff_options.append(
+        (easy_text, easy_menu, easy_menu_rect))
+    diff_options.append(
+        (medium_text, medium_menu, medium_menu_rect))
+    diff_options.append(
+        (hard_text, hard_menu, hard_menu_rect))
+    #endregion
 
 
     menu_choice = 0
@@ -323,18 +351,26 @@ def menu(ui):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
                     menu_choice += 1
-                    menu_choice = menu_choice % len(menu_options)
+                    menu_choice = menu_choice % 3
                 if event.key == pygame.K_UP:
                     menu_choice -= 1
                     if menu_choice < 0:
-                        menu_choice = len(menu_options) - 1
+                        menu_choice = 2
                 if event.key == pygame.K_RETURN:
-                    if menu_choice == 0:
-                        menu = False
-                    if menu_choice == 1:
-                        pass
-                    if menu_choice == 2:
-                        quit = True
+                    # Selected difficulty
+                    if difficulty:
+                        ui.game_difficulty = menu_choice
+                        difficulty = False
+                        print("Changing game difficulty to: {}".format(
+                            ui.game_difficulty))
+                    else:
+                        if menu_choice == 0:
+                            menu = False
+                        if menu_choice == 1:
+                            # Change menu
+                            difficulty = True
+                        if menu_choice == 2:
+                            quit = True
             if event.type == pygame.QUIT:
                 quit = True
 
@@ -342,10 +378,20 @@ def menu(ui):
 
         # Terrible code... when MenuOption class is created it's going to be
         # more legible .-.
-        for i in range(len(menu_options)):
-            text = menu_options[i][0]
-            render_text = menu_options[i][1]
-            rect = menu_options[i][2]
+        for i in range(3):
+            if difficulty:
+                text = diff_options[i][0]
+                render_text = diff_options[i][1]
+                rect = diff_options[i][2]
+            else:
+                # Gambiarra
+                if i == 0:
+                    text = 'Play ({})'.format(
+                        chosen_difficulty(ui.game_difficulty))
+                else:
+                    text = menu_options[i][0]
+                render_text = menu_options[i][1]
+                rect = menu_options[i][2]
 
             if i == menu_choice:
                 render_text = ui.font.render(text, 1, Color.RED.rgb)
@@ -366,6 +412,7 @@ def menu(ui):
 
 def run_game(ui, game, board):
 
+    print(ui.game_difficulty)
     held_piece_coord = None
     player_turn = True
     print("Player turn...")

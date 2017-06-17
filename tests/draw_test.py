@@ -98,7 +98,7 @@ def test_draw_by_impossible_checkmate_king_vs_king_knight():
 
 
 def test_draw_by_impossible_checkmate_king_bishop_vs_king_bishop():
-    # bishops_on_the_same_color
+    # bishops on the same color
     game = new_game_with_no_castling()
     game.board = [[_, _, _, _, k, _, _, _],
                   [_, _, _, _, _, _, _, _],
@@ -119,7 +119,7 @@ def test_draw_by_impossible_checkmate_king_bishop_vs_king_bishop():
 
 
 def test_not_draw_by_impossible_checkmate_king_bishop_vs_king_bishop():
-    # bishops_on_different_colors
+    # bishops on different colors
     game = new_game_with_no_castling()
     game.board = [[_, _, _, _, k, _, _, _],
                   [_, _, _, _, _, _, _, _],

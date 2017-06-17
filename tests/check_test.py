@@ -1,7 +1,8 @@
 from chess.core.moving import move
 from chess.core.models import Player, Coordinate
 from chess.core.game import Game
-from chess.core.possible_destinations import (is_check_for_player)
+from chess.core.destinations import (is_check_for_player,
+                                              is_checkmate_for_player)
 from chess.core.utils import _, K, k, Q, q, R, r, N, n, B, b, P, p
 
 
@@ -34,3 +35,23 @@ def test_check():
     move(game, white_queen_src, white_queen_dest)
 
     assert(is_check_for_player(game, Player.BLACK))
+
+
+def test_checkmate():
+    game = new_game_with_no_castling()
+    game.board = [[_, _, _, _, k, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, P, _, Q, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, K, _, _, _]]
+    white_queen_src = Coordinate(2, 5)
+    white_queen_dest = white_queen_src.up().left()
+
+    assert(not is_checkmate_for_player(game, Player.BLACK))
+
+    move(game, white_queen_src, white_queen_dest)
+
+    assert(is_checkmate_for_player(game, Player.BLACK))

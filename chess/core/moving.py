@@ -140,37 +140,3 @@ def castling(game, src, dest):
           src == Coordinate(0, 7) and
           game.state.allow_castling_right_black_rook):
         game.state.allow_castling_right_black_rook = False
-
-
-def diagonal_moves(board, src):
-    moves = set()
-
-    # diagonal pra cima e pra esquerda
-    for i in range(1, min(src.row, src.column) + 1):
-        pos = Coordinate(src.row - i, src.column - i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra cima e pra direita
-    for i in range(1, min(src.row, 7 - src.column) + 1):
-        pos = Coordinate(src.row - i, src.column + i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra baixo e pra esquerda
-    for i in range(1, min(7 - src.row, src.column) + 1):
-        pos = Coordinate(src.row + i, src.column - i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra baixo e pra direita
-    for i in range(1, min(7 - src.row, 7 - src.column) + 1):
-        pos = Coordinate(src.row + i, src.column + i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    return set(moves)

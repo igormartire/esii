@@ -1,6 +1,6 @@
 from chess.core.models import Coordinate
 from chess.core.moving import move
-from chess.core.possible_destinations import destinations
+from chess.core.destinations import destinations
 from chess.ai.score import score_board
 from chess.core.utils import BLACK_PIECES
 import copy

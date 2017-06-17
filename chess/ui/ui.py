@@ -9,11 +9,11 @@ from pygame.locals import *
 import chess.core.utils
 from chess.core.models import Coordinate, Color, Piece, Player
 from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
-from chess.core.possible_destinations import (destinations,
-                                              is_check_for_player,
-                                              is_checkmate_for_player,
-                                              is_stalemate_for_player,
-                                              is_impossible_checkmate)
+from chess.core.destinations import (destinations,
+                                     is_check_for_player,
+                                     is_checkmate_for_player,
+                                     is_stalemate_for_player,
+                                     is_impossible_checkmate)
 from chess.core.coloring import color_board
 from chess.core.moving import move
 from chess.ai.score import score_board
@@ -344,9 +344,9 @@ def run_game(ui, game, board):
                     cell_coord = get_coordinates_by_position(
                         pygame.mouse.get_pos(), board)
                     if is_holding_piece(held_piece_coord):
-                        possible_destinations = destinations(
+                        dests = destinations(
                             game, held_piece_coord)
-                        if cell_coord in possible_destinations:
+                        if cell_coord in dests:
                             move(game, held_piece_coord, cell_coord,
                                  promotion_callback_factory(ui))
                             player_turn = False
@@ -376,10 +376,10 @@ def run_game(ui, game, board):
                         print("Player turn still...")
                     held_piece_coord = None
 
-        possible_destinations = []
+        dests = []
         if player_turn and is_holding_piece(held_piece_coord):
-            possible_destinations = destinations(game, held_piece_coord)
-        colored_board = color_board(board, possible_destinations)
+            dests = destinations(game, held_piece_coord)
+        colored_board = color_board(board, dests)
 
         if not end_game and not player_turn:
             print("Computer turn")

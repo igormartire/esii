@@ -116,3 +116,20 @@ def test_no_castling_allowed_when_path_is_blocked():
     white_rook_src = Coordinate(7, 0)
 
     assert(white_king_dest not in destinations(game, white_king_src))
+
+
+def test_no_castling_allowed_when_in_check():
+    game = Game()
+    game.board = [[_, _, _, _, k, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, p, _, _, _, _],
+                  [R, _, _, _, K, _, _, _]]
+    white_king_src = Coordinate(7, 4)
+    white_king_dest = white_king_src.left().left()
+    white_rook_src = Coordinate(7, 0)
+
+    assert(white_king_dest not in destinations(game, white_king_src))

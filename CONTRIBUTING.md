@@ -29,11 +29,11 @@ The commit message should be in the imperative present tense, capitalized and ha
 
 Examples:
 
-- :rocket: CHS-30 Create Color constants
-- :green_heart: CHS-30 Add test cases for valid parameters
-- :green_heart: CHS-30 Add test cases for invalid parameters
-- :rocket: CHS-30 Implement coloring function
-- :bug: CHS-30 Handle null parameter
+- :rocket: #30 Create Color constants
+- :green_heart: #30 Add test cases for valid parameters
+- :green_heart: #30 Add test cases for invalid parameters
+- :rocket: #30 Implement coloring function
+- :bug: #30 Handle null parameter
 
 Emoji List:
 
@@ -41,6 +41,7 @@ Emoji List:
 - :rocket: When implementing features
 - :bug: When fixing bugs
 - :art: When fixing code style/structure
+- :memo: Documentation
 
 Style Guide
 ===========

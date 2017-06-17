@@ -92,3 +92,41 @@ def test_draw_by_impossible_checkmate_king_vs_king_knight():
     move(game, white_king_src, white_king_dest)
 
     assert(is_impossible_checkmate(game))
+
+def test_draw_by_impossible_checkmate_king_bishop_vs_king_bishop__bishops_on_same_colors():
+    game = new_game_with_no_castling()
+    game.board = [[_, _, _, _, k, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, b, _, _, _, _, _, _],
+                  [_, b, _, _, _, _, _, _],
+                  [K, _, _, _, _, B, _, _]]
+    white_king_src = Coordinate(7, 0)
+    white_king_dest = Coordinate(6, 1)
+
+    assert(not is_impossible_checkmate(game))
+
+    move(game, white_king_src, white_king_dest)
+
+    assert(is_impossible_checkmate(game))
+
+def test_not_draw_by_impossible_checkmate_king_bishop_vs_king_bishop__bishops_on_different_colors():
+    game = new_game_with_no_castling()
+    game.board = [[_, _, _, _, k, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, b, _, _, _, _, _, _],
+                  [_, b, _, _, _, _, _, _],
+                  [K, _, _, _, B, _, _, _]]
+    white_king_src = Coordinate(7, 0)
+    white_king_dest = Coordinate(6, 1)
+
+    assert(not is_impossible_checkmate(game))
+
+    move(game, white_king_src, white_king_dest)
+
+    assert(not is_impossible_checkmate(game))

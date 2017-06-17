@@ -154,6 +154,7 @@ def test_no_castling_allowed_when_king_has_moved():
 
     assert(white_king_dest not in destinations(game, white_king_src))
 
+
 def test_no_castling_allowed_when_rook_has_moved():
     game = Game()
     game.board = [[_, _, _, _, k, _, _, _],

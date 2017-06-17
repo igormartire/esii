@@ -99,3 +99,20 @@ def test_castling_right_black_rook():
     assert(piece_at(game.board, black_king_src) == Piece.NONE)
     assert(piece_at(game.board, black_king_dest) == Piece.BLACK_KING)
     assert(piece_at(game.board, black_king_dest.left()) == Piece.BLACK_ROOK)
+
+
+def test_no_castling_allowed_when_path_is_blocked():
+    game = Game()
+    game.board = [[_, _, _, _, k, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [_, _, _, _, _, _, _, _],
+                  [R, _, B, _, K, _, _, _]]
+    white_king_src = Coordinate(7, 4)
+    white_king_dest = white_king_src.left().left()
+    white_rook_src = Coordinate(7, 0)
+
+    assert(white_king_dest not in destinations(game, white_king_src))

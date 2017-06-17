@@ -11,7 +11,9 @@ from chess.core.models import Coordinate, Color, Piece, Player
 from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
 from chess.core.possible_destinations import (destinations,
                                               is_check_for_player,
-                                              is_check_mate_for_player)
+                                              is_check_mate_for_player,
+                                              is_stalemate_for_player,
+                                              impossible_check_mate)
 from chess.core.coloring import color_board
 from chess.core.moving import move
 from chess.ai.score import score_board
@@ -356,7 +358,19 @@ def run_game(ui, game, board):
                                     color=(0, 255, 0))
                                 end_game = True
                             elif is_check_for_player(game, Player.BLACK):
-                                ui.display_text("BLACK player is in CHECK")
+                                ui.display_text(
+                                    "BLACK player is in CHECK",
+                                    color=(0, 255, 0))
+                            elif is_stalemate_for_player(game, Player.BLACK):
+                                ui.display_text(
+                                    "Draw by Stalemate!",
+                                    color=(255, 0, 0))
+                                end_game = True
+                            elif impossible_check_mate(game):
+                                ui.display_text(
+                                    "Draw by Impossibility!",
+                                    color=(255, 0, 0))
+                                end_game = True
                     else:
                         print("You cannot do that!")
                         print("Player turn still...")
@@ -381,6 +395,12 @@ def run_game(ui, game, board):
             elif is_check_for_player(game, Player.WHITE):
                 print('WHITE player is in check!')
                 ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
+            elif is_stalemate_for_player(game, Player.WHITE):
+                ui.display_text("Draw by Stalemate!", color=(255, 0, 0))
+                end_game = True
+            elif impossible_check_mate(game):
+                ui.display_text("Draw by Impossibility!", color=(255, 0, 0))
+                end_game = True
             else:
                 print("Player turn")
                 ui.display_text("Your turn...")

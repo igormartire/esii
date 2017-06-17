@@ -8,9 +8,9 @@ from chess.core.utils import _, K, k, Q, q, R, r, N, n, B, b, P, p
 import mock
 
 
-##################
-### UNIT TESTS ###
-##################
+##############
+# UNIT TESTS #
+##############
 
 
 @mock.patch('chess.core.check.piece_at')
@@ -18,14 +18,14 @@ import mock
 def test_is_attacked(destinations, piece_at):
     game_stub = Game()
     game_stub.board = ['A', 'B', 'C', 'non-sense', 'i-am-mocked']
-    pos_stub = Coordinate(123,-321)
+    pos_stub = Coordinate(123, -321)
     attacked_player = Player.WHITE
 
     def piece_at_mock(board, coord):
         assert(board == game_stub.board)
-        if coord == Coordinate(0,1):
+        if coord == Coordinate(0, 1):
             return Piece.WHITE_BISHOP
-        if coord == Coordinate(0,2):
+        if coord == Coordinate(0, 2):
             return Piece.BLACK_QUEEN
         else:
             return Piece.NONE
@@ -35,34 +35,35 @@ def test_is_attacked(destinations, piece_at):
 
     assert(is_attacked(game_stub, pos_stub, attacked_player))
 
-    assert(piece_at.call_count == 3) # for coordinates (0,0), (0,1), (0,2)
-    assert(destinations.call_count == 1) # for attacker piece BLACK_QUEEN
+    assert(piece_at.call_count == 3)  # for coordinates (0,0), (0,1), (0,2)
+    assert(destinations.call_count == 1)  # for attacker piece BLACK_QUEEN
 
 
 @mock.patch('chess.core.check.destinations')
 @mock.patch('chess.core.check.piece_at')
-def test_is_not_attacked(piece_at,destinations):
+def test_is_not_attacked(piece_at, destinations):
     game_stub = Game()
     game_stub.board = ['A', 'B', 'C', 'non-sense', 'i-am-mocked']
-    pos_stub = Coordinate(123,-321)
+    pos_stub = Coordinate(123, -321)
     attacked_player = Player.BLACK
 
     def piece_at_mock(board, coord):
         assert(board == game_stub.board)
-        if coord == Coordinate(0,1):
+        if coord == Coordinate(0, 1):
             return Piece.WHITE_BISHOP
-        if coord == Coordinate(0,2):
+        if coord == Coordinate(0, 2):
             return Piece.WHITE_QUEEN
         else:
             return Piece.NONE
 
     piece_at.side_effect = piece_at_mock
-    destinations.return_value = [Coordinate(0,0)] # not pos_stub
+    destinations.return_value = [Coordinate(0, 0)]  # not pos_stub
 
     assert(not is_attacked(game_stub, pos_stub, attacked_player))
 
-    assert(piece_at.call_count == 64) # for coordinates (0,0), (0,1), (0,2)
-    assert(destinations.call_count == 2) # for attacker pieces BISHOP and QUEEN
+    assert(piece_at.call_count == 64)  # for coordinates (0,0), (0,1), (0,2)
+    # for attacker pieces BISHOP and QUEEN
+    assert(destinations.call_count == 2)
 
 
 @mock.patch('chess.core.check.is_attacked')
@@ -153,9 +154,9 @@ def test_is_not_check_for_player_black(get_piece_coordinate, is_attacked):
     assert kwargs == {}
 
 
-#########################
-### INTEGRATION TESTS ###
-#########################
+#####################
+# INTEGRATION TESTS #
+#####################
 
 
 def new_game_with_no_castling():

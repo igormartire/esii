@@ -8,7 +8,7 @@ import copy
 def move(game, src, dest, promotion_callback=None, draw_allowed_callback=None):
     board = game.board
     piece = board[src.row][src.column]
-    
+
     castling(game, src, dest)
 
     if (draw_allowed_callback is not None):

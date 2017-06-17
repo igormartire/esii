@@ -10,10 +10,10 @@ import chess.core.utils
 from chess.core.models import Coordinate, Color, Piece, Player
 from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
 from chess.core.query import (destinations,
-                                     is_check_for_player,
-                                     is_checkmate_for_player,
-                                     is_stalemate_for_player,
-                                     is_impossible_checkmate)
+                              is_check_for_player,
+                              is_checkmate_for_player,
+                              is_stalemate_for_player,
+                              is_impossible_checkmate)
 from chess.core.coloring import color_board
 from chess.core.moving import move
 from chess.ai.score import score_board

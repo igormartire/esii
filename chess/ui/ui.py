@@ -27,8 +27,6 @@ BOARD_SIZE = 640
 CELL_BORDER = 3
 IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
 
-clock = pygame.time.Clock()
-
 
 class UI:
     def __init__(self):
@@ -301,7 +299,6 @@ def menu(ui):
     quit = False
 
     # region Main Menu
-    # TODO: create a class to encapsulate each menu option
     menu_options = []
     play_text = 'Play ({})'.format(chosen_difficulty(ui.game_difficulty))
     play_menu = ui.font.render(play_text, 1, Color.WHITE.rgb)

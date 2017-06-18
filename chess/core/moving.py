@@ -1,6 +1,7 @@
 from chess.core.models import Piece, Coordinate, Color
 from chess.core.utils import (remaining_pieces, piece_at,
                               WHITE_PIECES, BLACK_PIECES)
+from chess.core.draw import (threefold_repetition, fifty_move_rule)
 import copy
 
 
@@ -19,37 +20,6 @@ def move(game, src, dest, promotion_callback=None, draw_allowed_callback=None):
 
     promotion(game, dest, promotion_callback)
     en_passant(game, src, dest)
-
-
-def threefold_repetition(game, src, dest, draw_allowed_callback):
-    if piece_at(game.board, src) in [Piece.WHITE_PAWN, Piece.BLACK_PAWN]:
-        # it is impossible to repeat a board after a pawn movement
-        game.clear_threefold_history()
-    elif piece_at(game.board, dest) != Piece.NONE:
-        # it is impossible to repeat a board after a capture
-        game.clear_threefold_history()
-    else:
-        repetition_count = 1  # this current state
-        history = game.get_threefold_history()
-        for previous_state in history:
-            if game.is_identical_to(previous_state):
-                repetition_count += 1
-        if repetition_count >= 3:
-            draw_allowed_callback()
-    game.add_to_history(copy.deepcopy(game))
-
-
-def fifty_move_rule(game, src, dest, draw_allowed_callback):
-    piece = piece_at(game.board, src)
-    if (piece not in [Piece.WHITE_PAWN, Piece.BLACK_PAWN] and
-            piece_at(game.board, dest) == Piece.NONE):
-        piece_color = Color.WHITE if piece in WHITE_PIECES else Color.BLACK
-        game.fift_move_rule_count[piece_color] += 1
-        if (game.fift_move_rule_count[Color.WHITE] >= 50 and
-                game.fift_move_rule_count[Color.BLACK] >= 50):
-            draw_allowed_callback()
-    else:
-        game.fift_move_rule_count[piece_color] = 0
 
 
 def en_passant(game, src, dest):
@@ -140,37 +110,3 @@ def castling(game, src, dest):
           src == Coordinate(0, 7) and
           game.state.allow_castling_right_black_rook):
         game.state.allow_castling_right_black_rook = False
-
-
-def diagonal_moves(board, src):
-    moves = set()
-
-    # diagonal pra cima e pra esquerda
-    for i in range(1, min(src.row, src.column) + 1):
-        pos = Coordinate(src.row - i, src.column - i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra cima e pra direita
-    for i in range(1, min(src.row, 7 - src.column) + 1):
-        pos = Coordinate(src.row - i, src.column + i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra baixo e pra esquerda
-    for i in range(1, min(7 - src.row, src.column) + 1):
-        pos = Coordinate(src.row + i, src.column - i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    # diagonal pra baixo e pra direita
-    for i in range(1, min(7 - src.row, 7 - src.column) + 1):
-        pos = Coordinate(src.row + i, src.column + i)
-        moves.add(pos)
-        if board[pos.row][pos.column] != Piece.NONE:
-            break
-
-    return set(moves)

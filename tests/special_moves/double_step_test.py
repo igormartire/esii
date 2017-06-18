@@ -1,4 +1,4 @@
-from chess.core.possible_destinations import destinations
+from chess.core.query import destinations
 from chess.core.models import Piece, Coordinate
 from chess.core.utils import empty_board, set_at
 from chess.core.game import Game

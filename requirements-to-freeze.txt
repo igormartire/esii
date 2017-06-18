@@ -1,4 +1,0 @@
-# https://www.kennethreitz.org/essays/a-better-pip-workflow
-pygame==1.9.3
-pytest
-pep8

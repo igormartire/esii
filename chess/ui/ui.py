@@ -291,13 +291,14 @@ def chosen_difficulty(game_difficulty):
     }
     return difficulty_map[game_difficulty]
 
+
 def menu(ui):
     print("menu")
     menu = True
     difficulty = False
     quit = False
 
-    #region Main Menu
+    # region Main Menu
     # TODO: create a class to encapsulate each menu option
     menu_options = []
     play_text = 'Play ({})'.format(chosen_difficulty(ui.game_difficulty))
@@ -321,9 +322,9 @@ def menu(ui):
         (difficulty_text, difficulty_menu, difficulty_menu_rect))
     menu_options.append(
         (quit_text, quit_menu, quit_menu_rect))
-    #endregion
+    # endregion
 
-    #region Difficulty Menu
+    # region Difficulty Menu
     diff_options = []
     easy_text = 'Easy'
     easy_menu = ui.font.render(easy_text, 1, Color.WHITE.rgb)
@@ -346,8 +347,7 @@ def menu(ui):
         (medium_text, medium_menu, medium_menu_rect))
     diff_options.append(
         (hard_text, hard_menu, hard_menu_rect))
-    #endregion
-
+    # endregion
 
     menu_choice = 0
     while menu and not quit:
@@ -380,7 +380,7 @@ def menu(ui):
 
         ui.screen.fill((0, 0, 0,))
         ui.screen.blit(ui.assets['bg'],
-           pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
+                       pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
         # Terrible code... when MenuOption class is created it's going to be
         # more legible .-.
@@ -404,11 +404,9 @@ def menu(ui):
             else:
                 render_text = ui.font.render(text, 1, Color.WHITE.rgb)
 
-
             ui.screen.blit(render_text, rect)
             ui.screen.blit(ui.assets['logo'],
                            pygame.Rect(100, 50, 80, 80))
-
 
         pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
             (0, 0), (SCREEN_WIDTH, 0),

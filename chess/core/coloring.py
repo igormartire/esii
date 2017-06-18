@@ -7,8 +7,6 @@ from chess.core.models import Color, Piece
 #   [models.Coordinate(1,1), models.Coordinate(3,5)]
 # )
 def color_board(board, possible_destinations):
-    # TODO: verificar se isso é mesmo necessário ou se estamos dando voltas a
-    # toa
     B = Color.BLACK
     W = Color.WHITE
 

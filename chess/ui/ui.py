@@ -48,8 +48,14 @@ class UI:
             "BLACK_QUEEN_IMAGE": self.load_png('chess-pieces/black-queen'),
             "BLACK_ROOK_IMAGE": self.load_png('chess-pieces/black-rook')
         }
+        self.assets = {
+            'logo': self.load_png('logo'),
+            'bg': self.load_png('bg'),
+        }
 
         self.__displayed_text = self.font.render("", 1, (255, 255, 255))
+
+        self.game_difficulty = 0
 
     def display_text(self, text, color=(255, 255, 255)):
         self.__displayed_text = self.font.render(text, 1, color)
@@ -277,25 +283,130 @@ def promotion_callback_factory(ui):
     return promotion_callback
 
 
+def chosen_difficulty(game_difficulty):
+    difficulty_map = {
+        0: 'Easy',
+        1: 'Medium',
+        2: 'Hard',
+    }
+    return difficulty_map[game_difficulty]
+
+
 def menu(ui):
     print("menu")
     menu = True
+    difficulty = False
     quit = False
+
+    # region Main Menu
+    menu_options = []
+    play_text = 'Play ({})'.format(chosen_difficulty(ui.game_difficulty))
+    play_menu = ui.font.render(play_text, 1, Color.WHITE.rgb)
+    play_menu_rect = play_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 30)
+    )
+    difficulty_text = 'Difficulty'
+    difficulty_menu = ui.font.render(difficulty_text, 1, Color.WHITE.rgb)
+    difficulty_menu_rect = difficulty_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50)
+    )
+    quit_text = 'Quit'
+    quit_menu = ui.font.render(quit_text, 1, Color.WHITE.rgb)
+    quit_menu_rect = quit_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 130)
+    )
+    menu_options.append(
+        (play_text, play_menu, play_menu_rect))
+    menu_options.append(
+        (difficulty_text, difficulty_menu, difficulty_menu_rect))
+    menu_options.append(
+        (quit_text, quit_menu, quit_menu_rect))
+    # endregion
+
+    # region Difficulty Menu
+    diff_options = []
+    easy_text = 'Easy'
+    easy_menu = ui.font.render(easy_text, 1, Color.WHITE.rgb)
+    easy_menu_rect = easy_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 30)
+    )
+    medium_text = 'Medium'
+    medium_menu = ui.font.render(medium_text, 1, Color.WHITE.rgb)
+    medium_menu_rect = medium_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50)
+    )
+    hard_text = 'Hard'
+    hard_menu = ui.font.render(hard_text, 1, Color.WHITE.rgb)
+    hard_menu_rect = hard_menu.get_rect(
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 130)
+    )
+    diff_options.append(
+        (easy_text, easy_menu, easy_menu_rect))
+    diff_options.append(
+        (medium_text, medium_menu, medium_menu_rect))
+    diff_options.append(
+        (hard_text, hard_menu, hard_menu_rect))
+    # endregion
+
+    menu_choice = 0
     while menu and not quit:
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN \
-                    or event.type == pygame.MOUSEBUTTONDOWN:
-                menu = False
-                quit = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    menu_choice += 1
+                    menu_choice = menu_choice % 3
+                if event.key == pygame.K_UP:
+                    menu_choice -= 1
+                    if menu_choice < 0:
+                        menu_choice = 2
+                if event.key == pygame.K_RETURN:
+                    # Selected difficulty
+                    if difficulty:
+                        ui.game_difficulty = menu_choice
+                        difficulty = False
+                        print("Changing game difficulty to: {}".format(
+                            ui.game_difficulty))
+                    else:
+                        if menu_choice == 0:
+                            menu = False
+                        if menu_choice == 1:
+                            # Change menu
+                            difficulty = True
+                        if menu_choice == 2:
+                            quit = True
             if event.type == pygame.QUIT:
                 quit = True
 
         ui.screen.fill((0, 0, 0,))
+        ui.screen.blit(ui.assets['bg'],
+                       pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
-        text = ui.font.render("Press (ENTER) to Start", 1, Color.WHITE.rgb)
-        text_rect = text.get_rect(
-            center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-        ui.screen.blit(text, text_rect)
+        # Terrible code... when MenuOption class is created it's going to be
+        # more legible .-.
+        for i in range(3):
+            if difficulty:
+                text = diff_options[i][0]
+                render_text = diff_options[i][1]
+                rect = diff_options[i][2]
+            else:
+                # Gambiarra
+                if i == 0:
+                    text = 'Play ({})'.format(
+                        chosen_difficulty(ui.game_difficulty))
+                else:
+                    text = menu_options[i][0]
+                render_text = menu_options[i][1]
+                rect = menu_options[i][2]
+
+            if i == menu_choice:
+                render_text = ui.font.render(text, 1, Color.RED.rgb)
+            else:
+                render_text = ui.font.render(text, 1, Color.WHITE.rgb)
+
+            ui.screen.blit(render_text, rect)
+            ui.screen.blit(ui.assets['logo'],
+                           pygame.Rect(100, 50, 80, 80))
+
         pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
             (0, 0), (SCREEN_WIDTH, 0),
             (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
@@ -308,6 +419,7 @@ def menu(ui):
 
 def run_game(ui, game, board):
 
+    print(ui.game_difficulty)
     held_piece_coord = None
     player_turn = True
     print("Player turn...")

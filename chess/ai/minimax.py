@@ -14,6 +14,7 @@ from chess.core.possible_destinations import (destinations,
 from copy import deepcopy
 
 class Minimax:
+    VICTORY = 100
     def __init__(self, state, difficulty):
         self.state = state
         self.difficulty = difficulty

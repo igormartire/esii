@@ -60,11 +60,25 @@ class UI:
     def display_text(self, text, color=(255, 255, 255)):
         self.__displayed_text = self.font.render(text, 1, color)
 
-    def animate(self, board, colored_board, move_diff):
+    def animate(self, board, move_diff):
+        B = Color.BLACK
+        W = Color.WHITE
+        colored_board = [[W, B, W, B, W, B, W, B],
+                         [B, W, B, W, B, W, B, W],
+                         [W, B, W, B, W, B, W, B],
+                         [B, W, B, W, B, W, B, W],
+                         [W, B, W, B, W, B, W, B],
+                         [B, W, B, W, B, W, B, W],
+                         [W, B, W, B, W, B, W, B],
+                         [B, W, B, W, B, W, B, W]]
+        print(board)
+        print(colored_board)
+        print(move_diff)
         dH = move_diff[1].row - move_diff[0].row
         dL = move_diff[1].column - move_diff[0].column
         for i in range(10):
             t = i / 10.0
+            self.screen.fill((0, 0, 0))
             board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
             chess_pieces = []
             num_of_cells = len(board)
@@ -72,14 +86,21 @@ class UI:
             for row in range(num_of_cells):
                 for col in range(num_of_cells):
                     cell_rect = (col * cell_size, row * cell_size,
-                                 cell_size - 5, cell_size - 5)
+                                 cell_size - CELL_BORDER,
+                                 cell_size - CELL_BORDER)
                     if row == move_diff[1].row and col == move_diff[1].column:
                         piece_cell_rect = (
-                            (move_diff[0].column + t * dL) * cell_size,
-                            (move_diff[0].row + t * dH) * cell_size,
-                            cell_size - 5, cell_size - 5)
+                            (move_diff[0].column + t * dL) * cell_size +
+                            board_position()[0],
+                            (move_diff[0].row + t * dH) * cell_size +
+                            board_position()[1],
+                            cell_size - CELL_BORDER, cell_size - CELL_BORDER)
                     else:
-                        piece_cell_rect = cell_rect
+                        piece_cell_rect = (
+                            col * cell_size + board_position()[0],
+                            row * cell_size + board_position()[1],
+                            cell_size - CELL_BORDER,
+                            cell_size - CELL_BORDER)
                     cell_color_rgb = colored_board[row][col].rgb
                     board_surface.fill(cell_color_rgb, cell_rect)
                     cell_value = board[row][col]
@@ -91,6 +112,10 @@ class UI:
             self.screen.blit(board_surface, board_position())
             for chess_piece in chess_pieces:
                 self.screen.blit(chess_piece.image, chess_piece.rect)
+            # Foreground
+            text_rect = self.__displayed_text.get_rect(
+                center=(SCREEN_WIDTH / 2, 50))
+            self.screen.blit(self.__displayed_text, text_rect)
             pygame.display.update()
             time.sleep(0.03)
 
@@ -497,6 +522,7 @@ def run_game(ui, game, board):
             ui.display_text("Computer turn...")
             movement = greedy_move(game)
             move(game, movement[0], movement[1])
+            ui.animate(game.board, movement)
             print("Computer moved!")
             if is_checkmate_for_player(game, Player.WHITE):
                 print('BLACK player wins!')

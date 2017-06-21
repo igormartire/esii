@@ -305,6 +305,7 @@ def menu(ui):
     play_menu_rect = play_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 30)
     )
+
     difficulty_text = 'Difficulty'
     difficulty_menu = ui.font.render(difficulty_text, 1, Color.WHITE.rgb)
     difficulty_menu_rect = difficulty_menu.get_rect(
@@ -381,20 +382,18 @@ def menu(ui):
         ui.screen.blit(ui.assets['bg'],
                        pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
-        # Terrible code... when MenuOption class is created it's going to be
-        # more legible .-.
         for i in range(3):
             if difficulty:
                 text = diff_options[i][0]
                 render_text = diff_options[i][1]
                 rect = diff_options[i][2]
             else:
-                # Gambiarra
                 if i == 0:
                     text = 'Play ({})'.format(
                         chosen_difficulty(ui.game_difficulty))
                 else:
                     text = menu_options[i][0]
+
                 render_text = menu_options[i][1]
                 rect = menu_options[i][2]
 

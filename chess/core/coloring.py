@@ -6,9 +6,7 @@ from chess.core.models import Color, Piece
 #   board,
 #   [models.Coordinate(1,1), models.Coordinate(3,5)]
 # )
-def color_board(board, possible_destinations):
-    # TODO: verificar se isso é mesmo necessário ou se estamos dando voltas a
-    # toa
+def color_board(board, destinations):
     B = Color.BLACK
     W = Color.WHITE
 
@@ -21,7 +19,7 @@ def color_board(board, possible_destinations):
                      [W, B, W, B, W, B, W, B],
                      [B, W, B, W, B, W, B, W]]
 
-    for dest in possible_destinations:
+    for dest in destinations:
         if board[dest.row][dest.column] != Piece.NONE:
             colored_board[dest.row][dest.column] = Color.RED
         else:

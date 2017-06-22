@@ -1,7 +1,10 @@
-from chess.core.models import Coordinate, Piece, Player
+from chess.core.models import Coordinate, Piece, Player, Color
 from chess.core.utils import (BLACK_PIECES, WHITE_PIECES,
-                              initial_board, piece_at, empty_at)
-from chess.core.moving import diagonal_moves, move
+                              initial_board, piece_at, empty_at,
+                              remaining_pieces, color_by_pos,
+                              get_piece_coordinate)
+from chess.core.moving import move
+from chess.core.coloring import color_board
 import copy
 
 
@@ -34,14 +37,12 @@ def is_check_for_player(game, checked_player):
     king = (Piece.WHITE_KING
             if checked_player == Player.WHITE
             else Piece.BLACK_KING)
-    for row in range(8):
-        for column in range(8):
-            pos = Coordinate(row, column)
-            if piece_at(game.board, pos) == king:
-                return is_attacked(game, pos, checked_player)
+    king_pos = get_piece_coordinate(game.board, king)
+    if (king_pos is not None):
+        return is_attacked(game, king_pos, checked_player)
 
 
-def is_check_mate_for_player(game, player):
+def is_checkmate_for_player(game, player):
     pieces = (WHITE_PIECES
               if player == Player.WHITE
               else BLACK_PIECES)
@@ -52,7 +53,67 @@ def is_check_mate_for_player(game, player):
             if piece_at(game.board, pos) in pieces:
                 if len(destinations(game, pos)) > 0:
                     return False
-    return True
+    # checkmate only when check and also no possible moves
+    return is_check_for_player(game, player)
+
+
+def is_stalemate_for_player(game, player):
+    pieces = (WHITE_PIECES
+              if player == Player.WHITE
+              else BLACK_PIECES)
+
+    for row in range(8):
+        for column in range(8):
+            pos = Coordinate(row, column)
+            if piece_at(game.board, pos) in pieces:
+                if len(destinations(game, pos)) > 0:
+                    return False
+    # stalemate only when not in check but no possible moves
+    return not is_check_for_player(game, player)
+
+
+def is_impossible_checkmate(game):
+    king_versus_king = False
+    king_and_bishop_versus_king = False
+    king_and_knight_versus_king = False
+    king_and_bishop_versus_king_and_bishop_on_same_color = False
+    remaining_white_pieces = remaining_pieces(game.board, Color.WHITE)
+    remaining_black_pieces = remaining_pieces(game.board, Color.BLACK)
+    if len(remaining_white_pieces) > 2 or len(remaining_black_pieces) > 2:
+        return False
+    if len(remaining_white_pieces) == 1 and len(remaining_black_pieces) == 1:
+        king_versus_king = True
+    elif (len(remaining_white_pieces) == 1 and
+          set(remaining_black_pieces) == set([Piece.BLACK_KING,
+                                              Piece.BLACK_BISHOP])):
+        king_and_bishop_versus_king = True
+    elif (len(remaining_black_pieces) == 1 and
+          set(remaining_white_pieces) == set([Piece.WHITE_KING,
+                                              Piece.WHITE_BISHOP])):
+        king_and_bishop_versus_king = True
+    elif (len(remaining_white_pieces) == 1 and
+          set(remaining_black_pieces) == set([Piece.BLACK_KING,
+                                              Piece.BLACK_KNIGHT])):
+        king_and_knight_versus_king = True
+    elif (len(remaining_black_pieces) == 1 and
+          set(remaining_white_pieces) == set([Piece.WHITE_KING,
+                                              Piece.WHITE_KNIGHT])):
+        king_and_knight_versus_king = True
+    elif (set(remaining_white_pieces) == set([Piece.WHITE_KING,
+                                              Piece.WHITE_BISHOP]) and
+          set(remaining_black_pieces) == set([Piece.BLACK_KING,
+                                              Piece.BLACK_BISHOP])):
+        white_bishop_pos = get_piece_coordinate(game.board, Piece.WHITE_BISHOP)
+        black_bishop_pos = get_piece_coordinate(game.board, Piece.BLACK_BISHOP)
+        color_white_bishop_on = color_by_pos(white_bishop_pos)
+        color_black_bishop_on = color_by_pos(black_bishop_pos)
+        king_and_bishop_versus_king_and_bishop_on_same_color = (
+            color_white_bishop_on == color_black_bishop_on)
+
+    return (king_versus_king or
+            king_and_bishop_versus_king or
+            king_and_knight_versus_king or
+            king_and_bishop_versus_king_and_bishop_on_same_color)
 
 
 def is_attacked(game, pos, attacked_player):
@@ -64,14 +125,16 @@ def is_attacked(game, pos, attacked_player):
             coord = Coordinate(row, column)
             piece = piece_at(game.board, coord)
             if (piece in attacker_pieces and
-                    pos in destinations(game, coord, offensive_only=True)):
+                    pos in destinations(game, coord,
+                                        all_and_only_offensive=True)):
                 return True
 
 
-def destinations(game, src, offensive_only=False):
+def destinations(game, src, all_and_only_offensive=False):
     """
-    offensive_only means to get the tiles the
-    piece at src can attack in the game
+    all_and_only_offensive means to get the tiles the
+    piece at src can attack in the game without
+    considering checkmates
     """
     board = game.board
     piece = board[src.row][src.column]
@@ -81,7 +144,7 @@ def destinations(game, src, offensive_only=False):
         up_middle = Coordinate(src.row - 1, src.column)
         up_left = Coordinate(src.row - 1, src.column - 1)
         up_right = Coordinate(src.row - 1, src.column + 1)
-        if offensive_only:
+        if all_and_only_offensive:
             allowed_destinations.append(up_left)
             allowed_destinations.append(up_right)
         else:
@@ -109,7 +172,7 @@ def destinations(game, src, offensive_only=False):
         down_middle = Coordinate(src.row + 1, src.column)
         down_left = Coordinate(src.row + 1, src.column - 1)
         down_right = Coordinate(src.row + 1, src.column + 1)
-        if offensive_only:
+        if all_and_only_offensive:
             allowed_destinations.append(down_left)
             allowed_destinations.append(down_right)
         else:
@@ -160,7 +223,7 @@ def destinations(game, src, offensive_only=False):
         ]
 
         # castling
-        if not offensive_only:
+        if not all_and_only_offensive:
             if (piece == Piece.WHITE_KING and
                     game.state.allow_castling_white_king):
                 if (game.state.allow_castling_left_white_rook and
@@ -197,56 +260,81 @@ def destinations(game, src, offensive_only=False):
                     allowed_destinations.append(src.right(2))
 
     if piece == Piece.WHITE_ROOK or piece == Piece.BLACK_ROOK:
-        for left in range(src.column - 1, -1, -1):
-            allowed_destinations += [
-                Coordinate(src.row, left)
-            ]
-            if board[src.row][left] != Piece.NONE:
-                break
-        for right in range(src.column + 1, 8, 1):
-            allowed_destinations += [
-                Coordinate(src.row, right)
-            ]
-            if board[src.row][right] != Piece.NONE:
-                break
-        for down in range(src.row + 1, 8, 1):
-            allowed_destinations += [
-                Coordinate(down, src.column)
-            ]
-            if board[down][src.column] != Piece.NONE:
-                break
-        for up in range(src.row - 1, -1, -1):
-            allowed_destinations += [
-                Coordinate(up, src.column)
-            ]
-            if board[up][src.column] != Piece.NONE:
-                break
+        allowed_destinations = straight_moves(board, src)
 
     if piece == Piece.WHITE_BISHOP or piece == Piece.BLACK_BISHOP:
         allowed_destinations = diagonal_moves(board, src)
 
     if piece == Piece.WHITE_QUEEN or piece == Piece.BLACK_QUEEN:
-        for left in range(src.column - 1, -1, -1):
-            allowed_destinations.append(Coordinate(src.row, left))
-            if board[src.row][left] != Piece.NONE:
-                break
-        for right in range(src.column + 1, 8, 1):
-            allowed_destinations.append(Coordinate(src.row, right))
-            if board[src.row][right] != Piece.NONE:
-                break
-        for down in range(src.row + 1, 8, 1):
-            allowed_destinations.append(Coordinate(down, src.column))
-            if board[down][src.column] != Piece.NONE:
-                break
-        for up in range(src.row - 1, -1, -1):
-            allowed_destinations.append(Coordinate(up, src.column))
-            if board[up][src.column] != Piece.NONE:
-                break
-        allowed_destinations += diagonal_moves(board, src)
+        allowed_destinations = straight_moves(board, src).union(
+            diagonal_moves(board, src))
 
-    if offensive_only:
+    if all_and_only_offensive:
         return allowed_destinations
     else:
-        return [
-            coord for coord in allowed_destinations
-            if is_valid(game, src, coord)]
+        return [dest for dest in allowed_destinations
+                if is_valid(game, src, dest)]
+
+
+def straight_moves(board, src):
+    moves = set()
+
+    # pra esquerda
+    for left in range(src.column - 1, -1, -1):
+        moves.add(Coordinate(src.row, left))
+        if board[src.row][left] != Piece.NONE:
+            break
+
+    # pra direita
+    for right in range(src.column + 1, 8, 1):
+        moves.add(Coordinate(src.row, right))
+        if board[src.row][right] != Piece.NONE:
+            break
+
+    # pra baixo
+    for down in range(src.row + 1, 8, 1):
+        moves.add(Coordinate(down, src.column))
+        if board[down][src.column] != Piece.NONE:
+            break
+
+    # pra cima
+    for up in range(src.row - 1, -1, -1):
+        moves.add(Coordinate(up, src.column))
+        if board[up][src.column] != Piece.NONE:
+            break
+
+    return moves
+
+
+def diagonal_moves(board, src):
+    moves = set()
+
+    # diagonal pra cima e pra esquerda
+    for i in range(1, min(src.row, src.column) + 1):
+        pos = Coordinate(src.row - i, src.column - i)
+        moves.add(pos)
+        if board[pos.row][pos.column] != Piece.NONE:
+            break
+
+    # diagonal pra cima e pra direita
+    for i in range(1, min(src.row, 7 - src.column) + 1):
+        pos = Coordinate(src.row - i, src.column + i)
+        moves.add(pos)
+        if board[pos.row][pos.column] != Piece.NONE:
+            break
+
+    # diagonal pra baixo e pra esquerda
+    for i in range(1, min(7 - src.row, src.column) + 1):
+        pos = Coordinate(src.row + i, src.column - i)
+        moves.add(pos)
+        if board[pos.row][pos.column] != Piece.NONE:
+            break
+
+    # diagonal pra baixo e pra direita
+    for i in range(1, min(7 - src.row, 7 - src.column) + 1):
+        pos = Coordinate(src.row + i, src.column + i)
+        moves.add(pos)
+        if board[pos.row][pos.column] != Piece.NONE:
+            break
+
+    return moves

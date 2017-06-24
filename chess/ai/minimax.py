@@ -2,6 +2,7 @@
 # Minimax com poda alpha-beta
 
 from chess.core.models import Coordinate
+from random import*
 from chess.core.moving import move
 from chess.core.possible_destinations import destinations
 from chess.ai.score import score_board
@@ -27,9 +28,7 @@ class Minimax:
             depth = 2
         elif self.difficulty == "hard":
             depth = 3
-        elif self.difficulty == "very hard":
-            depth = 4
-        
+                
         return depth
 
     # Realiza a jogada do PC, devolvendo um array [pos_x, pos_y] com as posições da jogada
@@ -64,21 +63,30 @@ class Minimax:
                         
             # momento em que pega a jogada do adversário
             m = self.max_value(minstate, alfa, beta, depth - 1)
-                        
-            if m[0] > v[0]:
-                v[0] = m[0]
-                        
-            v[1] = source
-            v[2] = movement[1]
+            
+            if m != None:            
+                if m[0] > v[0]:
+                    v[0] = m[0]
+                            
+                v[1] = source
+                v[2] = movement[1]
 
-            v_list.append(v)
-            
-            if v[0] <= alfa:
-                return min(v_list, key=lambda v: v[0])
-            
-            beta = min(v[0], beta)
-            
-        return min(v_list, key=lambda v: v[0])
+                v_list.append(v)
+                
+                if v[0] <= alfa:
+                    if all(v[0] == 0 for v in v_list):
+                        if len(v_list) != 0:
+                            return v_list[randint(0, len(v_list) - 1)]
+                    else:
+                        return min(v_list, key=lambda v: v[0])
+                
+                beta = min(v[0], beta)
+
+        if all(v[0] == 0 for v in v_list):
+            if len(v_list) != 0:
+                return v_list[randint(0, len(v_list) - 1)]
+        else:    
+            return min(v_list, key=lambda v: v[0])
 
     # Maximiza a jogada do PC (peça preta)
     def max_value(self, state, alfa, beta, depth):
@@ -106,21 +114,30 @@ class Minimax:
                         
             # momento em que pega a jogada do adversário
             m = self.min_value(maxstate, alfa, beta, depth - 1)
-                        
-            if m[0] < v[0]:
-                v[0] = m[0]
-                        
-            v[1] = source
-            v[2] = movement[1]
+            
+            if m != None:         
+                if m[0] < v[0]:
+                    v[0] = m[0]
+                            
+                v[1] = source
+                v[2] = movement[1]
 
-            v_list.append(v)
+                v_list.append(v)
+                
+                if v[0] >= beta:
+                    if all(v[0] == 0 for v in v_list):
+                        if len(v_list) != 0:
+                            return v_list[randint(0, len(v_list) - 1)]
+                    else:
+                        return max(v_list, key=lambda v: v[0])
+                
+                alfa = max(v[0], alfa)
             
-            if v[0] >= beta:
-                return max(v_list, key=lambda v: v[0])
-            
-            alfa = max(v[0], alfa)
-            
-        return max(v_list, key=lambda v: v[0])
+        if all(v[0] == 0 for v in v_list):
+            if len(v_list) != 0:
+                return v_list[randint(0, len(v_list) - 1)]
+        else:
+            return max(v_list, key=lambda v: v[0])
 
 
     def valid_movements(self, state, piece_type):

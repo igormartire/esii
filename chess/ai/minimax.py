@@ -68,19 +68,19 @@ class Minimax:
                 if m[0] > v[0]:
                     v[0] = m[0]
                             
-                v[1] = source
-                v[2] = movement[1]
+            v[1] = source
+            v[2] = movement[1]
 
-                v_list.append(v)
-                
-                if v[0] <= alfa:
-                    if all(v[0] == 0 for v in v_list):
-                        if len(v_list) != 0:
-                            return v_list[randint(0, len(v_list) - 1)]
-                    else:
-                        return min(v_list, key=lambda v: v[0])
-                
-                beta = min(v[0], beta)
+            v_list.append(v)
+            
+            if v[0] <= alfa:
+                if all(v[0] == 0 for v in v_list):
+                    if len(v_list) != 0:
+                        return v_list[randint(0, len(v_list) - 1)]
+                else:
+                    return min(v_list, key=lambda v: v[0])
+            
+            beta = min(v[0], beta)
 
         if all(v[0] == 0 for v in v_list):
             if len(v_list) != 0:
@@ -119,19 +119,19 @@ class Minimax:
                 if m[0] < v[0]:
                     v[0] = m[0]
                             
-                v[1] = source
-                v[2] = movement[1]
+            v[1] = source
+            v[2] = movement[1]
 
-                v_list.append(v)
-                
-                if v[0] >= beta:
-                    if all(v[0] == 0 for v in v_list):
-                        if len(v_list) != 0:
-                            return v_list[randint(0, len(v_list) - 1)]
-                    else:
-                        return max(v_list, key=lambda v: v[0])
-                
-                alfa = max(v[0], alfa)
+            v_list.append(v)
+            
+            if v[0] >= beta:
+                if all(v[0] == 0 for v in v_list):
+                    if len(v_list) != 0:
+                        return v_list[randint(0, len(v_list) - 1)]
+                else:
+                    return max(v_list, key=lambda v: v[0])
+            
+            alfa = max(v[0], alfa)
             
         if all(v[0] == 0 for v in v_list):
             if len(v_list) != 0:

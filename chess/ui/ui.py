@@ -427,11 +427,6 @@ def menu(ui):
                                20, 20)
                            )
 
-        pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
-            (0, 0), (SCREEN_WIDTH, 0),
-            (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
-        ], 10)
-
         pygame.display.update()
 
     return quit

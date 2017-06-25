@@ -76,17 +76,17 @@ class Minimax:
             v_list.append(v)
 
             if v[0] <= alfa:
-                if self.jogada_aleatoria(v_list):
-                    if len(v_list) != 0:
-                        return v_list[randint(0, len(v_list) - 1)]
+                if self.random_movement(v_list):
+                    return v_list[randint(0, len(v_list) - 1)]
+                        
                 else:
                     return min(v_list, key=lambda v: v[0])
 
             beta = min(v[0], beta)
-
-        if self.jogada_aleatoria(v_list):
-            if len(v_list) != 0:
-                return v_list[randint(0, len(v_list) - 1)]
+        
+        if self.random_movement(v_list):
+            return v_list[randint(0, len(v_list) - 1)]
+                
         else:
             return min(v_list, key=lambda v: v[0])
 
@@ -128,17 +128,17 @@ class Minimax:
             v_list.append(v)
 
             if v[0] >= beta:
-                if self.jogada_aleatoria(v_list):
-                    if len(v_list) != 0:
-                        return v_list[randint(0, len(v_list) - 1)]
+                if self.random_movement(v_list):
+                    return v_list[randint(0, len(v_list) - 1)]
+                        
                 else:
                     return max(v_list, key=lambda v: v[0])
 
             alfa = max(v[0], alfa)
 
-        if self.jogada_aleatoria(v_list):
-            if len(v_list) != 0:
-                return v_list[randint(0, len(v_list) - 1)]
+        if self.random_movement(v_list):
+            return v_list[randint(0, len(v_list) - 1)]
+                
         else:
             return max(v_list, key=lambda v: v[0])
 
@@ -158,14 +158,13 @@ class Minimax:
 
         return destinations_list
 
-    def jogada_aleatoria(self, l):
+    def random_movement(self, l):
+        
         for i in l:
             if l[0][0] != i[0]:
                 return False
+             
         return True
 
     def cutoff_test(self, depth):
-        if depth == 0:
-            return True
-
-        return False
+        return depth == 0

@@ -43,7 +43,6 @@ class Minimax:
         	return [state.value, None, None]
 
         if is_check_mate_for_player(self.state.game, Player.BLACK):
-            print("passou")
             return [-self.VICTORY, None]
 
         v_list = []
@@ -97,7 +96,6 @@ class Minimax:
         	return [state.value, None, None]
 
         if is_check_mate_for_player(self.state.game, Player.WHITE):
-            print("passou")
             return [self.VICTORY, None]
 
         v_list = []

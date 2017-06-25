@@ -474,7 +474,8 @@ def run_game(ui, game, board):
                         if cell_coord in dests:
                             move(game, held_piece_coord, cell_coord,
                                  promotion_callback_factory(ui))
-                            ui.animate(game.board, (held_piece_coord, cell_coord))
+                            ui.animate(game.board,
+                                       (held_piece_coord, cell_coord))
                             player_turn = False
                             if is_checkmate_for_player(game, Player.BLACK):
                                 ui.display_text(

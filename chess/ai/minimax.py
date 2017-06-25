@@ -2,6 +2,7 @@
 # Minimax com poda alpha-beta
 
 from chess.core.models import Coordinate
+import operator
 from random import*
 from chess.core.moving import move
 from chess.core.possible_destinations import destinations
@@ -15,7 +16,7 @@ from chess.core.possible_destinations import (destinations,
 from copy import deepcopy
 
 class Minimax:
-    VICTORY = 100
+    VICTORY = 10000
     def __init__(self, state, difficulty):
         self.state = state
         self.difficulty = difficulty
@@ -42,6 +43,7 @@ class Minimax:
         	return [state.value, None, None]
 
         if is_check_mate_for_player(self.state.game, Player.BLACK):
+            print("passou")
             return [-self.VICTORY, None]
 
         v_list = []
@@ -74,7 +76,7 @@ class Minimax:
             v_list.append(v)
             
             if v[0] <= alfa:
-                if all(v[0] == 0 for v in v_list):
+                if self.jogada_aleatoria(v_list):
                     if len(v_list) != 0:
                         return v_list[randint(0, len(v_list) - 1)]
                 else:
@@ -82,7 +84,7 @@ class Minimax:
             
             beta = min(v[0], beta)
 
-        if all(v[0] == 0 for v in v_list):
+        if self.jogada_aleatoria(v_list):
             if len(v_list) != 0:
                 return v_list[randint(0, len(v_list) - 1)]
         else:    
@@ -94,8 +96,9 @@ class Minimax:
         if self.cutoff_test(depth):
         	return [state.value, None, None]
 
-        if is_check_mate_for_player(self.state.game, Player.BLACK):
-            return [-self.VICTORY, None]
+        if is_check_mate_for_player(self.state.game, Player.WHITE):
+            print("passou")
+            return [self.VICTORY, None]
 
         v_list = []
         
@@ -125,7 +128,7 @@ class Minimax:
             v_list.append(v)
             
             if v[0] >= beta:
-                if all(v[0] == 0 for v in v_list):
+                if self.jogada_aleatoria(v_list):
                     if len(v_list) != 0:
                         return v_list[randint(0, len(v_list) - 1)]
                 else:
@@ -133,7 +136,7 @@ class Minimax:
             
             alfa = max(v[0], alfa)
             
-        if all(v[0] == 0 for v in v_list):
+        if self.jogada_aleatoria(v_list):
             if len(v_list) != 0:
                 return v_list[randint(0, len(v_list) - 1)]
         else:
@@ -156,6 +159,12 @@ class Minimax:
                         
 
         return destinations_list
+
+    def jogada_aleatoria(self, l):
+        for i in l:
+            if l[0][0] != i[0]:
+                return False
+        return True
 
     def cutoff_test(self, depth):
         if depth == 0:

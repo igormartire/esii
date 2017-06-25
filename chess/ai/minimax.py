@@ -7,8 +7,8 @@ from chess.core.moving import move
 from chess.ai.score import score_board
 from chess.core.models import Player
 from chess.core.utils import BLACK_PIECES, WHITE_PIECES
-from chess.core.possible_destinations import (destinations,
-                                              is_check_mate_for_player)
+from chess.core.query import destinations
+from chess.core.check import is_checkmate_for_player
 
 from copy import deepcopy
 
@@ -44,7 +44,7 @@ class Minimax:
         if self.cutoff_test(depth):
             return [state.value, None, None]
 
-        if is_check_mate_for_player(self.state.game, Player.BLACK):
+        if is_checkmate_for_player(self.state.game, Player.BLACK):
             return [-self.VICTORY, None]
 
         v_list = []
@@ -97,7 +97,7 @@ class Minimax:
         if self.cutoff_test(depth):
             return [state.value, None, None]
 
-        if is_check_mate_for_player(self.state.game, Player.WHITE):
+        if is_checkmate_for_player(self.state.game, Player.WHITE):
             return [self.VICTORY, None]
 
         v_list = []

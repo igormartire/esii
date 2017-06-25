@@ -15,3 +15,4 @@ class GameState:
         self.allow_castling_black_king = True
         self.allow_castling_left_black_rook = True
         self.allow_castling_right_black_rook = True
+        self.en_passant_destination = None

@@ -413,19 +413,22 @@ def menu(ui):
                 rect = menu_options[i][2]
 
             if i == menu_choice:
-                render_text = ui.font.render(text, 1, Color.RED.rgb)
+                render_text = ui.font.render(text, 1, Color.WHITE.rgb)
             else:
                 render_text = ui.font.render(text, 1, font_color)
 
             ui.screen.blit(render_text, rect)
             ui.screen.blit(ui.assets['title'],
                            pygame.Rect(120, 50, 80, 80))
-            ui.screen.blit(ui.assets['logo_small'],
-                           pygame.Rect(
-                               SCREEN_WIDTH - 140,
-                               SCREEN_HEIGHT - 80,
-                               20, 20)
-                           )
+            ui.screen.blit(
+                ui.assets['logo_small'],
+                pygame.Rect(
+                   SCREEN_WIDTH - 140,
+                   SCREEN_HEIGHT - 80,
+                   20, 20)
+               )
+            ui.screen.blit(ui.assets['bg'],
+                           pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
         pygame.display.update()
 

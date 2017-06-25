@@ -49,7 +49,8 @@ class UI:
             "BLACK_ROOK_IMAGE": self.load_png('chess-pieces/black-rook')
         }
         self.assets = {
-            'logo': self.load_png('logo'),
+            'title': self.load_png('title'),
+            'logo_small': self.load_png('logo_small'),
             'bg': self.load_png('bg'),
         }
 
@@ -71,9 +72,6 @@ class UI:
                          [B, W, B, W, B, W, B, W],
                          [W, B, W, B, W, B, W, B],
                          [B, W, B, W, B, W, B, W]]
-        print(board)
-        print(colored_board)
-        print(move_diff)
         dH = move_diff[1].row - move_diff[0].row
         dL = move_diff[1].column - move_diff[0].column
         for i in range(10):
@@ -112,7 +110,6 @@ class UI:
             self.screen.blit(board_surface, board_position())
             for chess_piece in chess_pieces:
                 self.screen.blit(chess_piece.image, chess_piece.rect)
-            # Foreground
             text_rect = self.__displayed_text.get_rect(
                 center=(SCREEN_WIDTH / 2, 50))
             self.screen.blit(self.__displayed_text, text_rect)
@@ -120,7 +117,6 @@ class UI:
             time.sleep(0.03)
 
     def refresh(self, chess_board, colored_board):
-        # Erase screen
         self.screen.fill((0, 0, 0))
 
         board_surface, chess_pieces = self.setup_board(
@@ -129,7 +125,6 @@ class UI:
         for chess_piece in chess_pieces:
             self.screen.blit(chess_piece.image, chess_piece.rect)
 
-        # Foreground
         text_rect = self.__displayed_text.get_rect(
             center=(SCREEN_WIDTH / 2, 50))
         self.screen.blit(self.__displayed_text, text_rect)
@@ -180,7 +175,6 @@ class UI:
         return board_surface, chess_pieces
 
     def load_png(self, file_name):
-        """ Load image and return image object"""
         fullname = os.path.join(IMAGES_FOLDER_PATH, file_name + '.png')
         image = pygame.image.load(fullname)
         if image.get_alpha() is None:
@@ -318,28 +312,29 @@ def chosen_difficulty(game_difficulty):
 
 
 def menu(ui):
-    print("menu")
     menu = True
     difficulty = False
     quit = False
+    font_color = (0, 150, 150)
 
     # region Main Menu
     menu_options = []
-    play_text = 'Play ({})'.format(chosen_difficulty(ui.game_difficulty))
-    play_menu = ui.font.render(play_text, 1, Color.WHITE.rgb)
+
+    play_text = 'PLAY ({})'.format(chosen_difficulty(ui.game_difficulty))
+    play_menu = ui.font.render(play_text, 1, font_color)
     play_menu_rect = play_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 30)
     )
 
     difficulty_text = 'Difficulty'
-    difficulty_menu = ui.font.render(difficulty_text, 1, Color.WHITE.rgb)
+    difficulty_menu = ui.font.render(difficulty_text, 1, font_color)
     difficulty_menu_rect = difficulty_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50)
     )
     quit_text = 'Quit'
-    quit_menu = ui.font.render(quit_text, 1, Color.WHITE.rgb)
+    quit_menu = ui.font.render(quit_text, 1, font_color)
     quit_menu_rect = quit_menu.get_rect(
-        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 130)
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 200)
     )
     menu_options.append(
         (play_text, play_menu, play_menu_rect))
@@ -352,17 +347,17 @@ def menu(ui):
     # region Difficulty Menu
     diff_options = []
     easy_text = 'Easy'
-    easy_menu = ui.font.render(easy_text, 1, Color.WHITE.rgb)
+    easy_menu = ui.font.render(easy_text, 1, font_color)
     easy_menu_rect = easy_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 30)
     )
     medium_text = 'Medium'
-    medium_menu = ui.font.render(medium_text, 1, Color.WHITE.rgb)
+    medium_menu = ui.font.render(medium_text, 1, font_color)
     medium_menu_rect = medium_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50)
     )
     hard_text = 'Hard'
-    hard_menu = ui.font.render(hard_text, 1, Color.WHITE.rgb)
+    hard_menu = ui.font.render(hard_text, 1, font_color)
     hard_menu_rect = hard_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 130)
     )
@@ -386,26 +381,21 @@ def menu(ui):
                     if menu_choice < 0:
                         menu_choice = 2
                 if event.key == pygame.K_RETURN:
-                    # Selected difficulty
                     if difficulty:
                         ui.game_difficulty = menu_choice
                         difficulty = False
-                        print("Changing game difficulty to: {}".format(
-                            ui.game_difficulty))
                     else:
                         if menu_choice == 0:
                             menu = False
                         if menu_choice == 1:
-                            # Change menu
                             difficulty = True
                         if menu_choice == 2:
                             quit = True
+                    menu_choice = 0
             if event.type == pygame.QUIT:
                 quit = True
 
         ui.screen.fill((0, 0, 0,))
-        ui.screen.blit(ui.assets['bg'],
-                       pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
         for i in range(3):
             if difficulty:
@@ -414,7 +404,7 @@ def menu(ui):
                 rect = diff_options[i][2]
             else:
                 if i == 0:
-                    text = 'Play ({})'.format(
+                    text = 'PLAY ({})'.format(
                         chosen_difficulty(ui.game_difficulty))
                 else:
                     text = menu_options[i][0]
@@ -423,18 +413,22 @@ def menu(ui):
                 rect = menu_options[i][2]
 
             if i == menu_choice:
-                render_text = ui.font.render(text, 1, Color.RED.rgb)
-            else:
                 render_text = ui.font.render(text, 1, Color.WHITE.rgb)
+            else:
+                render_text = ui.font.render(text, 1, font_color)
 
             ui.screen.blit(render_text, rect)
-            ui.screen.blit(ui.assets['logo'],
-                           pygame.Rect(100, 50, 80, 80))
-
-        pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
-            (0, 0), (SCREEN_WIDTH, 0),
-            (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
-        ], 10)
+            ui.screen.blit(ui.assets['title'],
+                           pygame.Rect(120, 50, 80, 80))
+            ui.screen.blit(
+                ui.assets['logo_small'],
+                pygame.Rect(
+                   SCREEN_WIDTH - 140,
+                   SCREEN_HEIGHT - 80,
+                   20, 20)
+               )
+            ui.screen.blit(ui.assets['bg'],
+                           pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
         pygame.display.update()
 
@@ -443,10 +437,8 @@ def menu(ui):
 
 def run_game(ui, game, board):
 
-    print(ui.game_difficulty)
     held_piece_coord = None
     player_turn = True
-    print("Player turn...")
     ui.display_text("Your turn...")
 
     colored_board = []
@@ -473,9 +465,6 @@ def run_game(ui, game, board):
                         if can_move_piece(clicked_piece, held_piece_coord):
                             held_piece_coord = Coordinate(
                                 cell_coord.row, cell_coord.column)
-                            print(
-                                "Clicked on cell: {} which contains a {}"
-                                .format(held_piece_coord, clicked_piece))
                 elif event.type == pygame.MOUSEBUTTONUP:
                     cell_coord = get_coordinates_by_position(
                         pygame.mouse.get_pos(), board)
@@ -485,10 +474,10 @@ def run_game(ui, game, board):
                         if cell_coord in dests:
                             move(game, held_piece_coord, cell_coord,
                                  promotion_callback_factory(ui))
+                            ui.animate(game.board,
+                                       (held_piece_coord, cell_coord))
                             player_turn = False
-                            print("Player moved!")
                             if is_checkmate_for_player(game, Player.BLACK):
-                                print('WHITE player wins!')
                                 ui.display_text(
                                     "WHITE player wins! (Press ESC)",
                                     color=(0, 255, 0))
@@ -507,9 +496,6 @@ def run_game(ui, game, board):
                                     "Draw by Impossibility!",
                                     color=(255, 0, 0))
                                 end_game = True
-                    else:
-                        print("You cannot do that!")
-                        print("Player turn still...")
                     held_piece_coord = None
 
         dests = []
@@ -518,19 +504,15 @@ def run_game(ui, game, board):
         colored_board = color_board(board, dests)
 
         if not end_game and not player_turn:
-            print("Computer turn")
             ui.display_text("Computer turn...")
             movement = greedy_move(game)
             move(game, movement[0], movement[1])
             ui.animate(game.board, movement)
-            print("Computer moved!")
             if is_checkmate_for_player(game, Player.WHITE):
-                print('BLACK player wins!')
                 ui.display_text("BLACK player wins! (Press ESC)",
                                 color=(255, 0, 0))
                 end_game = True
             elif is_check_for_player(game, Player.WHITE):
-                print('WHITE player is in check!')
                 ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
             elif is_stalemate_for_player(game, Player.WHITE):
                 ui.display_text("Draw by Stalemate!", color=(255, 0, 0))
@@ -539,7 +521,6 @@ def run_game(ui, game, board):
                 ui.display_text("Draw by Impossibility!", color=(255, 0, 0))
                 end_game = True
             else:
-                print("Player turn")
                 ui.display_text("Your turn...")
             player_turn = True
 

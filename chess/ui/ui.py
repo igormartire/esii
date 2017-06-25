@@ -71,9 +71,6 @@ class UI:
                          [B, W, B, W, B, W, B, W],
                          [W, B, W, B, W, B, W, B],
                          [B, W, B, W, B, W, B, W]]
-        print(board)
-        print(colored_board)
-        print(move_diff)
         dH = move_diff[1].row - move_diff[0].row
         dL = move_diff[1].column - move_diff[0].column
         for i in range(10):
@@ -318,7 +315,6 @@ def chosen_difficulty(game_difficulty):
 
 
 def menu(ui):
-    print("menu")
     menu = True
     difficulty = False
     quit = False
@@ -390,8 +386,6 @@ def menu(ui):
                     if difficulty:
                         ui.game_difficulty = menu_choice
                         difficulty = False
-                        print("Changing game difficulty to: {}".format(
-                            ui.game_difficulty))
                     else:
                         if menu_choice == 0:
                             menu = False
@@ -443,10 +437,8 @@ def menu(ui):
 
 def run_game(ui, game, board):
 
-    print(ui.game_difficulty)
     held_piece_coord = None
     player_turn = True
-    print("Player turn...")
     ui.display_text("Your turn...")
 
     colored_board = []
@@ -473,9 +465,6 @@ def run_game(ui, game, board):
                         if can_move_piece(clicked_piece, held_piece_coord):
                             held_piece_coord = Coordinate(
                                 cell_coord.row, cell_coord.column)
-                            print(
-                                "Clicked on cell: {} which contains a {}"
-                                .format(held_piece_coord, clicked_piece))
                 elif event.type == pygame.MOUSEBUTTONUP:
                     cell_coord = get_coordinates_by_position(
                         pygame.mouse.get_pos(), board)
@@ -485,10 +474,9 @@ def run_game(ui, game, board):
                         if cell_coord in dests:
                             move(game, held_piece_coord, cell_coord,
                                  promotion_callback_factory(ui))
+                            ui.animate(game.board, (held_piece_coord, cell_coord))
                             player_turn = False
-                            print("Player moved!")
                             if is_checkmate_for_player(game, Player.BLACK):
-                                print('WHITE player wins!')
                                 ui.display_text(
                                     "WHITE player wins! (Press ESC)",
                                     color=(0, 255, 0))
@@ -507,9 +495,6 @@ def run_game(ui, game, board):
                                     "Draw by Impossibility!",
                                     color=(255, 0, 0))
                                 end_game = True
-                    else:
-                        print("You cannot do that!")
-                        print("Player turn still...")
                     held_piece_coord = None
 
         dests = []
@@ -518,19 +503,15 @@ def run_game(ui, game, board):
         colored_board = color_board(board, dests)
 
         if not end_game and not player_turn:
-            print("Computer turn")
             ui.display_text("Computer turn...")
             movement = greedy_move(game)
             move(game, movement[0], movement[1])
             ui.animate(game.board, movement)
-            print("Computer moved!")
             if is_checkmate_for_player(game, Player.WHITE):
-                print('BLACK player wins!')
                 ui.display_text("BLACK player wins! (Press ESC)",
                                 color=(255, 0, 0))
                 end_game = True
             elif is_check_for_player(game, Player.WHITE):
-                print('WHITE player is in check!')
                 ui.display_text("Your turn... (CHECK!)", color=(255, 0, 0))
             elif is_stalemate_for_player(game, Player.WHITE):
                 ui.display_text("Draw by Stalemate!", color=(255, 0, 0))
@@ -539,7 +520,6 @@ def run_game(ui, game, board):
                 ui.display_text("Draw by Impossibility!", color=(255, 0, 0))
                 end_game = True
             else:
-                print("Player turn")
                 ui.display_text("Your turn...")
             player_turn = True
 

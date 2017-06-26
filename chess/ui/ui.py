@@ -423,7 +423,7 @@ def menu(ui):
 
             ui.screen.blit(render_text, rect)
             ui.screen.blit(ui.assets['title'],
-                           pygame.Rect(120, 50, 80, 80))
+                           pygame.Rect(60, 50, 80, 80))
             ui.screen.blit(
                 ui.assets['logo_small'],
                 pygame.Rect(

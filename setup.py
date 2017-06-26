@@ -7,7 +7,9 @@ Usage:
 
 from setuptools import setup
 
-APP = ['main.py']
+NAME = 'Chess'
+VERSION = '1.0'
+APP = ['main_build.py']
 DATA_FILES = [
     'assets/black-bishop.png',
     'assets/black-king.png',
@@ -27,10 +29,13 @@ DATA_FILES = [
     'assets/title.png',
 ]
 OPTIONS = {
-    'packages': ['pygame']
+    'packages': ['pygame'],
+    'iconfile': 'assets/icon2.icns',
 }
 
 setup(
+    name=NAME,
+    version=VERSION,
     app=APP,
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},

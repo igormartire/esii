@@ -176,6 +176,7 @@ class UI:
         return board_surface, chess_pieces
 
     def load_png(self, file_name):
+        print(BUILD)
         if  BUILD:
             image = pygame.image.load(file_name)
         else:
@@ -534,6 +535,7 @@ def run_game(ui, game, board):
 
 
 def run(build=False):
+    global BUILD
     BUILD = build
     ui = UI()
     running = True

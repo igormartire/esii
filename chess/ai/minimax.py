@@ -42,7 +42,7 @@ class Minimax:
         # o algoritmo para quando chega na profundidade especificada
         # e retorna o valor da ultima jogada e para a recursão
         if self.cutoff_test(depth):
-            return [state.value, None, None]
+            return [score_board(state.game.board), None, None]
 
         if is_checkmate_for_player(self.state.game, Player.BLACK):
             return [-self.VICTORY, None]
@@ -52,41 +52,37 @@ class Minimax:
         for movement in self.valid_movements(state, WHITE_PIECES):
             v = [float("inf"), None, None]
             source = movement[0]
+            destination = movement[1]
 
             minstate = deepcopy(state)
             # faz a jogada
-            move(minstate.game, source, movement[1])
+            move(minstate.game, source, destination)
             # valor da jogada
 
-            v[0] = score_board(minstate.game.board)
-
-            # associa o valor da jogada com o estado atual
-            minstate.value = v[0]
-
             # momento em que pega a jogada do adversário
-            m = self.max_value(minstate, alfa, beta, depth - 1)
+            best_score = self.max_value(minstate, alfa, beta, depth - 1)
 
-            if m is not None:
-                if m[0] > v[0]:
-                    v[0] = m[0]
-
+            v[0] = best_score[0]
             v[1] = source
-            v[2] = movement[1]
+            v[2] = destination
 
             v_list.append(v)
 
             if v[0] <= alfa:
                 if self.random_movement(v_list):
                     return v_list[randint(0, len(v_list) - 1)]
-                        
+
                 else:
                     return min(v_list, key=lambda v: v[0])
 
             beta = min(v[0], beta)
-        
+
+        if len(v_list) == 0:
+            return [float('inf'), None, None]
+
         if self.random_movement(v_list):
             return v_list[randint(0, len(v_list) - 1)]
-                
+
         else:
             return min(v_list, key=lambda v: v[0])
 
@@ -95,7 +91,7 @@ class Minimax:
         # o algoritmo para quando chega na profundidade especificada e
         # retorna o valor da ultima jogada e para a recursão
         if self.cutoff_test(depth):
-            return [state.value, None, None]
+            return [score_board(state.game.board), None, None]
 
         if is_checkmate_for_player(self.state.game, Player.WHITE):
             return [self.VICTORY, None]
@@ -106,39 +102,36 @@ class Minimax:
         for movement in vm:
             v = [float("-inf"), None, None]
             source = movement[0]
+            destination = movement[1]
+
             maxstate = deepcopy(state)
             # faz a jogada
-            move(maxstate.game, source, movement[1])
-            # valor da jogada
-            v[0] = score_board(maxstate.game.board)
-
-            # associa o valor da jogada com o estado atual
-            maxstate.value = v[0]
+            move(maxstate.game, source, destination)
 
             # momento em que pega a jogada do adversário
-            m = self.min_value(maxstate, alfa, beta, depth - 1)
+            best_score = self.min_value(maxstate, alfa, beta, depth - 1)
 
-            if m is not None:
-                if m[0] < v[0]:
-                    v[0] = m[0]
-
+            v[0] = best_score[0]
             v[1] = source
-            v[2] = movement[1]
+            v[2] = destination
 
             v_list.append(v)
 
             if v[0] >= beta:
                 if self.random_movement(v_list):
                     return v_list[randint(0, len(v_list) - 1)]
-                        
+
                 else:
                     return max(v_list, key=lambda v: v[0])
 
             alfa = max(v[0], alfa)
 
+        if len(v_list) == 0:
+            return [float('-inf'), None, None]
+
         if self.random_movement(v_list):
             return v_list[randint(0, len(v_list) - 1)]
-                
+
         else:
             return max(v_list, key=lambda v: v[0])
 
@@ -159,11 +152,11 @@ class Minimax:
         return destinations_list
 
     def random_movement(self, l):
-        
+
         for i in l:
             if l[0][0] != i[0]:
                 return False
-             
+
         return True
 
     def cutoff_test(self, depth):

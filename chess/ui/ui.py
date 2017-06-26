@@ -25,7 +25,8 @@ SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 740
 BOARD_SIZE = 640
 CELL_BORDER = 3
-IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
+IMAGES_FOLDER_PATH = 'assets'
+BUILD = False
 
 
 class UI:
@@ -35,23 +36,23 @@ class UI:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption(SCREEN_TITLE)
         self.sprites = {
-            "WHITE_PAWN_IMAGE": self.load_png('chess-pieces/white-pawn'),
-            "WHITE_BISHOP_IMAGE": self.load_png('chess-pieces/white-bishop'),
-            "WHITE_KING_IMAGE": self.load_png('chess-pieces/white-king'),
-            "WHITE_KNIGHT_IMAGE": self.load_png('chess-pieces/white-knight'),
-            "WHITE_QUEEN_IMAGE": self.load_png('chess-pieces/white-queen'),
-            "WHITE_ROOK_IMAGE": self.load_png('chess-pieces/white-rook'),
-            "BLACK_PAWN_IMAGE": self.load_png('chess-pieces/black-pawn'),
-            "BLACK_BISHOP_IMAGE": self.load_png('chess-pieces/black-bishop'),
-            "BLACK_KING_IMAGE": self.load_png('chess-pieces/black-king'),
-            "BLACK_KNIGHT_IMAGE": self.load_png('chess-pieces/black-knight'),
-            "BLACK_QUEEN_IMAGE": self.load_png('chess-pieces/black-queen'),
-            "BLACK_ROOK_IMAGE": self.load_png('chess-pieces/black-rook')
+            "WHITE_PAWN_IMAGE": self.load_png('white-pawn.png'),
+            "WHITE_BISHOP_IMAGE": self.load_png('white-bishop.png'),
+            "WHITE_KING_IMAGE": self.load_png('white-king.png'),
+            "WHITE_KNIGHT_IMAGE": self.load_png('white-knight.png'),
+            "WHITE_QUEEN_IMAGE": self.load_png('white-queen.png'),
+            "WHITE_ROOK_IMAGE": self.load_png('white-rook.png'),
+            "BLACK_PAWN_IMAGE": self.load_png('black-pawn.png'),
+            "BLACK_BISHOP_IMAGE": self.load_png('black-bishop.png'),
+            "BLACK_KING_IMAGE": self.load_png('black-king.png'),
+            "BLACK_KNIGHT_IMAGE": self.load_png('black-knight.png'),
+            "BLACK_QUEEN_IMAGE": self.load_png('black-queen.png'),
+            "BLACK_ROOK_IMAGE": self.load_png('black-rook.png')
         }
         self.assets = {
-            'title': self.load_png('title'),
-            'logo_small': self.load_png('logo_small'),
-            'bg': self.load_png('bg'),
+            'title': self.load_png('title.png'),
+            'logo_small': self.load_png('logo_small.png'),
+            'bg': self.load_png('bg.png'),
         }
 
         self.__displayed_text = self.font.render("", 1, (255, 255, 255))
@@ -175,8 +176,11 @@ class UI:
         return board_surface, chess_pieces
 
     def load_png(self, file_name):
-        fullname = os.path.join(IMAGES_FOLDER_PATH, file_name + '.png')
-        image = pygame.image.load(fullname)
+        if  BUILD:
+            image = pygame.image.load(file_name)
+        else:
+            image = pygame.image.load(
+                os.path.join(IMAGES_FOLDER_PATH, file_name))
         if image.get_alpha() is None:
             image = image.convert()
         else:
@@ -529,7 +533,8 @@ def run_game(ui, game, board):
         ui.refresh(board, colored_board)
 
 
-def run():
+def run(build=False):
+    BUILD = build
     ui = UI()
     running = True
     while running:

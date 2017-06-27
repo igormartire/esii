@@ -507,7 +507,7 @@ def run_game(ui, game, cpu):
             ui.display_text("Computer turn...")
             movement = cpu.cpu_move()
             move(game, movement[1], movement[2])
-            ui.animate(game.board, movement)
+            ui.animate(game.board, (movement[1], movement[2]))
             if is_checkmate_for_player(game, Player.WHITE):
                 ui.display_text("BLACK player wins! (Press ESC)",
                                 color=(255, 0, 0))
@@ -540,7 +540,7 @@ def run(build=False):
             game = Game()
             value = 0
             state = State(game, value)
-            difficulty = "medium"
+            difficulty = chosen_difficulty(ui.game_difficulty).lower()
             cpu = Minimax(state, difficulty)
             quit = run_game(ui, game, cpu)
             if quit:

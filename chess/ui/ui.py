@@ -54,7 +54,7 @@ class UI:
 
         self.__displayed_text = self.font.render("", 1, (255, 255, 255))
 
-        self.game_difficulty = 0
+        self.game_difficulty = 1
 
     def display_text(self, text, color=(255, 255, 255)):
         self.__displayed_text = self.font.render(text, 1, color)
@@ -72,8 +72,8 @@ class UI:
                          [B, W, B, W, B, W, B, W]]
         dH = move_diff[1].row - move_diff[0].row
         dL = move_diff[1].column - move_diff[0].column
-        for i in range(10):
-            t = i / 10.0
+        for i in range(21):
+            t = i / 20.0
             self.screen.fill((0, 0, 0))
             board_surface = pygame.Surface((BOARD_SIZE, BOARD_SIZE)).convert()
             chess_pieces = []
@@ -112,7 +112,7 @@ class UI:
                 center=(SCREEN_WIDTH / 2, 50))
             self.screen.blit(self.__displayed_text, text_rect)
             pygame.display.update()
-            time.sleep(0.03)
+            time.sleep(0.01)
 
     def refresh(self, chess_board, colored_board):
         self.screen.fill((0, 0, 0))
@@ -505,6 +505,7 @@ def run_game(ui, game, cpu):
 
         if not end_game and not player_turn:
             ui.display_text("Computer turn...")
+            ui.refresh(board, colored_board)
             movement = cpu.cpu_move()
             move(game, movement[1], movement[2])
             ui.animate(game.board, (movement[1], movement[2]))

@@ -25,7 +25,8 @@ SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 740
 BOARD_SIZE = 640
 CELL_BORDER = 3
-IMAGES_FOLDER_PATH = 'chess/ui/assets/images'
+IMAGES_FOLDER_PATH = 'assets'
+BUILD = False
 
 
 class UI:
@@ -35,22 +36,23 @@ class UI:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption(SCREEN_TITLE)
         self.sprites = {
-            "WHITE_PAWN_IMAGE": self.load_png('chess-pieces/white-pawn'),
-            "WHITE_BISHOP_IMAGE": self.load_png('chess-pieces/white-bishop'),
-            "WHITE_KING_IMAGE": self.load_png('chess-pieces/white-king'),
-            "WHITE_KNIGHT_IMAGE": self.load_png('chess-pieces/white-knight'),
-            "WHITE_QUEEN_IMAGE": self.load_png('chess-pieces/white-queen'),
-            "WHITE_ROOK_IMAGE": self.load_png('chess-pieces/white-rook'),
-            "BLACK_PAWN_IMAGE": self.load_png('chess-pieces/black-pawn'),
-            "BLACK_BISHOP_IMAGE": self.load_png('chess-pieces/black-bishop'),
-            "BLACK_KING_IMAGE": self.load_png('chess-pieces/black-king'),
-            "BLACK_KNIGHT_IMAGE": self.load_png('chess-pieces/black-knight'),
-            "BLACK_QUEEN_IMAGE": self.load_png('chess-pieces/black-queen'),
-            "BLACK_ROOK_IMAGE": self.load_png('chess-pieces/black-rook')
+            "WHITE_PAWN_IMAGE": self.load_png('white-pawn.png'),
+            "WHITE_BISHOP_IMAGE": self.load_png('white-bishop.png'),
+            "WHITE_KING_IMAGE": self.load_png('white-king.png'),
+            "WHITE_KNIGHT_IMAGE": self.load_png('white-knight.png'),
+            "WHITE_QUEEN_IMAGE": self.load_png('white-queen.png'),
+            "WHITE_ROOK_IMAGE": self.load_png('white-rook.png'),
+            "BLACK_PAWN_IMAGE": self.load_png('black-pawn.png'),
+            "BLACK_BISHOP_IMAGE": self.load_png('black-bishop.png'),
+            "BLACK_KING_IMAGE": self.load_png('black-king.png'),
+            "BLACK_KNIGHT_IMAGE": self.load_png('black-knight.png'),
+            "BLACK_QUEEN_IMAGE": self.load_png('black-queen.png'),
+            "BLACK_ROOK_IMAGE": self.load_png('black-rook.png')
         }
         self.assets = {
-            'logo': self.load_png('logo'),
-            'bg': self.load_png('bg'),
+            'title': self.load_png('title.png'),
+            'logo_small': self.load_png('logo_small.png'),
+            'bg': self.load_png('bg.png'),
         }
 
         self.__displayed_text = self.font.render("", 1, (255, 255, 255))
@@ -109,7 +111,6 @@ class UI:
             self.screen.blit(board_surface, board_position())
             for chess_piece in chess_pieces:
                 self.screen.blit(chess_piece.image, chess_piece.rect)
-            # Foreground
             text_rect = self.__displayed_text.get_rect(
                 center=(SCREEN_WIDTH / 2, 50))
             self.screen.blit(self.__displayed_text, text_rect)
@@ -117,7 +118,6 @@ class UI:
             time.sleep(0.03)
 
     def refresh(self, chess_board, colored_board):
-        # Erase screen
         self.screen.fill((0, 0, 0))
 
         board_surface, chess_pieces = self.setup_board(
@@ -126,7 +126,6 @@ class UI:
         for chess_piece in chess_pieces:
             self.screen.blit(chess_piece.image, chess_piece.rect)
 
-        # Foreground
         text_rect = self.__displayed_text.get_rect(
             center=(SCREEN_WIDTH / 2, 50))
         self.screen.blit(self.__displayed_text, text_rect)
@@ -177,9 +176,11 @@ class UI:
         return board_surface, chess_pieces
 
     def load_png(self, file_name):
-        """ Load image and return image object"""
-        fullname = os.path.join(IMAGES_FOLDER_PATH, file_name + '.png')
-        image = pygame.image.load(fullname)
+        if BUILD:
+            image = pygame.image.load(file_name)
+        else:
+            image = pygame.image.load(
+                os.path.join(IMAGES_FOLDER_PATH, file_name))
         if image.get_alpha() is None:
             image = image.convert()
         else:
@@ -318,24 +319,26 @@ def menu(ui):
     menu = True
     difficulty = False
     quit = False
+    font_color = (0, 150, 150)
 
     # region Main Menu
     menu_options = []
-    play_text = 'Play ({})'.format(chosen_difficulty(ui.game_difficulty))
-    play_menu = ui.font.render(play_text, 1, Color.WHITE.rgb)
+
+    play_text = 'PLAY ({})'.format(chosen_difficulty(ui.game_difficulty))
+    play_menu = ui.font.render(play_text, 1, font_color)
     play_menu_rect = play_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 30)
     )
 
     difficulty_text = 'Difficulty'
-    difficulty_menu = ui.font.render(difficulty_text, 1, Color.WHITE.rgb)
+    difficulty_menu = ui.font.render(difficulty_text, 1, font_color)
     difficulty_menu_rect = difficulty_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50)
     )
     quit_text = 'Quit'
-    quit_menu = ui.font.render(quit_text, 1, Color.WHITE.rgb)
+    quit_menu = ui.font.render(quit_text, 1, font_color)
     quit_menu_rect = quit_menu.get_rect(
-        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 130)
+        center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 200)
     )
     menu_options.append(
         (play_text, play_menu, play_menu_rect))
@@ -348,17 +351,17 @@ def menu(ui):
     # region Difficulty Menu
     diff_options = []
     easy_text = 'Easy'
-    easy_menu = ui.font.render(easy_text, 1, Color.WHITE.rgb)
+    easy_menu = ui.font.render(easy_text, 1, font_color)
     easy_menu_rect = easy_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) - 30)
     )
     medium_text = 'Medium'
-    medium_menu = ui.font.render(medium_text, 1, Color.WHITE.rgb)
+    medium_menu = ui.font.render(medium_text, 1, font_color)
     medium_menu_rect = medium_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 50)
     )
     hard_text = 'Hard'
-    hard_menu = ui.font.render(hard_text, 1, Color.WHITE.rgb)
+    hard_menu = ui.font.render(hard_text, 1, font_color)
     hard_menu_rect = hard_menu.get_rect(
         center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 130)
     )
@@ -382,7 +385,6 @@ def menu(ui):
                     if menu_choice < 0:
                         menu_choice = 2
                 if event.key == pygame.K_RETURN:
-                    # Selected difficulty
                     if difficulty:
                         ui.game_difficulty = menu_choice
                         difficulty = False
@@ -390,16 +392,14 @@ def menu(ui):
                         if menu_choice == 0:
                             menu = False
                         if menu_choice == 1:
-                            # Change menu
                             difficulty = True
                         if menu_choice == 2:
                             quit = True
+                    menu_choice = 0
             if event.type == pygame.QUIT:
                 quit = True
 
         ui.screen.fill((0, 0, 0,))
-        ui.screen.blit(ui.assets['bg'],
-                       pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
         for i in range(3):
             if difficulty:
@@ -408,7 +408,7 @@ def menu(ui):
                 rect = diff_options[i][2]
             else:
                 if i == 0:
-                    text = 'Play ({})'.format(
+                    text = 'PLAY ({})'.format(
                         chosen_difficulty(ui.game_difficulty))
                 else:
                     text = menu_options[i][0]
@@ -417,18 +417,22 @@ def menu(ui):
                 rect = menu_options[i][2]
 
             if i == menu_choice:
-                render_text = ui.font.render(text, 1, Color.RED.rgb)
-            else:
                 render_text = ui.font.render(text, 1, Color.WHITE.rgb)
+            else:
+                render_text = ui.font.render(text, 1, font_color)
 
             ui.screen.blit(render_text, rect)
-            ui.screen.blit(ui.assets['logo'],
-                           pygame.Rect(100, 50, 80, 80))
-
-        pygame.draw.lines(ui.screen, (0, 128, 255), 1, [
-            (0, 0), (SCREEN_WIDTH, 0),
-            (SCREEN_WIDTH, SCREEN_HEIGHT), (0, SCREEN_HEIGHT),
-        ], 10)
+            ui.screen.blit(ui.assets['title'],
+                           pygame.Rect(60, 50, 80, 80))
+            ui.screen.blit(
+                ui.assets['logo_small'],
+                pygame.Rect(
+                   SCREEN_WIDTH - 140,
+                   SCREEN_HEIGHT - 80,
+                   20, 20)
+               )
+            ui.screen.blit(ui.assets['bg'],
+                           pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT))
 
         pygame.display.update()
 
@@ -529,7 +533,9 @@ def run_game(ui, game, board):
         ui.refresh(board, colored_board)
 
 
-def run():
+def run(build=False):
+    global BUILD
+    BUILD = build
     ui = UI()
     running = True
     while running:

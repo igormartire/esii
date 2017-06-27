@@ -98,3 +98,6 @@ pip-selfcheck.json
 .idea/
 
 .DS_Store
+
+dist/
+build/

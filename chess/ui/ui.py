@@ -1,14 +1,11 @@
 import os
-import copy
 import time
-from functools import partial
 
 import pygame
 from pygame.locals import *
 
-import chess.core.utils
 from chess.core.models import Coordinate, Color, Piece, Player
-from chess.core.utils import initial_board, BLACK_PIECES, WHITE_PIECES
+from chess.core.utils import WHITE_PIECES
 from chess.core.query import (destinations,
                               is_check_for_player,
                               is_checkmate_for_player,
@@ -16,9 +13,9 @@ from chess.core.query import (destinations,
                               is_impossible_checkmate)
 from chess.core.coloring import color_board
 from chess.core.moving import move
-from chess.ai.score import score_board
-from chess.ai.greedy import greedy_move
+from chess.ai.minimax import Minimax
 from chess.core.game import Game
+from chess.ai.state import State
 
 SCREEN_TITLE = 'Chess'
 SCREEN_WIDTH = 640
@@ -249,7 +246,6 @@ def promotion_callback_factory(ui):
 
         black = pygame.color.Color('Black')
         green = pygame.color.Color('Green')
-        red = pygame.color.Color('Red')
 
         top_notification_surface = pygame.Surface((BOARD_SIZE, 100)).convert()
         top_notification_surface.fill(black, (0, 0, BOARD_SIZE, 100))
@@ -439,8 +435,8 @@ def menu(ui):
     return quit
 
 
-def run_game(ui, game, board):
-
+def run_game(ui, game, cpu):
+    board = game.board
     held_piece_coord = None
     player_turn = True
     ui.display_text("Your turn...")
@@ -509,8 +505,8 @@ def run_game(ui, game, board):
 
         if not end_game and not player_turn:
             ui.display_text("Computer turn...")
-            movement = greedy_move(game)
-            move(game, movement[0], movement[1])
+            movement = cpu.cpu_move()
+            move(game, movement[1], movement[2])
             ui.animate(game.board, movement)
             if is_checkmate_for_player(game, Player.WHITE):
                 ui.display_text("BLACK player wins! (Press ESC)",
@@ -542,10 +538,14 @@ def run(build=False):
         quit = menu(ui)
         if not quit:
             game = Game()
-            board = game.board
-            quit = run_game(ui, game, board)
+            value = 0
+            state = State(game, value)
+            difficulty = "medium"
+            cpu = Minimax(state, difficulty)
+            quit = run_game(ui, game, cpu)
             if quit:
                 break
+            board = game.board
             ui.refresh(board, color_board(board, []))
         else:
             break

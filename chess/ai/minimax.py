@@ -7,8 +7,7 @@ from chess.core.moving import move
 from chess.ai.score import score_board
 from chess.core.models import Player
 from chess.core.utils import BLACK_PIECES, WHITE_PIECES
-from chess.core.query import destinations
-from chess.core.check import is_checkmate_for_player
+from chess.core.query import destinations, is_checkmate_for_player
 
 from copy import deepcopy
 

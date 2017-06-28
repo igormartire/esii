@@ -1,7 +1,7 @@
 from chess.core.moving import move
 from chess.core.models import Player, Coordinate, Piece
 from chess.core.game import Game
-from chess.core.check import (is_check_for_player,
+from chess.core.query import (is_check_for_player,
                               is_checkmate_for_player,
                               is_attacked)
 from chess.core.utils import _, K, k, Q, q, R, r, N, n, B, b, P, p
@@ -13,8 +13,8 @@ import mock
 ##############
 
 
-@mock.patch('chess.core.check.piece_at')
-@mock.patch('chess.core.check.destinations')
+@mock.patch('chess.core.query.piece_at')
+@mock.patch('chess.core.query.destinations')
 def test_is_attacked(destinations, piece_at):
     game_stub = Game()
     game_stub.board = ['A', 'B', 'C', 'non-sense', 'i-am-mocked']
@@ -39,8 +39,8 @@ def test_is_attacked(destinations, piece_at):
     assert(destinations.call_count == 1)  # for attacker piece BLACK_QUEEN
 
 
-@mock.patch('chess.core.check.destinations')
-@mock.patch('chess.core.check.piece_at')
+@mock.patch('chess.core.query.destinations')
+@mock.patch('chess.core.query.piece_at')
 def test_is_not_attacked(piece_at, destinations):
     game_stub = Game()
     game_stub.board = ['A', 'B', 'C', 'non-sense', 'i-am-mocked']
@@ -66,8 +66,8 @@ def test_is_not_attacked(piece_at, destinations):
     assert(destinations.call_count == 2)
 
 
-@mock.patch('chess.core.check.is_attacked')
-@mock.patch('chess.core.check.get_piece_coordinate')
+@mock.patch('chess.core.query.is_attacked')
+@mock.patch('chess.core.query.get_piece_coordinate')
 def test_is_check_for_player_white(get_piece_coordinate, is_attacked):
     game_stub = Game()
     game_stub.board = ['A', 'B', 'C', 'non-sense', 'i-am-mocked']
@@ -88,8 +88,8 @@ def test_is_check_for_player_white(get_piece_coordinate, is_attacked):
     assert kwargs == {}
 
 
-@mock.patch('chess.core.check.is_attacked')
-@mock.patch('chess.core.check.get_piece_coordinate')
+@mock.patch('chess.core.query.is_attacked')
+@mock.patch('chess.core.query.get_piece_coordinate')
 def test_is_not_check_for_player_white(get_piece_coordinate, is_attacked):
     game_stub = Game()
     game_stub.board = ['A', 'B', 'C', 'non-sense', 'i-am-mocked']
@@ -110,8 +110,8 @@ def test_is_not_check_for_player_white(get_piece_coordinate, is_attacked):
     assert kwargs == {}
 
 
-@mock.patch('chess.core.check.is_attacked')
-@mock.patch('chess.core.check.get_piece_coordinate')
+@mock.patch('chess.core.query.is_attacked')
+@mock.patch('chess.core.query.get_piece_coordinate')
 def test_is_check_for_player_black(get_piece_coordinate, is_attacked):
     game_stub = Game()
     game_stub.board = ['A', 'B', 'C', 'non-sense', 'i-am-mocked']
@@ -132,8 +132,8 @@ def test_is_check_for_player_black(get_piece_coordinate, is_attacked):
     assert kwargs == {}
 
 
-@mock.patch('chess.core.check.is_attacked')
-@mock.patch('chess.core.check.get_piece_coordinate')
+@mock.patch('chess.core.query.is_attacked')
+@mock.patch('chess.core.query.get_piece_coordinate')
 def test_is_not_check_for_player_black(get_piece_coordinate, is_attacked):
     game_stub = Game()
     game_stub.board = ['A', 'B', 'C', 'non-sense', 'i-am-mocked']

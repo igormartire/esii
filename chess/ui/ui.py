@@ -506,7 +506,14 @@ def run_game(ui, game, cpu):
         if not end_game and not player_turn:
             ui.display_text("Computer turn...")
             ui.refresh(board, colored_board)
+            import cProfile, pstats
+            pr = cProfile.Profile()
+            pr.enable()
             movement = cpu.cpu_move()
+            pr.disable()
+            sortby = 'tottime'
+            ps = pstats.Stats(pr).sort_stats(sortby)
+            ps.print_stats()
             move(game, movement[1], movement[2])
             ui.animate(game.board, (movement[1], movement[2]))
             if is_checkmate_for_player(game, Player.WHITE):

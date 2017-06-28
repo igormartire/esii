@@ -12,3 +12,14 @@ test:
 
 clean:
 	find . | grep -E "(__pycache__|\.pyc$$)" | xargs rm -rf
+
+.PHONY: unbuild
+unbuild:
+	rm -rf build
+	rm -rf dist
+
+.PHONY: build
+build:
+	rm -rf build
+	rm -rf dist
+	python setup.py py2app

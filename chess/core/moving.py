@@ -1,19 +1,14 @@
 from chess.core.models import Piece, Coordinate, Color
 from chess.core.utils import (remaining_pieces, piece_at,
                               WHITE_PIECES, BLACK_PIECES)
-from chess.core.draw import (threefold_repetition, fifty_move_rule)
 import copy
 
 
-def move(game, src, dest, promotion_callback=None, draw_allowed_callback=None):
+def move(game, src, dest, promotion_callback=None):
     board = game.board
     piece = board[src.row][src.column]
 
     castling(game, src, dest)
-
-    if (draw_allowed_callback is not None):
-        threefold_repetition(game, src, dest, draw_allowed_callback)
-        fifty_move_rule(game, src, dest, draw_allowed_callback)
 
     board[src.row][src.column] = Piece.NONE
     board[dest.row][dest.column] = piece

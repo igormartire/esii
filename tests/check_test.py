@@ -87,6 +87,9 @@ def test_is_check_for_player_white(get_piece_coordinate, is_attacked):
     assert args == (game_stub, king_pos_stub, checked_player)
     assert kwargs == {}
 
+    assert get_piece_coordinate.call_count == 1
+    assert is_attacked.call_count == 1
+
 
 @mock.patch('chess.core.query.is_attacked')
 @mock.patch('chess.core.query.get_piece_coordinate')
